@@ -25,6 +25,18 @@ describe "Python Mathematics":
     # Because it doesn't have colon at the end, it shouldn't be given a body and it will be replaced with
     #  "def test_should_do_this_other_thing(self): raise nose.SkipTest"
 
+# We can also define a class for the describes
+# Either when we create the tokeniser and register it
+# Or inside the spec file itself, per describe
+
+class DifferentBase(object):
+    def x(self):
+        return 5
+
+describe DifferentBase 'Inheritance':
+    it 'should have x equal to 5':
+        self.x() |should.be| 5
+
 # Combined with the spec plugin from Pinnochio and it's corresponding --with-spec and --spec-color options
 #  and should-dsl, we can achieve a very nice rspec style situation for python :D
 # A nose 0.10.0 compatible version of that plugin can be found at :: 

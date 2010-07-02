@@ -117,12 +117,15 @@ class Tokeniser(object):
                 , (OP,   ')')
                 ]
     
-    def makeDescribe(self, value):
-        result = [ (NAME, 'test_%s' % self.acceptable(value))
+    def makeDescribe(self, value, nextDescribeKls):
+        result = [ (NAME, 'Test_%s' % self.acceptable(value))
                  , (OP,   '(')
                  ]
         
-        result.extend( self.defaultKls )
+        if nextDescribeKls:
+            result.extend( self.tokensIn(nextDescribeKls) )
+        else:
+            result.extend( self.defaultKls )
         
         result.append( (OP, ')') )
     
@@ -150,6 +153,8 @@ class Tokeniser(object):
     def translate(self, readline):
         result = [d for d in self.defaultImports]
         
+        nextDescribeKls = None
+        keepLastToken = False
         indentLevel = 0
         startingAnIt  = False
         afterSpace  = True
@@ -190,7 +195,8 @@ class Tokeniser(object):
                     result.extend( self.makeIt(value) )
                                
                 elif lastToken == 'describe':
-                    result.extend( self.makeDescribe(value) )
+                    result.extend( self.makeDescribe(value, nextDescribeKls) )
+                    nextDescribeKls = None
                     
                 elif lastToken == 'ignore':
                     startingAnIt = True
@@ -198,6 +204,10 @@ class Tokeniser(object):
                 
                 else:
                     justAppend = True
+            
+            elif tokenum == NAME and lastToken == 'describe':
+                nextDescribeKls = value
+                keepLastToken = True
             
             elif tokenum == NEWLINE and lastToken != ':' and startingAnIt:
                 result.extend( self.testSkip )
@@ -210,7 +220,10 @@ class Tokeniser(object):
             
             if justAppend:
                 result.append([tokenum, value])
-            
-            lastToken = value
+                
+            if not keepLastToken:
+                lastToken = value
+            else:
+                keepLastToken = False
             
         return result

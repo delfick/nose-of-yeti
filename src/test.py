@@ -82,12 +82,12 @@ class Test_Tokenisor_translation(object):
         self.tokb = Tokeniser(withDefaultImports=False, defaultKls = 'other')
         
     def test_it_should_translate_a_describe(self):
-        (self.toka, 'describe "Something testable"') | should | result_in('class test_Something_testable (object )')
-        (self.tokb, 'describe "Something testable"') | should | result_in('class test_Something_testable (other )')
+        (self.toka, 'describe "Something testable"') | should | result_in('class Test_Something_testable (object )')
+        (self.tokb, 'describe "Something testable"') | should | result_in('class Test_Something_testable (other )')
         
         # Same tests, but with newlines in front
-        (self.toka, '\ndescribe "Something testable"') | should | result_in('\nclass test_Something_testable (object )')
-        (self.tokb, '\ndescribe "Something testable"') | should | result_in('\nclass test_Something_testable (other )')
+        (self.toka, '\ndescribe "Something testable"') | should | result_in('\nclass Test_Something_testable (object )')
+        (self.tokb, '\ndescribe "Something testable"') | should | result_in('\nclass Test_Something_testable (other )')
         
     def test_it_should_translate_an_it(self):
         (self.toka, 'it "should do this thing"') | should | result_in('def test_should_do_this_thing (self )')
@@ -144,4 +144,21 @@ class Test_Tokenisor_translation(object):
         (self.toka, '\nvariable = describe')    | should | result_in('\nvariable =describe ')
         (self.toka, '\nvariable = ignore')      | should | result_in('\nvariable =ignore ')
         (self.toka, '\nvariable = it')          | should | result_in('\nvariable =it ')
+    
+    def test_it_should_allow_definition_of_different_base_class_for_next_describe(self):
+        test = '''
+        describe TestCase "This thing":pass
+        describe "Another thing":pass
+        '''
+        
+        desired = '''%s
+        class Test_This_thing (TestCase ):pass 
+        class Test_Another_thing (%s ):pass \n'''
+        
+        (self.toka, test) | should | result_in(desired % ('', 'object'))
+        (self.tokb, test) | should | result_in(desired % ('', 'other'))
+        
+        # Same tests, but with newlines in front
+        (self.toka, '\n%s' % test) | should | result_in(desired % ('\n', 'object'))
+        (self.tokb, '\n%s' % test) | should | result_in(desired % ('\n', 'other'))
         
