@@ -37,6 +37,36 @@ describe DifferentBase 'Inheritance':
     it 'should have x equal to 5':
         self.x() |should.be| 5
 
+# You can even nest describes !
+# The following is a bad example, but it demonstrates well enough
+
+describe 'numbers':
+    before_each:
+        self.number1 = 1
+        self.number2 = 2
+    
+    it 'should have number1 as 1':
+        self.number1 | should.be | 1
+    
+    describe 'testing number 3':
+        before_each:
+            self.number3 = 3
+        
+        it 'should have number1 from the lower level describe':
+            self.number1 | should.be | 1
+        
+        it 'should also have number3':
+            self.number3 | should.be | 3
+        
+        describe "let's change a number":
+            before_each:
+                self.number1 = 4
+            
+            it 'should have changed number1 but kept others':
+                self.number1 | should.be | 4
+                self.number2 | should.be | 2
+                self.number3 | should.be | 3
+
 # Combined with the spec plugin from Pinnochio and it's corresponding --with-spec and --spec-color options
 #  and should-dsl, we can achieve a very nice rspec style situation for python :D
 # A nose 0.10.0 compatible version of that plugin can be found at :: 

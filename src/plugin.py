@@ -2,9 +2,7 @@ from nose.plugins import Plugin
 from tokeniser import Tokeniser
 
 class Plugin(Plugin):
-    enabled = True
     name = "noseOfYeti"
-    score = 0
 
     def options(self, parser, env={}):
         super(Plugin, self).options(parser, env)
@@ -25,6 +23,14 @@ class Plugin(Plugin):
             )
             
         parser.add_option(
+              '--noy-no-describe-attrs'
+            , default = env.get('NOSE_NOY_NO_DESCRIBE_ATTRS') or False
+            , action  = 'store_true'
+            , dest    = 'noDescribeAttrs'
+            , help    = 'Turn off giving describes a is_noy_spec attribute'
+            )
+            
+        parser.add_option(
               '--noy-default-kls'
             , default = env.get('NOSE_NOY_DEFAULT_KLS') or 'object'
             , action  = 'store'
@@ -42,11 +48,23 @@ class Plugin(Plugin):
                               'import thing')
                         '''
             )
-
+    
+    def wantMethod(self, method):
+        kls = method.im_class
+        if hasattr(kls, 'is_noy_spec'):
+            if method.__name__ in kls.__dict__:
+                return True
+        else:
+            return True
+        
+        return False
+        
     def configure(self, options, conf):
         super(Plugin, self).configure(options, conf)
         if options.enabled:
+            self.enabled = True
             tok = Tokeniser( withDefaultImports = not options.noDefaultImports
+                           , withDescribeAttrs  = not options.noDescribeAttrs
                            , extraImports       = ';'.join([d for d in options.extraImport if d])
                            , defaultKls         = options.defaultKls
                            )

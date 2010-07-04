@@ -9,8 +9,9 @@ whitespace = re.compile('\s+')
         
 class Tokeniser(object): 
 
-    def __init__(self, defaultKls='object', extraImports=None, withDefaultImports=True):
+    def __init__(self, defaultKls='object', extraImports=None, withDefaultImports=True, withDescribeAttrs=True):
         self.withDefaultImports = withDefaultImports
+        self.withDescribeAttrs = withDescribeAttrs
         self.defaultImports = self.determineImports(extraImports)
         self.defaultKls = self.tokensIn(defaultKls)
         self.constructReplacements()
@@ -92,6 +93,11 @@ class Tokeniser(object):
                 return ''
             
         return [(t, v) for t, v, _, _, _ in generate_tokens(get)][:-1]
+    
+    def getEquivalence(self, name):
+        return { 'before_each' : 'setUp'
+               , 'after_each'  : 'tearDown'
+               }.get(name, name)
             
     ########################
     ###   MAKERS
@@ -100,7 +106,7 @@ class Tokeniser(object):
     def constructReplacements(self):
         self.before_each = [
               (NAME, 'def')
-            , (NAME, 'setUp')
+            , (NAME, self.getEquivalence('before_each'))
             , (OP,   '(')
             , (NAME, 'self')
             , (OP,   ')')
@@ -108,7 +114,7 @@ class Tokeniser(object):
         
         self.after_each =  [
               (NAME, 'def')
-            , (NAME, 'tearDown')
+            , (NAME, self.getEquivalence('after_each'))
             , (OP,   '(')
             , (NAME, 'self')
             , (OP,   ')')
@@ -118,7 +124,6 @@ class Tokeniser(object):
               (OP,   ':')
             , (NAME, 'raise')
             , (NAME, 'nose.SkipTest')
-            , (NEWLINE, '\n')
             ]
     
     def makeIt(self, value):
@@ -149,7 +154,61 @@ class Tokeniser(object):
         result.append( (OP, ')') )
     
         return result, name
+    
+    def makeSuper(self, nextDescribeKls):
+        if nextDescribeKls:
+            kls = self.tokensIn(nextDescribeKls)
+        else:
+            kls = self.defaultKls
+            
+        result = [ (NAME, 'sup')
+                 , (OP,   '=')
+                 , (NAME, 'super')
+                 , (OP,   '(')
+                 ]
         
+        result.extend(kls)
+            
+        result.extend(
+            [ (OP,   ',')
+            , (NAME, 'self')
+            , (OP,   ')')
+            , (NEWLINE, '\n')
+            ]
+        )
+        
+        return result
+        
+    def useSuper(self, method):
+        method = self.getEquivalence(method)
+        
+        return [ (NAME,   'if')
+               , (NAME,   'hasattr')
+               , (OP,     '(')
+               , (OP,     'sup')
+               , (OP,     ',')
+               , (OP,     '"')
+               , (STRING, method)
+               , (OP,     '"')
+               , (OP,     ')')
+               , (OP,     ':')
+               , (NAME,   'sup')
+               , (OP,     '.')
+               , (NAME,   method)
+               , (OP,     '(')
+               , (OP,     ')')
+               , (NEWLINE, '\n')
+               ]
+    
+    def makeDescribeAttr(self, describe):
+        return [ (NEWLINE, '\n')
+               , (NAME, describe)
+               , (OP,   '.')
+               , (NAME, 'is_noy_spec')
+               , (OP,   '=')
+               , (NAME, 'True')
+               ]
+               
     ########################
     ###   TRANSLATE
     ########################
@@ -160,19 +219,34 @@ class Tokeniser(object):
         currentDescribeLevel = 0
         
         nextDescribeKls = None
+        adjustIndentAt  = []
         describeStack   = []
         indentAmounts   = []
         keepLastToken   = False
         startingAnIt    = False
+        allDescribes    = []
         
+        skippedTest = True
         lookAtSpace = False
         afterSpace  = True
         justAppend  = False
         indentType  = ' '
+        ignoreNext  = None
         lastToken   = ' '
         
         # Looking at all the tokens
         for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
+            # Sometimes we need to ignore stuff
+            if ignoreNext:
+                nextIgnore = ignoreNext
+                if type(ignoreNext) is list:
+                    nextIgnore = ignoreNext.pop(0)
+                
+                if nextIgnore == (tokenum, value):
+                    continue
+                else:
+                    nextIgnore = None
+            
             # By default, we don't just append the value
             justAppend = False
             
@@ -188,6 +262,9 @@ class Tokeniser(object):
             if afterSpace and tokenum not in (NEWLINE, DEDENT, INDENT):
                 if not indentAmounts or scol > indentAmounts[-1]:
                     indentAmounts.append( scol )
+                
+                while adjustIndentAt:
+                    result[adjustIndentAt.pop()] = (INDENT, indentType * (scol - currentDescribeLevel))
             
             # I want to change dedents into indents, because they seem to screw nesting up
             if tokenum == DEDENT:
@@ -213,6 +290,11 @@ class Tokeniser(object):
             
             if afterSpace and tokenum == NAME:
                 if value == 'describe':
+                    # Make sure we dedent if we just made a skip test
+                    if skippedTest:
+                        result.append( (INDENT, indentType * (scol - currentDescribeLevel)) )
+                        skippedTest = False
+                        
                     # Dedenting describes removes them from being inheritable
                     while describeStack and describeStack[-1][0] >= scol:
                         describeStack.pop()
@@ -228,15 +310,30 @@ class Tokeniser(object):
                     result.append( (NAME, 'class') )
                 
                 elif value in ('it', 'ignore'):
+                    skippedTest = False
                     result.append( (NAME, 'def') )
                     
-                elif value == 'before_each':
-                    result.extend( self.before_each )
-                                   
-                elif value == 'after_each':
-                    result.extend( self.after_each )
+                elif value in ('before_each', 'after_each'):
+                    skippedTest = False
+                    result.extend( getattr(self, value) )
+                    if describeStack:
+                        expecting = [ (OP,      ':')
+                                    , (NEWLINE, '\n')
+                                    ]
+                        
+                        result.extend(expecting)
+                        ignoreNext = expecting
+                        
+                        adjustIndentAt.append(len(result))
+                        result.append( (INDENT, '') )
+                        result.extend( self.makeSuper(describeStack[-1][1]) )
+                        
+                        adjustIndentAt.append(len(result))
+                        result.append( (INDENT, '') )
+                        result.extend( self.useSuper(value) )
                     
                 else:
+                    skippedTest = False
                     justAppend = True
                                
             elif tokenum == STRING:
@@ -251,6 +348,7 @@ class Tokeniser(object):
                     
                     res, name = self.makeDescribe(value, nextDescribeKls)
                     describeStack.append([currentDescribeLevel, name])
+                    allDescribes.append(name)
                     
                     result.extend( res )
                     
@@ -267,6 +365,9 @@ class Tokeniser(object):
             
             elif tokenum == NEWLINE and lastToken != ':' and startingAnIt:
                 result.extend( self.testSkip )
+                startingAnIt = False
+                skippedTest = True
+                justAppend = True
                              
             else:
                 if tokenum == NEWLINE and lastToken == ':' and startingAnIt:
@@ -305,9 +406,18 @@ class Tokeniser(object):
                         # Isn't reset till we have a newline
                         lookAtSpace = False
         
-        #Remove trailing indents and dedents
+        # Remove trailing indents and dedents
         while result and result[-2][0] in (DEDENT, INDENT, ERRORTOKEN, NEWLINE):
             result.pop(-2)
+        
+        # Add attributes to our Describes so that the plugin can handle some nesting issues
+        # Where we have tests in upper level describes being run in lower level describes
+        if self.withDescribeAttrs and allDescribes:
+            result.append( (NEWLINE, '\n') )
+            result.append( (INDENT, '') )
+            
+            for describe in allDescribes:
+                result.extend( self.makeDescribeAttr(describe) )
         
         #Gone through all the tokens, returning now
         return result

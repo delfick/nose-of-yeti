@@ -41,7 +41,19 @@ class ResultIn(object):
 ########################
 
 class Test_Tokeniser(object):
-        
+    
+    def test_it_should_give_describes_noy_specific_attributes(self):
+        tok = Tokeniser(withDefaultImports=False)
+        (tok, 'describe "Something testable"') | should | result_in(
+        '''class Test_Something_testable (object )
+
+Test_Something_testable .is_noy_spec =True '''
+        )
+    
+    def test_it_should_be_possible_to_turn_off_attributes(self):
+        tok = Tokeniser(withDefaultImports=False, withDescribeAttrs=False)
+        (tok, 'describe "Something testable"') | should | result_in('class Test_Something_testable (object )')
+    
     def test_it_should_not_have_newline_in_default_imports(self):
         tok = Tokeniser()
         tok.defaultImports |should_not.contain| (NEWLINE, '\n')
@@ -82,8 +94,8 @@ class Test_Tokeniser(object):
  
 class Test_Tokenisor_translation(object):
     def setUp(self):
-        self.toka = Tokeniser(withDefaultImports=False)
-        self.tokb = Tokeniser(withDefaultImports=False, defaultKls = 'other')
+        self.toka = Tokeniser(withDefaultImports=False, withDescribeAttrs=False)
+        self.tokb = Tokeniser(withDefaultImports=False, withDescribeAttrs=False, defaultKls = 'other')
         
     def test_it_should_translate_a_describe(self):
         (self.toka, 'describe "Something testable"') | should | result_in('class Test_Something_testable (object )')
@@ -124,12 +136,87 @@ class Test_Tokenisor_translation(object):
         
         # Same tests, but with newlines in front
         (self.toka, '\nbefore_each:') | should | result_in('\ndef setUp (self ):')
+    
+    def test_indentation_for_test_should_work_after_skipped_test(self):
+        test = """
+        describe 'thing':
+            it 'should be skipped'
+            it 'shouldnt be skipped':
+                print 'hi'
+            
+            it 'another that should be skipped'
+            
+            it 'another that shouldnt be skipped':
+                print 'hi'"""
+        
+        desired = """
+class Test_thing (object ):
+    def test_should_be_skipped (self ):raise nose.SkipTest 
+    def test_shouldnt_be_skipped (self ):
+        print 'hi'
+
+    def test_another_that_should_be_skipped (self ):raise nose.SkipTest 
+
+    def test_another_that_shouldnt_be_skipped (self ):
+        print 'hi'"""
+        
+        (self.toka, test) | should | result_in(desired)
+    
+    def test_indentation_for_describe_should_work_after_skipped_test(self):
+        test = '''
+        describe 'thing':
+            it 'should be skipped'
+            describe 'that':
+                pass'''
+        
+        desired = '''
+class Test_thing (object ):
+    def test_should_be_skipped (self ):raise nose.SkipTest 
+class Test_that (Test_thing ):
+    pass '''
+        (self.toka, test) | should | result_in(desired)
+        
+    def test_it_should_give_setups_super_call_when_in_describes(self):
+        test = '''
+        describe "Thing":
+            before_each:
+                self.x = 5
+        '''
+        
+        desired = '''
+class Test_Thing (object ):
+    def setUp (self ):
+        sup =super (Test_Thing ,self )
+        if hasattr (sup,"setUp"):sup .setUp ()
+        self .x =5 '''
+        
+        (self.toka, test) | should | result_in(desired)
+        # and with tabs
+        (self.toka, test.replace('    ', '\t')) | should | result_in(desired.replace('    ', '\t'))
         
     def test_it_should_turn_after_each_into_tearDown(self):
         (self.toka, 'after_each:') | should | result_in('def tearDown (self ):')
         
         # Same tests, but with newlines in front
         (self.toka, '\nafter_each:') | should | result_in('\ndef tearDown (self ):')
+    
+    def test_it_should_give_tearDowns_super_call_when_in_describes(self):
+        test = '''
+        describe "Thing":
+            after_each:
+                self.x = 5
+        '''
+        
+        desired = '''
+class Test_Thing (object ):
+    def tearDown (self ):
+        sup =super (Test_Thing ,self )
+        if hasattr (sup,"tearDown"):sup .tearDown ()
+        self .x =5 '''
+        
+        (self.toka, test) | should | result_in(desired)
+        # and with tabs
+        (self.toka, test.replace('    ', '\t')) | should | result_in(desired.replace('    ', '\t'))
     
     def test_it_should_have_ignorable_its(self):
         (self.toka, '\nignore "should be ignored"') | should | result_in('\ndef ignore__should_be_ignored (self )')
@@ -172,8 +259,8 @@ class Test_Another_thing (%s ):pass '''
  
 class Test_Tokeniser_Nesting(object):
     def setUp(self):
-        self.toka = Tokeniser(withDefaultImports=False)
-        self.tokb = Tokeniser(withDefaultImports=False, defaultKls = 'other')
+        self.toka = Tokeniser(withDefaultImports=False, withDescribeAttrs=False)
+        self.tokb = Tokeniser(withDefaultImports=False, withDescribeAttrs=False, defaultKls = 'other')
         
         ###   SMALL EXAMPLE
         
@@ -272,10 +359,168 @@ class Test_Another (%(o)s ):
         (self.toka, test) | should | result_in(desired % {'o' : 'object'})
         (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
     
+########################
+###   MORE NESTING TESTS
+########################
+ 
+class Test_Tokeniser_More_Nesting(object):
+    def setUp(self):
+        self.toka = Tokeniser(withDefaultImports=False)
+        self.tokb = Tokeniser(withDefaultImports=False, defaultKls = 'other')
+        
+        ###   SMALL EXAMPLE
+        
+        self.smallExample = [
+        '''
+        describe "This":
+            before_each:
+                self.x = 5
+            describe "That":
+                before_each:
+                    self.y = 6
+                describe "Meh":
+                    after_each:
+                        self.y = None
+            describe "Blah":pass
+        describe "Another":
+            before_each:
+                self.z = 8 '''
+        ,
+        '''
+class Test_This (%(o)s ):
+    def setUp (self ):
+        sup =super (Test_This ,self )
+        if hasattr (sup,"setUp"):sup .setUp ()
+        self .x =5 
+class Test_That (Test_This ):
+    def setUp (self ):
+        sup =super (Test_That ,self )
+        if hasattr (sup,"setUp"):sup .setUp ()
+        self .y =6 
+class Test_Meh (Test_That ):
+    def tearDown (self ):
+        sup =super (Test_Meh ,self )
+        if hasattr (sup,"tearDown"):sup .tearDown ()
+        self .y =None 
+class Test_Blah (Test_This ):pass 
+class Test_Another (%(o)s ):
+    def setUp (self ):
+        sup =super (Test_Another ,self )
+        if hasattr (sup,"setUp"):sup .setUp ()
+        self .z =8 
+
+Test_This .is_noy_spec =True 
+Test_That .is_noy_spec =True 
+Test_Meh .is_noy_spec =True 
+Test_Blah .is_noy_spec =True 
+Test_Another .is_noy_spec =True '''
+        ]
+        
+        ###   BIG EXAMPLE
+        
+        self.bigExample = [
+        '''
+        describe "This":
+            before_each:
+                self.x = 5
+            it 'should':
+                if x:
+                    pass
+                else:
+                    x += 9
+            describe "That":
+                before_each:
+                    self.y = 6
+                describe "Meh":
+                    after_each:
+                        self.y = None
+                    it 'should':
+                        if y:
+                            pass
+                        else:
+                            pass
+            describe "Blah":pass
+        describe "Another":
+            before_each:
+                self.z = 8
+            it 'should':
+                if z:
+                    if u:
+                        print "hello \
+                            there"
+                    else:
+                        print "no"
+                else:
+                    pass
+        '''
+        ,
+        '''
+class Test_This (%(o)s ):
+    def setUp (self ):
+        sup =super (Test_This ,self )
+        if hasattr (sup,"setUp"):sup .setUp ()
+        self .x =5 
+    def test_should (self ):
+        if x :
+            pass 
+        else :
+            x +=9 
+class Test_That (Test_This ):
+    def setUp (self ):
+        sup =super (Test_That ,self )
+        if hasattr (sup,"setUp"):sup .setUp ()
+        self .y =6 
+class Test_Meh (Test_That ):
+    def tearDown (self ):
+        sup =super (Test_Meh ,self )
+        if hasattr (sup,"tearDown"):sup .tearDown ()
+        self .y =None 
+    def test_should (self ):
+        if y :
+            pass 
+        else :
+            pass 
+class Test_Blah (Test_This ):pass 
+class Test_Another (%(o)s ):
+    def setUp (self ):
+        sup =super (Test_Another ,self )
+        if hasattr (sup,"setUp"):sup .setUp ()
+        self .z =8 
+    def test_should (self ):
+        if z :
+            if u :
+                print "hello \
+                            there"
+            else :
+                print "no"
+        else :
+            pass 
+
+Test_This .is_noy_spec =True 
+Test_That .is_noy_spec =True 
+Test_Meh .is_noy_spec =True 
+Test_Blah .is_noy_spec =True 
+Test_Another .is_noy_spec =True '''
+        ]
+        
+    ###   TESTS
     
+    def test_it_should_work_with_space(self):
+        test, desired = self.smallExample
+        (self.toka, test) | should | result_in(desired % {'o' : 'object'})
+        (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
     
-    
-    
-    
-    
-    
+    def test_it_should_work_with_tabs(self):
+        test, desired = [d.replace('    ', '\t') for d in self.smallExample]
+        (self.toka, test) | should | result_in(desired % {'o' : 'object'})
+        (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
+        
+    def test_it_should_keep_good_indentation_in_body_with_spaces(self):
+        test, desired = self.bigExample
+        (self.toka, test) | should | result_in(desired % {'o' : 'object'})
+        (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
+        
+    def test_it_should_keep_good_indentation_in_body_with_tabs(self):
+        test, desired = [d.replace('    ', '\t') for d in self.bigExample]
+        (self.toka, test) | should | result_in(desired % {'o' : 'object'})
+        (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
