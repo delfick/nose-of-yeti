@@ -29,7 +29,7 @@ class ResultIn(object):
         return self._expected == self._radicand
 
     def message_for_failed_should(self):
-        return 'expected "%s"\n\t=>  "%s"\n\tgot "%s"' % (
+        return 'expected "%s"\n======================>\n"%s"\n\n======================$\n"%s"' % (
             self._actual, self._radicand, self._expected)
 
     def message_for_failed_should_not(self):
@@ -37,7 +37,7 @@ class ResultIn(object):
             self._actual, self._radicand)
 
 ########################
-###   TESTS
+###   GENERAL TESTS
 ########################
 
 class Test_Tokeniser(object):
@@ -75,7 +75,11 @@ class Test_Tokeniser(object):
     
     def test_it_should_import_nose_and_should_dsl_by_default(self):
         (Tokeniser(), '') | should | result_in('import nose ;from nose .tools import *;from should_dsl import *')
-    
+   
+########################
+###   TRANSLATION TESTS
+########################
+ 
 class Test_Tokenisor_translation(object):
     def setUp(self):
         self.toka = Tokeniser(withDefaultImports=False)
@@ -99,20 +103,20 @@ class Test_Tokenisor_translation(object):
         
     def test_it_should_turn_an_it_without_colon_into_skippable(self):
         (self.toka, 'it "should be skipped"\n') | should | result_in(
-            'def test_should_be_skipped (self ):raise nose.SkipTest \n'
+            'def test_should_be_skipped (self ):raise nose.SkipTest '
         )
         
         (self.toka, 'it "should not be skipped":\n') | should | result_in(
-            'def test_should_not_be_skipped (self ):\n'
+            'def test_should_not_be_skipped (self ):'
         )
         
         # Same tests, but with newlines in front
         (self.toka, '\nit "should be skipped"\n') | should | result_in(
-            '\ndef test_should_be_skipped (self ):raise nose.SkipTest \n'
+            '\ndef test_should_be_skipped (self ):raise nose.SkipTest '
         )
         
         (self.toka, '\nit "should not be skipped":\n') | should | result_in(
-            '\ndef test_should_not_be_skipped (self ):\n'
+            '\ndef test_should_not_be_skipped (self ):'
         )
         
     def test_it_should_turn_before_each_into_setUp(self):
@@ -152,8 +156,8 @@ class Test_Tokenisor_translation(object):
         '''
         
         desired = '''%s
-        class Test_This_thing (TestCase ):pass 
-        class Test_Another_thing (%s ):pass \n'''
+class Test_This_thing (TestCase ):pass 
+class Test_Another_thing (%s ):pass '''
         
         (self.toka, test) | should | result_in(desired % ('', 'object'))
         (self.tokb, test) | should | result_in(desired % ('', 'other'))
@@ -162,3 +166,116 @@ class Test_Tokenisor_translation(object):
         (self.toka, '\n%s' % test) | should | result_in(desired % ('\n', 'object'))
         (self.tokb, '\n%s' % test) | should | result_in(desired % ('\n', 'other'))
         
+########################
+###   NESTING TESTS
+########################
+ 
+class Test_Tokeniser_Nesting(object):
+    def setUp(self):
+        self.toka = Tokeniser(withDefaultImports=False)
+        self.tokb = Tokeniser(withDefaultImports=False, defaultKls = 'other')
+        
+        ###   SMALL EXAMPLE
+        
+        self.smallExample = [
+        '''
+        describe "This":pass
+            describe "That":pass
+                describe "Meh":pass
+            describe "Blah":pass
+        describe "Another":pass '''
+        ,
+        '''
+class Test_This (%(o)s ):pass 
+class Test_That (Test_This ):pass 
+class Test_Meh (Test_That ):pass 
+class Test_Blah (Test_This ):pass 
+class Test_Another (%(o)s ):pass '''
+        ]
+        
+        ###   BIG EXAMPLE
+        
+        self.bigExample = [
+        '''
+        describe "This":
+            it 'should':
+                if x:
+                    pass
+                else:
+                    x += 9
+            describe "That": pass
+                describe "Meh":
+                    it 'should':
+                        if y:
+                            pass
+                        else:
+                            pass
+            describe "Blah":pass
+        describe "Another":
+            it 'should':
+                if z:
+                    if u:
+                        print "hello \
+                            there"
+                    else:
+                        print "no"
+                else:
+                    pass
+        '''
+        ,
+        '''
+class Test_This (%(o)s ):
+    def test_should (self ):
+        if x :
+            pass 
+        else :
+            x +=9 
+class Test_That (Test_This ):pass 
+class Test_Meh (Test_That ):
+    def test_should (self ):
+        if y :
+            pass 
+        else :
+            pass 
+class Test_Blah (Test_This ):pass 
+class Test_Another (%(o)s ):
+    def test_should (self ):
+        if z :
+            if u :
+                print "hello \
+                            there"
+            else :
+                print "no"
+        else :
+            pass '''
+        ]
+        
+    ###   TESTS
+    
+    def test_it_should_work_with_space(self):
+        test, desired = self.smallExample
+        (self.toka, test) | should | result_in(desired % {'o' : 'object'})
+        (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
+    
+    def test_it_should_work_with_tabs(self):
+        test, desired = [d.replace('    ', '\t') for d in self.smallExample]
+        (self.toka, test) | should | result_in(desired % {'o' : 'object'})
+        (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
+        
+    def test_it_should_keep_good_indentation_in_body_with_spaces(self):
+        test, desired = self.bigExample
+        (self.toka, test) | should | result_in(desired % {'o' : 'object'})
+        (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
+        
+    def test_it_should_keep_good_indentation_in_body_with_tabs(self):
+        test, desired = [d.replace('    ', '\t') for d in self.bigExample]
+        (self.toka, test) | should | result_in(desired % {'o' : 'object'})
+        (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
+    
+    
+    
+    
+    
+    
+    
+    
