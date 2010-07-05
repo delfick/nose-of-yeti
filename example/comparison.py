@@ -74,7 +74,7 @@ class Test_testing_number_3(Test_numbers):
 
 class Test_lets_change_a_number(Test_testing_number_3):
     def setUp(self):
-        sup = super(Test_lets_change_a_num, self)
+        sup = super(Test_lets_change_a_number, self)
         if hasattr(sup, "setUp"): sup.setUp()
         self.number1 =4
 

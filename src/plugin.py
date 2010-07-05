@@ -48,9 +48,20 @@ class Plugin(Plugin):
                               'import thing')
                         '''
             )
+            
+        parser.add_option(
+              '--noy-ignore-kls'
+            , default = [env.get('NOSE_NOY_IGNORE_KLS')] or []
+            , action  = 'append'
+            , dest    = 'ignoreKls'
+            , help    = '''Set class name to ignore in wantMethod'''
+            )
     
     def wantMethod(self, method):
         kls = method.im_class
+        if kls.__name__ in self.ignoreKls:
+            return False
+        
         if hasattr(kls, 'is_noy_spec'):
             if method.__name__ in kls.__dict__:
                 return True
@@ -61,6 +72,7 @@ class Plugin(Plugin):
         
     def configure(self, options, conf):
         super(Plugin, self).configure(options, conf)
+        self.ignoreKls = options.ignoreKls
         if options.enabled:
             self.enabled = True
             tok = Tokeniser( withDefaultImports = not options.noDefaultImports
