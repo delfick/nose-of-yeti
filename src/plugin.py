@@ -57,14 +57,26 @@ class Plugin(Plugin):
             , help    = '''Set class name to ignore in wantMethod'''
             )
     
+    def wantModule(self, mod):
+        self.done = {}
+        
     def wantMethod(self, method):
         kls = method.im_class
+               
         if kls.__name__ in self.ignoreKls:
             return False
         
         if hasattr(kls, 'is_noy_spec'):
-            if method.__name__ in kls.__dict__:
-                return True
+            if method.__name__ in kls.__dict__ \
+            and not method.__name__.startswith("setUp") \
+            and not method.__name__.startswith("tearDown") :
+
+                key = '%s.%s' % (kls.__name__, method.__name__)
+                if key not in self.done:
+                    self.done[key] = True
+                    return True
+                
+                return False
         else:
             return True
         
@@ -75,6 +87,7 @@ class Plugin(Plugin):
         self.ignoreKls = options.ignoreKls
         if options.enabled:
             self.enabled = True
+            self.done = {}
             tok = Tokeniser( withDefaultImports = not options.noDefaultImports
                            , withDescribeAttrs  = not options.noDescribeAttrs
                            , extraImports       = ';'.join([d for d in options.extraImport if d])
