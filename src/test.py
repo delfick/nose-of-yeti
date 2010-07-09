@@ -155,7 +155,10 @@ class Test_Tokenisor_translation(object):
                 )
                 
                 d = {'asdf' : True}
-            
+                
+                t2 = (True
+                ,    False
+        )
             it 'asdf2'"""
         
         desired = """
@@ -176,6 +179,9 @@ class Test_a (object ):
 
         d ={'asdf':True }
 
+        t2 =(True 
+        ,False 
+        )
     def test_asdf2 (self )"""
     
         (self.toka, test) | should | result_in(desired)

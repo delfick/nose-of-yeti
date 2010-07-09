@@ -305,7 +305,7 @@ class Tokeniser(object):
                     # add to the stack because we started a list
                     groupStack.append(value)
                 
-                elif value in [')', ']', '{']:
+                elif value in [')', ']', '}']:
                     # not necessary to check for correctness
                     groupStack.pop()
                     
