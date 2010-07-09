@@ -140,8 +140,17 @@ class Tokeniser(object):
                 , (OP,   ')')
                 ]
     
-    def makeDescribe(self, value, nextDescribeKls):
-        name = 'Test_%s' % self.acceptable(value)
+    def makeDescribe(self, value, nextDescribeKls, inheriting=False):
+        name = 'Test_%%s%s' % self.acceptable(value)
+        if nextDescribeKls and inheriting:
+            use = nextDescribeKls
+            if use.startswith('Test_'):
+                use = use[5:]
+                
+            name = name % '%s_' % use
+        else:
+            name = name % ''
+            
         result = [ (NAME, name)
                  , (OP,   '(')
                  ]
@@ -228,6 +237,7 @@ class Tokeniser(object):
         
         skippedTest = True
         lookAtSpace = False
+        inheriting  = False
         afterSpace  = True
         justAppend  = False
         indentType  = ' '
@@ -342,11 +352,13 @@ class Tokeniser(object):
                     result.extend( self.makeIt(value) )
                                
                 elif lastToken == 'describe':
+                    inheritance = False
                     if describeStack:
                         if not nextDescribeKls:
+                            inheritance = True
                             nextDescribeKls = describeStack[-1][1]
                     
-                    res, name = self.makeDescribe(value, nextDescribeKls)
+                    res, name = self.makeDescribe(value, nextDescribeKls, inheritance)
                     describeStack.append([currentDescribeLevel, name])
                     allDescribes.append(name)
                     

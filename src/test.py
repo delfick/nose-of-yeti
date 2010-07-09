@@ -172,7 +172,7 @@ class Test_thing (object ):
         desired = '''
 class Test_thing (object ):
     def test_should_be_skipped (self ):raise nose.SkipTest 
-class Test_that (Test_thing ):
+class Test_thing_that (Test_thing ):
     pass '''
         (self.toka, test) | should | result_in(desired)
         
@@ -274,9 +274,9 @@ class Test_Tokeniser_Nesting(object):
         ,
         '''
 class Test_This (%(o)s ):pass 
-class Test_That (Test_This ):pass 
-class Test_Meh (Test_That ):pass 
-class Test_Blah (Test_This ):pass 
+class Test_This_That (Test_This ):pass 
+class Test_This_That_Meh (Test_This_That ):pass 
+class Test_This_Blah (Test_This ):pass 
 class Test_Another (%(o)s ):pass '''
         ]
         
@@ -317,14 +317,14 @@ class Test_This (%(o)s ):
             pass 
         else :
             x +=9 
-class Test_That (Test_This ):pass 
-class Test_Meh (Test_That ):
+class Test_This_That (Test_This ):pass 
+class Test_This_That_Meh (Test_This_That ):
     def test_should (self ):
         if y :
             pass 
         else :
             pass 
-class Test_Blah (Test_This ):pass 
+class Test_This_Blah (Test_This ):pass 
 class Test_Another (%(o)s ):
     def test_should (self ):
         if z :
@@ -359,6 +359,11 @@ class Test_Another (%(o)s ):
         (self.toka, test) | should | result_in(desired % {'o' : 'object'})
         (self.tokb, test) | should | result_in(desired % {'o' : 'other'})
     
+    def test_it_should_name_nested_describes_with_part_of_parents_name(self):
+        test = 'describe "a":\n\tdescribe "b":'
+        desired = 'class Test_a (object ):\nclass Test_a_b (Test_a ):'
+        (self.toka, test) | should | result_in(desired)
+    
 ########################
 ###   MORE NESTING TESTS
 ########################
@@ -392,17 +397,17 @@ class Test_This (%(o)s ):
         sup =super (Test_This ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .x =5 
-class Test_That (Test_This ):
+class Test_This_That (Test_This ):
     def setUp (self ):
-        sup =super (Test_That ,self )
+        sup =super (Test_This_That ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .y =6 
-class Test_Meh (Test_That ):
+class Test_This_That_Meh (Test_This_That ):
     def tearDown (self ):
-        sup =super (Test_Meh ,self )
+        sup =super (Test_This_That_Meh ,self )
         if hasattr (sup,"tearDown"):sup .tearDown ()
         self .y =None 
-class Test_Blah (Test_This ):pass 
+class Test_This_Blah (Test_This ):pass 
 class Test_Another (%(o)s ):
     def setUp (self ):
         sup =super (Test_Another ,self )
@@ -410,9 +415,9 @@ class Test_Another (%(o)s ):
         self .z =8 
 
 Test_This .is_noy_spec =True 
-Test_That .is_noy_spec =True 
-Test_Meh .is_noy_spec =True 
-Test_Blah .is_noy_spec =True 
+Test_This_That .is_noy_spec =True 
+Test_This_That_Meh .is_noy_spec =True 
+Test_This_Blah .is_noy_spec =True 
 Test_Another .is_noy_spec =True '''
         ]
         
@@ -465,14 +470,14 @@ class Test_This (%(o)s ):
             pass 
         else :
             x +=9 
-class Test_That (Test_This ):
+class Test_This_That (Test_This ):
     def setUp (self ):
-        sup =super (Test_That ,self )
+        sup =super (Test_This_That ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .y =6 
-class Test_Meh (Test_That ):
+class Test_This_That_Meh (Test_This_That ):
     def tearDown (self ):
-        sup =super (Test_Meh ,self )
+        sup =super (Test_This_That_Meh ,self )
         if hasattr (sup,"tearDown"):sup .tearDown ()
         self .y =None 
     def test_should (self ):
@@ -480,7 +485,7 @@ class Test_Meh (Test_That ):
             pass 
         else :
             pass 
-class Test_Blah (Test_This ):pass 
+class Test_This_Blah (Test_This ):pass 
 class Test_Another (%(o)s ):
     def setUp (self ):
         sup =super (Test_Another ,self )
@@ -497,9 +502,9 @@ class Test_Another (%(o)s ):
             pass 
 
 Test_This .is_noy_spec =True 
-Test_That .is_noy_spec =True 
-Test_Meh .is_noy_spec =True 
-Test_Blah .is_noy_spec =True 
+Test_This_That .is_noy_spec =True 
+Test_This_That_Meh .is_noy_spec =True 
+Test_This_Blah .is_noy_spec =True 
 Test_Another .is_noy_spec =True '''
         ]
         

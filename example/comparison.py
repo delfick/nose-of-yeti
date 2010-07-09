@@ -60,9 +60,9 @@ class Test_numbers(object):
 
     def test_should_be_skipped(self): raise nose.SkipTest
 
-class Test_testing_number_3(Test_numbers):
+class Test_numbers_testing_number_3(Test_numbers):
     def setUp(self):
-        sup = super(Test_testing_number_3, self)
+        sup = super(Test_numbers_testing_number_3, self)
         if hasattr(sup, "setUp"): sup.setUp()
         self.number3 = 3
 
@@ -72,9 +72,9 @@ class Test_testing_number_3(Test_numbers):
     def test_should_also_have_number3(self):
         self.number3 | should.be | 3
 
-class Test_lets_change_a_number(Test_testing_number_3):
+class Test_numbers_testing_number_3_lets_change_a_number(Test_numbers_testing_number_3):
     def setUp(self):
-        sup = super(Test_lets_change_a_number, self)
+        sup = super(Test_numbers_testing_number_3_lets_change_a_number, self)
         if hasattr(sup, "setUp"): sup.setUp()
         self.number1 =4
 
@@ -84,5 +84,5 @@ class Test_lets_change_a_number(Test_testing_number_3):
         self.number3 | should.be | 3
 
 Test_numbers.is_noy_spec = True
-Test_testing_number_3.is_noy_spec = True
-Test_lets_change_a_number.is_noy_spec = True
+Test_numbers_testing_number_3.is_noy_spec = True
+Test_numbers_testing_number_3_lets_change_a_number.is_noy_spec = True
