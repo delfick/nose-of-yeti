@@ -242,6 +242,7 @@ class Tokeniser(object):
         justAppend  = False
         indentType  = ' '
         ignoreNext  = None
+        groupStack  = []
         lastToken   = ' '
         
         # Looking at all the tokens
@@ -270,11 +271,13 @@ class Tokeniser(object):
             
             # Determine next level of indentation
             if afterSpace and tokenum not in (NEWLINE, DEDENT, INDENT):
-                if not indentAmounts or scol > indentAmounts[-1]:
-                    indentAmounts.append( scol )
-                
-                while adjustIndentAt:
-                    result[adjustIndentAt.pop()] = (INDENT, indentType * (scol - currentDescribeLevel))
+                if not groupStack:
+                    # We don't care about indentation inside a group (list, tuple or dictionary)
+                    if not indentAmounts or scol > indentAmounts[-1]:
+                        indentAmounts.append( scol )
+                    
+                    while adjustIndentAt:
+                        result[adjustIndentAt.pop()] = (INDENT, indentType * (scol - currentDescribeLevel))
             
             # I want to change dedents into indents, because they seem to screw nesting up
             if tokenum == DEDENT:
@@ -297,8 +300,18 @@ class Tokeniser(object):
                 value = indentType * lastIndent
             
             # Determining what to replace and with what ::
-            
-            if afterSpace and tokenum == NAME:
+            if tokenum == OP:
+                if value in ['(', '[', '{']:
+                    # add to the stack because we started a list
+                    groupStack.append(value)
+                
+                elif value in [')', ']', '{']:
+                    # not necessary to check for correctness
+                    groupStack.pop()
+                    
+                justAppend = True
+                
+            elif afterSpace and tokenum == NAME:
                 if value == 'describe':
                     # Make sure we dedent if we just made a skip test
                     if skippedTest:

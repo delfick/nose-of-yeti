@@ -137,6 +137,49 @@ class Test_Tokenisor_translation(object):
         # Same tests, but with newlines in front
         (self.toka, '\nbefore_each:') | should | result_in('\ndef setUp (self ):')
     
+    def test_indentation_should_work_regardless_of_crazy_groups(self):
+        test = """
+        describe 'a':
+            it 'asdf':
+                l = [ True
+                    , False
+                        , 1
+                , 2
+                ]
+                
+                t = (1
+                        , 2
+                , 3
+            , 4
+                    , 5,
+                )
+                
+                d = {'asdf' : True}
+            
+            it 'asdf2'"""
+        
+        desired = """
+class Test_a (object ):
+    def test_asdf (self ):
+        l =[True 
+        ,False 
+        ,1 
+        ,2 
+        ]
+
+        t =(1 
+        ,2 
+        ,3 
+        ,4 
+        ,5 ,
+        )
+
+        d ={'asdf':True }
+
+    def test_asdf2 (self )"""
+    
+        (self.toka, test) | should | result_in(desired)
+            
     def test_indentation_for_test_should_work_after_skipped_test(self):
         test = """
         describe 'thing':
