@@ -61,6 +61,10 @@ class Plugin(Plugin):
         self.done = {}
         
     def wantMethod(self, method):
+        
+        if method.__name__.startswith("ignore__"):
+            return False
+        
         kls = method.im_class
                
         if kls.__name__ in self.ignoreKls:
