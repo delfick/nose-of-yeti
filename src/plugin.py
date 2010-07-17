@@ -65,6 +65,9 @@ class Plugin(Plugin):
         if method.__name__.startswith("ignore__"):
             return False
         
+        if hasattr(method, '__test__') and not method.__test__:
+            return False
+        
         kls = method.im_class
                
         if kls.__name__ in self.ignoreKls:
