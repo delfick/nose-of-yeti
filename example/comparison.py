@@ -12,7 +12,7 @@ describe 'numbers':
         self.number2 = 2
     
     it 'should have number1 as 1':
-        self.number1 | should.be | 1
+        self.number1 |should| equal_to(1)
     
     ignore 'some test that I want to be named so it isnt ran':
         pass
@@ -24,19 +24,19 @@ describe 'numbers':
             self.number3 = 3
         
         it 'should have number1 from the lower level describe':
-            self.number1 | should.be | 1
+            self.number1 |should| equal_to(1)
         
         it 'should also have number3':
-            self.number3 | should.be | 3
+            self.number3 |should| equal_to(3)
         
         describe "let's change a number":
             before_each:
                 self.number1 = 4
             
             it 'should have changed number1 but kept others':
-                self.number1 | should.be | 4
-                self.number2 | should.be | 2
-                self.number3 | should.be | 3
+                self.number1 |should| equal_to(4)
+                self.number2 |should| equal_to(2)
+                self.number3 |should| equal_to(3)
 
 ########################
 ###   AFTER
@@ -53,7 +53,7 @@ class Test_numbers(object):
         self.number2 = 2
 
     def test_should_have_number1_as_1(self):
-        self.number1 | should.be | 1
+        self.number1 |should| equal_to(1)
 
     def ignore__some_test_that_I_want_to_be_named_so_it_isnt_ran(self):
         pass
@@ -67,10 +67,10 @@ class Test_numbers_testing_number_3(Test_numbers):
         self.number3 = 3
 
     def test_should_have_number1_from_the_lower_level_describe(self):
-        self.number1 | should .be | 1
+        self.number1 | should| equal_to(1)
 
     def test_should_also_have_number3(self):
-        self.number3 | should.be | 3
+        self.number3 |should| equal_to(3)
 
 class Test_numbers_testing_number_3_lets_change_a_number(Test_numbers_testing_number_3):
     def setUp(self):
@@ -79,9 +79,9 @@ class Test_numbers_testing_number_3_lets_change_a_number(Test_numbers_testing_nu
         self.number1 =4
 
     def test_should_have_changed_number1_but_kept_others(self):
-        self.number1 | should.be | 4
-        self.number2 | should.be | 2
-        self.number3 | should.be | 3
+        self.number1 |should| equal_to(4)
+        self.number2 |should| equal_to(2)
+        self.number3 |should| equal_to(3)
 
 Test_numbers.is_noy_spec = True
 Test_numbers_testing_number_3.is_noy_spec = True
