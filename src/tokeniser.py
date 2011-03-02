@@ -125,19 +125,19 @@ class Tokeniser(object):
             , (NAME, 'raise')
             , (NAME, 'nose.SkipTest')
             ]
+        
+        self.endIt = [ (OP,   ')')]
     
-    def makeIt(self, value):
+    def startIt(self, value):
         return  [ (NAME, 'test_%s' % self.acceptable(value))
                 , (OP,   '(')
                 , (NAME, 'self')
-                , (OP,   ')')
                 ]
                 
-    def makeIgnore(self, value):
+    def startIgnore(self, value):
         return  [ (NAME, 'ignore__%s' % self.acceptable(value))
                 , (OP,   '(')
                 , (NAME, 'self')
-                , (OP,   ')')
                 ]
     
     def makeDescribe(self, value, nextDescribeKls, inheriting=False):
@@ -244,6 +244,7 @@ class Tokeniser(object):
         ignoreNext  = None
         groupStack  = []
         lastToken   = ' '
+        endedIt     = False
         
         # Looking at all the tokens
         for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
@@ -299,6 +300,11 @@ class Tokeniser(object):
                 
                 value = indentType * lastIndent
             
+            #Determine if we have an it to close
+            if startingAnIt and not endedIt and (value == ":" or tokenum == NEWLINE):
+                result.extend( self.endIt )
+                endedIt = True
+                
             # Determining what to replace and with what ::
             if tokenum == OP:
                 if value in ['(', '[', '{']:
@@ -361,8 +367,9 @@ class Tokeniser(object):
                                
             elif tokenum == STRING:
                 if lastToken == 'it':
+                    endedIt = False
                     startingAnIt = True
-                    result.extend( self.makeIt(value) )
+                    result.extend( self.startIt(value) )
                                
                 elif lastToken == 'describe':
                     inheritance = False
@@ -378,8 +385,9 @@ class Tokeniser(object):
                     result.extend( res )
                     
                 elif lastToken == 'ignore':
+                    endedIt = False
                     startingAnIt = True
-                    result.extend( self.makeIgnore(value) )
+                    result.extend( self.startIgnore(value) )
                 
                 else:
                     justAppend = True
@@ -431,6 +439,11 @@ class Tokeniser(object):
                         # Isn't reset till we have a newline
                         lookAtSpace = False
         
+        if startingAnIt and not endedIt:
+            result.extend(self.endIt)
+            if lastToken != ':':
+                result.extend(self.testSkip)
+            
         # Remove trailing indents and dedents
         while result and result[-2][0] in (DEDENT, INDENT, ERRORTOKEN, NEWLINE):
             result.pop(-2)

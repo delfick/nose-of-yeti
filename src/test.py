@@ -106,12 +106,59 @@ class Test_Tokenisor_translation(object):
         (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass Test_Something_testable (other )')
         
     def test_it_should_translate_an_it(self):
-        (self.toka, 'it "should do this thing"') |should| result_in('def test_should_do_this_thing (self )')
-        (self.tokb, 'it "should do this thing"') |should| result_in('def test_should_do_this_thing (self )')
+        (self.toka, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing (self ):')
+        (self.tokb, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing (self ):')
         
         # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing"') |should| result_in('\ndef test_should_do_this_thing (self )')
-        (self.tokb, '\nit "should do this thing"') |should| result_in('\ndef test_should_do_this_thing (self )')
+        (self.toka, '\nit "should do this thing":') |should| result_in('\ndef test_should_do_this_thing (self ):')
+        (self.tokb, '\nit "should do this thing":') |should| result_in('\ndef test_should_do_this_thing (self ):')
+    
+    def test_it_should_add_arguments_to_its_if_declared_on_same_line(self):
+        (self.toka, 'it "should do this thing", blah, meh:') |should| result_in(
+            'def test_should_do_this_thing (self ,blah ,meh ):'
+            )
+        (self.tokb, 'it "should do this thing", blah, meh:') |should| result_in(
+            'def test_should_do_this_thing (self ,blah ,meh ):'
+            )
+        
+        # Same tests, but with newlines in front
+        (self.toka, '\nit "should do this thing", blah, meh:') |should| result_in(
+            '\ndef test_should_do_this_thing (self ,blah ,meh ):'
+            )
+        (self.tokb, '\nit "should do this thing", blah, meh:') |should| result_in(
+            '\ndef test_should_do_this_thing (self ,blah ,meh ):'
+            )    
+    def test_it_should_add_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
+        (self.toka, 'it "should do this thing", blah, meh') |should| result_in(
+            'def test_should_do_this_thing (self ,blah ,meh ):raise nose.SkipTest '
+            )
+        (self.tokb, 'it "should do this thing", blah, meh') |should| result_in(
+            'def test_should_do_this_thing (self ,blah ,meh ):raise nose.SkipTest '
+            )
+        
+        # Same tests, but with newlines in front
+        (self.toka, '\nit "should do this thing", blah, meh') |should| result_in(
+            '\ndef test_should_do_this_thing (self ,blah ,meh ):raise nose.SkipTest '
+            )
+        (self.tokb, '\nit "should do this thing", blah, meh') |should| result_in(
+            '\ndef test_should_do_this_thing (self ,blah ,meh ):raise nose.SkipTest '
+            )
+        
+    def test_it_should__not_add_arguments_to_its_if_not_declared_on_same_line(self):
+        (self.toka, 'it "should do this thing"\n, blah, meh') |should| result_in(
+            "def test_should_do_this_thing (self ):raise nose.SkipTest \n,blah ,meh "
+            )
+        (self.tokb, 'it "should do this thing"\n, blah, meh') |should| result_in(
+            "def test_should_do_this_thing (self ):raise nose.SkipTest \n,blah ,meh "
+            )
+        
+        # Same tests, but with newlines in front
+        (self.toka, '\nit "should do this thing"\n, blah, meh') |should| result_in(
+            "\ndef test_should_do_this_thing (self ):raise nose.SkipTest \n,blah ,meh "
+            )
+        (self.tokb, '\nit "should do this thing"\n, blah, meh') |should| result_in(
+            "\ndef test_should_do_this_thing (self ):raise nose.SkipTest \n,blah ,meh "
+            )
         
     def test_it_should_turn_an_it_without_colon_into_skippable(self):
         (self.toka, 'it "should be skipped"\n') |should| result_in(
@@ -182,7 +229,7 @@ class Test_a (object ):
         t2 =(True 
         ,False 
         )
-    def test_asdf2 (self )"""
+    def test_asdf2 (self ):raise nose.SkipTest """
     
         (self.toka, test) |should| result_in(desired)
             
@@ -268,8 +315,12 @@ class Test_Thing (object ):
         (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
     
     def test_it_should_have_ignorable_its(self):
-        (self.toka, '\nignore "should be ignored"') |should| result_in('\ndef ignore__should_be_ignored (self )')
-        (self.toka, '\nignore "should be ignored"') |should| result_in('\ndef ignore__should_be_ignored (self )')
+        (self.toka, '\nignore "should be ignored"') |should| result_in(
+            '\ndef ignore__should_be_ignored (self ):raise nose.SkipTest '
+            )
+        (self.toka, '\nignore "should be ignored"') |should| result_in(
+            '\ndef ignore__should_be_ignored (self ):raise nose.SkipTest '
+            )
     
     def test_it_should_not_transform_inside_expression(self):
         (self.toka, 'variable = before_each') |should| result_in('variable =before_each ')
@@ -493,6 +544,8 @@ Test_Another .is_noy_spec =True '''
                             pass
                         else:
                             pass
+                    it 'should have args', arg1, arg2:
+                        blah |should| be_good()
             describe "Blah":pass
         describe "Another":
             before_each:
@@ -534,6 +587,8 @@ class Test_This_That_Meh (Test_This_That ):
             pass 
         else :
             pass 
+    def test_should_have_args (self ,arg1 ,arg2 ):
+        blah |should |be_good ()
 class Test_This_Blah (Test_This ):pass 
 class Test_Another (%(o)s ):
     def setUp (self ):
