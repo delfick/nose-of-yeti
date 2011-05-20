@@ -245,6 +245,7 @@ class Tokeniser(object):
         groupStack  = []
         lastToken   = ' '
         endedIt     = False
+        emptyDescr  = False
         
         # Looking at all the tokens
         for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
@@ -310,7 +311,8 @@ class Tokeniser(object):
                 if value in ['(', '[', '{']:
                     # add to the stack because we started a list
                     groupStack.append(value)
-                
+                    emptyDescr = False
+
                 elif value in [')', ']', '}']:
                     # not necessary to check for correctness
                     groupStack.pop()
@@ -324,6 +326,16 @@ class Tokeniser(object):
                         result.append( (INDENT, indentType * (scol - currentDescribeLevel)) )
                         skippedTest = False
                         
+                    # Make sure we insert a pass if we inserted an empty describe.
+                    if emptyDescr and scol > currentDescribeLevel:
+                        while result[-1][0] in (INDENT, NEWLINE):
+                            result.pop()
+                        result.append( (NAME, 'pass') )
+                        result.append( (NEWLINE, '\n') )
+                        result.append( (INDENT, indentType * scol) )
+                        
+                    emptyDescr = True
+
                     # Dedenting describes removes them from being inheritable
                     while describeStack and describeStack[-1][0] >= scol:
                         describeStack.pop()
@@ -340,10 +352,12 @@ class Tokeniser(object):
                 
                 elif value in ('it', 'ignore'):
                     skippedTest = False
+                    emptyDescr = False
                     result.append( (NAME, 'def') )
                     
                 elif value in ('before_each', 'after_each'):
                     skippedTest = False
+                    emptyDescr = False
                     result.extend( getattr(self, value) )
                     if describeStack:
                         expecting = [ (OP,      ':')
@@ -363,6 +377,7 @@ class Tokeniser(object):
                     
                 else:
                     skippedTest = False
+                    emptyDescr = False
                     justAppend = True
                                
             elif tokenum == STRING:
@@ -390,6 +405,7 @@ class Tokeniser(object):
                     result.extend( self.startIgnore(value) )
                 
                 else:
+                    emptyDescr = False
                     justAppend = True
             
             elif tokenum == NAME and lastToken == 'describe':
@@ -405,7 +421,8 @@ class Tokeniser(object):
             else:
                 if tokenum == NEWLINE and lastToken == ':' and startingAnIt:
                     startingAnIt = False
-                
+                if tokenum not in (NEWLINE, INDENT):
+                    emptyDescr = False
                 justAppend = True
             
             # Just apending if token isn't replaced and should be kept
@@ -445,7 +462,7 @@ class Tokeniser(object):
                 result.extend(self.testSkip)
             
         # Remove trailing indents and dedents
-        while result and result[-2][0] in (DEDENT, INDENT, ERRORTOKEN, NEWLINE):
+        while result and result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
             result.pop(-2)
         
         # Add attributes to our Describes so that the plugin can handle some nesting issues

@@ -362,9 +362,28 @@ class Test_Tokeniser_Nesting(object):
         self.toka = Tokeniser(withDefaultImports=False, withDescribeAttrs=False)
         self.tokb = Tokeniser(withDefaultImports=False, withDescribeAttrs=False, defaultKls = 'other')
         
-        ###   SMALL EXAMPLE
+        ###   SMALL EXAMPLE (WITHOUT PASS)
         
         self.smallExample = [
+        '''
+        describe "This":
+            describe "That":
+
+                describe "Meh":pass
+            describe "Blah":pass
+        describe "Another":pass '''
+        ,
+        '''
+class Test_This (%(o)s ):pass 
+class Test_This_That (Test_This ):pass 
+class Test_This_That_Meh (Test_This_That ):pass 
+class Test_This_Blah (Test_This ):pass 
+class Test_Another (%(o)s ):pass '''
+        ]
+        
+        ###   SMALL EXAMPLE (WITH PATH FOR BW COMPAT)
+        
+        self.smallExampleWithPass = [
         '''
         describe "This":pass
             describe "That":pass
@@ -390,7 +409,7 @@ class Test_Another (%(o)s ):pass '''
                     pass
                 else:
                     x += 9
-            describe "That": pass
+            describe "That":
                 describe "Meh":
                     it 'should':
                         if y:
@@ -449,6 +468,16 @@ class Test_Another (%(o)s ):
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
         
+    def test_it_should_work_with_space_and_inline_pass(self):
+        test, desired = self.smallExampleWithPass
+        (self.toka, test) |should| result_in(desired % {'o' : 'object'})
+        (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
+    
+    def test_it_should_work_with_tabs_and_inline_pass(self):
+        test, desired = [d.replace('    ', '\t') for d in self.smallExampleWithPass]
+        (self.toka, test) |should| result_in(desired % {'o' : 'object'})
+        (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
+        
     def test_it_should_keep_good_indentation_in_body_with_spaces(self):
         test, desired = self.bigExample
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
@@ -461,7 +490,7 @@ class Test_Another (%(o)s ):
     
     def test_it_should_name_nested_describes_with_part_of_parents_name(self):
         test = 'describe "a":\n\tdescribe "b":'
-        desired = 'class Test_a (object ):\nclass Test_a_b (Test_a ):'
+        desired = 'class Test_a (object ):pass \nclass Test_a_b (Test_a ):'
         (self.toka, test) |should| result_in(desired)
     
 ########################
