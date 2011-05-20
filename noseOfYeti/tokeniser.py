@@ -80,7 +80,7 @@ class Tokeniser(object):
         return default
     
     def acceptable(self, value):
-        return re.sub('[ ({]', '_', re.sub('[\'",.;?)}]', '', value))
+        return re.sub('[\'",.;?{()}]', '', value.replace(' ', '_'))
         
     def tokensIn(self, s):
         self.taken = False
