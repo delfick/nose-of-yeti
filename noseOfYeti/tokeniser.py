@@ -80,7 +80,7 @@ class Tokeniser(object):
         return default
     
     def acceptable(self, value):
-        return re.sub('[\'",.;?{()}]', '', value.replace(' ', '_'))
+        return re.sub('[\'",.;?{()}#]', '', value.replace(' ', '_'))
         
     def tokensIn(self, s):
         self.taken = False
@@ -141,16 +141,17 @@ class Tokeniser(object):
                 ]
     
     def makeDescribe(self, value, nextDescribeKls, inheriting=False):
-        name = 'Test_%%s%s' % self.acceptable(value)
+        from string import capwords
+        name = capwords(self.acceptable(value), '_')
+                
         if nextDescribeKls and inheriting:
             use = nextDescribeKls
-            if use.startswith('Test_'):
-                use = use[5:]
-                
-            name = name % '%s_' % use
+            if use.startswith('Test'):
+                use = use[4:]
+            name = 'Test{}_{}'.format(use, name)
         else:
-            name = name % ''
-            
+            name = 'Test{}'.format(name)
+
         result = [ (NAME, name)
                  , (OP,   '(')
                  ]

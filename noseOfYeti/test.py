@@ -45,14 +45,14 @@ class Test_Tokeniser(object):
     def test_it_should_give_describes_noy_specific_attributes(self):
         tok = Tokeniser(withDefaultImports=False)
         (tok, 'describe "Something testable"') |should| result_in(
-        '''class Test_Something_testable (object )
+        '''class TestSomething_Testable (object )
 
-Test_Something_testable .is_noy_spec =True '''
+TestSomething_Testable .is_noy_spec =True '''
         )
     
     def test_it_should_be_possible_to_turn_off_attributes(self):
         tok = Tokeniser(withDefaultImports=False, withDescribeAttrs=False)
-        (tok, 'describe "Something testable"') |should| result_in('class Test_Something_testable (object )')
+        (tok, 'describe "Something testable"') |should| result_in('class TestSomething_Testable (object )')
     
     def test_it_should_not_have_newline_in_default_imports(self):
         tok = Tokeniser()
@@ -98,12 +98,12 @@ class Test_Tokenisor_translation(object):
         self.tokb = Tokeniser(withDefaultImports=False, withDescribeAttrs=False, defaultKls = 'other')
         
     def test_it_should_translate_a_describe(self):
-        (self.toka, 'describe "Something testable"') |should| result_in('class Test_Something_testable (object )')
-        (self.tokb, 'describe "Something testable"') |should| result_in('class Test_Something_testable (other )')
+        (self.toka, 'describe "Something testable"') |should| result_in('class TestSomething_Testable (object )')
+        (self.tokb, 'describe "Something testable"') |should| result_in('class TestSomething_Testable (other )')
         
         # Same tests, but with newlines in front
-        (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass Test_Something_testable (object )')
-        (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass Test_Something_testable (other )')
+        (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomething_Testable (object )')
+        (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomething_Testable (other )')
         
     def test_it_should_translate_an_it(self):
         (self.toka, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing (self ):')
@@ -209,7 +209,7 @@ class Test_Tokenisor_translation(object):
             it 'asdf2'"""
         
         desired = """
-class Test_a (object ):
+class TestA (object ):
     def test_asdf (self ):
         l =[True 
         ,False 
@@ -246,7 +246,7 @@ class Test_a (object ):
                 print 'hi'"""
         
         desired = """
-class Test_thing (object ):
+class TestThing (object ):
     def test_should_be_skipped (self ):raise nose.SkipTest 
     def test_shouldnt_be_skipped (self ):
         print 'hi'
@@ -266,9 +266,9 @@ class Test_thing (object ):
                 pass'''
         
         desired = '''
-class Test_thing (object ):
+class TestThing (object ):
     def test_should_be_skipped (self ):raise nose.SkipTest 
-class Test_thing_that (Test_thing ):
+class TestThing_That (TestThing ):
     pass '''
         (self.toka, test) |should| result_in(desired)
         
@@ -280,9 +280,9 @@ class Test_thing_that (Test_thing ):
         '''
         
         desired = '''
-class Test_Thing (object ):
+class TestThing (object ):
     def setUp (self ):
-        sup =super (Test_Thing ,self )
+        sup =super (TestThing ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .x =5 '''
         
@@ -304,9 +304,9 @@ class Test_Thing (object ):
         '''
         
         desired = '''
-class Test_Thing (object ):
+class TestThing (object ):
     def tearDown (self ):
-        sup =super (Test_Thing ,self )
+        sup =super (TestThing ,self )
         if hasattr (sup,"tearDown"):sup .tearDown ()
         self .x =5 '''
         
@@ -343,8 +343,8 @@ class Test_Thing (object ):
         '''
         
         desired = '''%s
-class Test_This_thing (TestCase ):pass 
-class Test_Another_thing (%s ):pass '''
+class TestThis_Thing (TestCase ):pass 
+class TestAnother_Thing (%s ):pass '''
         
         (self.toka, test) |should| result_in(desired % ('', 'object'))
         (self.tokb, test) |should| result_in(desired % ('', 'other'))
@@ -374,11 +374,11 @@ class Test_Tokeniser_Nesting(object):
         describe "Another":pass '''
         ,
         '''
-class Test_This (%(o)s ):pass 
-class Test_This_That (Test_This ):pass 
-class Test_This_That_Meh (Test_This_That ):pass 
-class Test_This_Blah (Test_This ):pass 
-class Test_Another (%(o)s ):pass '''
+class TestThis (%(o)s ):pass 
+class TestThis_That (TestThis ):pass 
+class TestThis_That_Meh (TestThis_That ):pass 
+class TestThis_Blah (TestThis ):pass 
+class TestAnother (%(o)s ):pass '''
         ]
         
         ###   SMALL EXAMPLE (WITH PATH FOR BW COMPAT)
@@ -392,11 +392,11 @@ class Test_Another (%(o)s ):pass '''
         describe "Another":pass '''
         ,
         '''
-class Test_This (%(o)s ):pass 
-class Test_This_That (Test_This ):pass 
-class Test_This_That_Meh (Test_This_That ):pass 
-class Test_This_Blah (Test_This ):pass 
-class Test_Another (%(o)s ):pass '''
+class TestThis (%(o)s ):pass 
+class TestThis_That (TestThis ):pass 
+class TestThis_That_Meh (TestThis_That ):pass 
+class TestThis_Blah (TestThis ):pass 
+class TestAnother (%(o)s ):pass '''
         ]
         
         ###   BIG EXAMPLE
@@ -430,21 +430,21 @@ class Test_Another (%(o)s ):pass '''
         '''
         ,
         '''
-class Test_This (%(o)s ):
+class TestThis (%(o)s ):
     def test_should (self ):
         if x :
             pass 
         else :
             x +=9 
-class Test_This_That (Test_This ):pass 
-class Test_This_That_Meh (Test_This_That ):
+class TestThis_That (TestThis ):pass 
+class TestThis_That_Meh (TestThis_That ):
     def test_should (self ):
         if y :
             pass 
         else :
             pass 
-class Test_This_Blah (Test_This ):pass 
-class Test_Another (%(o)s ):
+class TestThis_Blah (TestThis ):pass 
+class TestAnother (%(o)s ):
     def test_should (self ):
         if z :
             if u :
@@ -490,7 +490,7 @@ class Test_Another (%(o)s ):
     
     def test_it_should_name_nested_describes_with_part_of_parents_name(self):
         test = 'describe "a":\n\tdescribe "b":'
-        desired = 'class Test_a (object ):pass \nclass Test_a_b (Test_a ):'
+        desired = 'class TestA (object ):pass \nclass TestA_B (TestA ):'
         (self.toka, test) |should| result_in(desired)
     
 ########################
@@ -521,33 +521,33 @@ class Test_Tokeniser_More_Nesting(object):
                 self.z = 8 '''
         ,
         '''
-class Test_This (%(o)s ):
+class TestThis (%(o)s ):
     def setUp (self ):
-        sup =super (Test_This ,self )
+        sup =super (TestThis ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .x =5 
-class Test_This_That (Test_This ):
+class TestThis_That (TestThis ):
     def setUp (self ):
-        sup =super (Test_This_That ,self )
+        sup =super (TestThis_That ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .y =6 
-class Test_This_That_Meh (Test_This_That ):
+class TestThis_That_Meh (TestThis_That ):
     def tearDown (self ):
-        sup =super (Test_This_That_Meh ,self )
+        sup =super (TestThis_That_Meh ,self )
         if hasattr (sup,"tearDown"):sup .tearDown ()
         self .y =None 
-class Test_This_Blah (Test_This ):pass 
-class Test_Another (%(o)s ):
+class TestThis_Blah (TestThis ):pass 
+class TestAnother (%(o)s ):
     def setUp (self ):
-        sup =super (Test_Another ,self )
+        sup =super (TestAnother ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .z =8 
 
-Test_This .is_noy_spec =True 
-Test_This_That .is_noy_spec =True 
-Test_This_That_Meh .is_noy_spec =True 
-Test_This_Blah .is_noy_spec =True 
-Test_Another .is_noy_spec =True '''
+TestThis .is_noy_spec =True 
+TestThis_That .is_noy_spec =True 
+TestThis_That_Meh .is_noy_spec =True 
+TestThis_Blah .is_noy_spec =True 
+TestAnother .is_noy_spec =True '''
         ]
         
         ###   BIG EXAMPLE
@@ -591,9 +591,9 @@ Test_Another .is_noy_spec =True '''
         '''
         ,
         '''
-class Test_This (%(o)s ):
+class TestThis (%(o)s ):
     def setUp (self ):
-        sup =super (Test_This ,self )
+        sup =super (TestThis ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .x =5 
     def test_should (self ):
@@ -601,14 +601,14 @@ class Test_This (%(o)s ):
             pass 
         else :
             x +=9 
-class Test_This_That (Test_This ):
+class TestThis_That (TestThis ):
     def setUp (self ):
-        sup =super (Test_This_That ,self )
+        sup =super (TestThis_That ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .y =6 
-class Test_This_That_Meh (Test_This_That ):
+class TestThis_That_Meh (TestThis_That ):
     def tearDown (self ):
-        sup =super (Test_This_That_Meh ,self )
+        sup =super (TestThis_That_Meh ,self )
         if hasattr (sup,"tearDown"):sup .tearDown ()
         self .y =None 
     def test_should (self ):
@@ -618,10 +618,10 @@ class Test_This_That_Meh (Test_This_That ):
             pass 
     def test_should_have_args (self ,arg1 ,arg2 ):
         blah |should |be_good ()
-class Test_This_Blah (Test_This ):pass 
-class Test_Another (%(o)s ):
+class TestThis_Blah (TestThis ):pass 
+class TestAnother (%(o)s ):
     def setUp (self ):
-        sup =super (Test_Another ,self )
+        sup =super (TestAnother ,self )
         if hasattr (sup,"setUp"):sup .setUp ()
         self .z =8 
     def test_should (self ):
@@ -634,11 +634,11 @@ class Test_Another (%(o)s ):
         else :
             pass 
 
-Test_This .is_noy_spec =True 
-Test_This_That .is_noy_spec =True 
-Test_This_That_Meh .is_noy_spec =True 
-Test_This_Blah .is_noy_spec =True 
-Test_Another .is_noy_spec =True '''
+TestThis .is_noy_spec =True 
+TestThis_That .is_noy_spec =True 
+TestThis_That_Meh .is_noy_spec =True 
+TestThis_Blah .is_noy_spec =True 
+TestAnother .is_noy_spec =True '''
         ]
         
     ###   TESTS
