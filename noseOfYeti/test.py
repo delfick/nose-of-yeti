@@ -370,7 +370,7 @@ class Test_Tokeniser_Nesting(object):
             describe "That":
 
                 describe "Meh":pass
-            describe "Blah":pass
+            context "Blah":pass
         describe "Another":pass '''
         ,
         '''
@@ -385,7 +385,7 @@ class TestAnother (%(o)s ):pass '''
         
         self.smallExampleWithPass = [
         '''
-        describe "This":pass
+        context "This":pass
             describe "That":pass
                 describe "Meh":pass
             describe "Blah":pass

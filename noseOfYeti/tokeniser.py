@@ -80,7 +80,7 @@ class Tokeniser(object):
         return default
     
     def acceptable(self, value):
-        return re.sub('[\'",.;?{()}#]', '', value.replace(' ', '_'))
+        return re.sub('[\'",.;?{()}#]', '', re.sub('[ -]', '_', value))
         
     def tokensIn(self, s):
         self.taken = False
@@ -141,9 +141,7 @@ class Tokeniser(object):
                 ]
     
     def makeDescribe(self, value, nextDescribeKls, inheriting=False):
-        from string import capwords
-        name = capwords(self.acceptable(value), '_')
-                
+        name = self.acceptable(value)
         if nextDescribeKls and inheriting:
             use = nextDescribeKls
             if use.startswith('Test'):
@@ -155,14 +153,11 @@ class Tokeniser(object):
         result = [ (NAME, name)
                  , (OP,   '(')
                  ]
-        
         if nextDescribeKls:
             result.extend( self.tokensIn(nextDescribeKls) )
         else:
             result.extend( self.defaultKls )
-        
         result.append( (OP, ')') )
-    
         return result, name
     
     def makeSuper(self, nextDescribeKls):
@@ -321,7 +316,7 @@ class Tokeniser(object):
                 justAppend = True
                 
             elif afterSpace and tokenum == NAME:
-                if value == 'describe':
+                if value in ('describe', 'context'):
                     # Make sure we dedent if we just made a skip test
                     if skippedTest:
                         result.append( (INDENT, indentType * (scol - currentDescribeLevel)) )
@@ -387,7 +382,7 @@ class Tokeniser(object):
                     startingAnIt = True
                     result.extend( self.startIt(value) )
                                
-                elif lastToken == 'describe':
+                elif lastToken in ('describe', 'context'):
                     inheritance = False
                     if describeStack:
                         if not nextDescribeKls:
@@ -409,7 +404,7 @@ class Tokeniser(object):
                     emptyDescr = False
                     justAppend = True
             
-            elif tokenum == NAME and lastToken == 'describe':
+            elif tokenum == NAME and lastToken in ('describe', 'context'):
                 nextDescribeKls = value
                 keepLastToken = True
             
