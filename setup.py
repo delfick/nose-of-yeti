@@ -9,7 +9,6 @@ setup( name='noseOfYeti'
                    ]
                    
      , keywords='bdd rspec spec'
-     , package_dir = {'noseOfYeti': 'src'}
      , author = 'Stephen Moore'
      , author_email = 'delfick755@gmail.com'
      , license = 'GPL'
