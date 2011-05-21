@@ -1,4 +1,5 @@
 from encodings import utf_8
+from string import capwords
 from tokenize import *
 import cStringIO
 import encodings
@@ -6,6 +7,12 @@ import codecs
 import re
 
 whitespace = re.compile('\s+')
+
+regexes = {
+      'joins': re.compile('[ -]')
+    , 'whitespace': re.compile('\s+')
+    , 'punctuation': re.compile('[\'",.;?{()}#]')
+    }
         
 class Tokeniser(object): 
 
@@ -80,7 +87,7 @@ class Tokeniser(object):
         return default
     
     def acceptable(self, value):
-        return re.sub('[\'",.;?{()}#]', '', re.sub('[ -]', '_', value))
+        return regexes['punctuation'].sub("", regexes['joins'].sub("_", value))
         
     def tokensIn(self, s):
         self.taken = False
@@ -141,14 +148,14 @@ class Tokeniser(object):
                 ]
     
     def makeDescribe(self, value, nextDescribeKls, inheriting=False):
-        name = self.acceptable(value)
+        name = capwords(self.acceptable(value), '_')
         if nextDescribeKls and inheriting:
             use = nextDescribeKls
             if use.startswith('Test'):
                 use = use[4:]
-            name = 'Test{}_{}'.format(use, name)
+            name = 'Test{0}_{1}'.format(use, name)
         else:
-            name = 'Test{}'.format(name)
+            name = 'Test{0}'.format(name)
 
         result = [ (NAME, name)
                  , (OP,   '(')
@@ -444,7 +451,7 @@ class Tokeniser(object):
                 
             else:
                 afterSpace = False
-                if lookAtSpace and (value == '' or whitespace.match(value)):
+                if lookAtSpace and (value == '' or regexes['whitespace'].match(value)):
                     afterSpace = True
                     
                     if tokenum != INDENT:
