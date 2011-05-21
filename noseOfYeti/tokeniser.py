@@ -16,6 +16,7 @@ class Tokeniser(object):
         self.defaultImports = self.determineImports(extraImports)
         self.defaultKls = self.tokensIn(defaultKls)
         self.constructReplacements()
+        self.usedSuper = {'before_each': False, 'after_each': False}
 
     ########################
     ###   REGISTER
@@ -67,9 +68,8 @@ class Tokeniser(object):
             if default and tuple(default[-1]) != (OP, ';'):
                 default.append((OP, ';'))
             default.extend(
-                self.tokensIn('import nose; from nose.tools import *; from should_dsl import *')
+                self.tokensIn('import nose; from nose.tools import *; from should_dsl import *;')
             )
-            default.append((NEWLINE, '\n'))
 
         return default
 
@@ -79,13 +79,16 @@ class Tokeniser(object):
             name = ''.join([word[0].upper() + word[1:] for word in name.split('_')])
         return name
 
-    def tokensIn(self, s):
+    def tokensIn(self, s, strip_it=True):
         self.taken = False
         def get():
             #Making generate_tokens not loop forever
             if not self.taken:
                 self.taken = True
-                return s.strip()
+                if strip_it:
+                    return s.strip()
+                else:
+                    return s
             else:
                 return ''
 
@@ -157,14 +160,16 @@ class Tokeniser(object):
         result.append((OP, ')'))
         return result, name
 
-    def makeSuper(self, nextDescribeKls):
+    def makeSuper(self, nextDescribeKls, method):
+        self.usedSuper[method] = True
+
         if nextDescribeKls:
             kls = self.tokensIn(nextDescribeKls)
         else:
             kls = self.defaultKls
 
-        result = [ (NAME, 'sup')
-                 , (OP, '=')
+        result = [ (NAME, '_sup_%s' % self.getEquivalence(method))
+                 , (OP, '(')
                  , (NAME, 'super')
                  , (OP, '(')
                  ]
@@ -175,32 +180,12 @@ class Tokeniser(object):
             [ (OP, ',')
             , (NAME, 'self')
             , (OP, ')')
-            , (NEWLINE, '\n')
+            , (OP, ')')
+            , (OP, ';')
             ]
         )
 
         return result
-
-    def useSuper(self, method):
-        method = self.getEquivalence(method)
-
-        return [ (NAME, 'if')
-               , (NAME, 'hasattr')
-               , (OP, '(')
-               , (OP, 'sup')
-               , (OP, ',')
-               , (OP, '"')
-               , (STRING, method)
-               , (OP, '"')
-               , (OP, ')')
-               , (OP, ':')
-               , (NAME, 'sup')
-               , (OP, '.')
-               , (NAME, method)
-               , (OP, '(')
-               , (OP, ')')
-               , (NEWLINE, '\n')
-               ]
 
     def makeDescribeAttr(self, describe):
         return [ (NEWLINE, '\n')
@@ -362,11 +347,7 @@ class Tokeniser(object):
 
                         adjustIndentAt.append(len(result))
                         result.append((INDENT, ''))
-                        result.extend(self.makeSuper(describeStack[-1][1]))
-
-                        adjustIndentAt.append(len(result))
-                        result.append((INDENT, ''))
-                        result.extend(self.useSuper(value))
+                        result.extend(self.makeSuper(describeStack[-1][1], value))
 
                 else:
                     skippedTest = False
@@ -458,6 +439,22 @@ class Tokeniser(object):
         while result and result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
             result.pop(-2)
 
+        # Add superclass set-up helper method.
+        for method in ('before_each', 'after_each'):
+            if self.usedSuper[method]:
+                method = self.getEquivalence(method)
+                result.extend(
+                    self.tokensIn(
+                        """
+
+def _sup_{method}(sup):
+    if hasattr(sup, "{method}"):
+        sup.{method}()
+                        """.replace('{method}', method),
+                        False
+                    )
+                )
+
         # Add attributes to our Describes so that the plugin can handle some nesting issues
         # Where we have tests in upper level describes being run in lower level describes
         if self.withDescribeAttrs and allDescribes:
@@ -466,11 +463,6 @@ class Tokeniser(object):
 
             for describe in allDescribes:
                 result.extend(self.makeDescribeAttr(describe))
-
-        data = untokenize(result)
-        f = file('/home/fgrandel/Desktop/spec.out', 'w')
-        f.write(data)
-        f.close()
 
         #Gone through all the tokens, returning now
         return result
