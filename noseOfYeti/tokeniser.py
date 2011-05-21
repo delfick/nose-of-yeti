@@ -6,8 +6,6 @@ import encodings
 import codecs
 import re
 
-whitespace = re.compile('\s+')
-
 regexes = {
       'joins': re.compile('[ -]')
     , 'whitespace': re.compile('\s+')
