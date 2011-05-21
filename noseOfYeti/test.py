@@ -45,14 +45,14 @@ class Test_Tokeniser(object):
     def test_it_should_give_describes_noy_specific_attributes(self):
         tok = Tokeniser(withDefaultImports=False)
         (tok, 'describe "Something testable"') |should| result_in(
-        '''class TestSomething_Testable (object )
+        '''class TestSomethingTestable (object )
 
-TestSomething_Testable .is_noy_spec =True '''
+TestSomethingTestable .is_noy_spec =True '''
         )
     
     def test_it_should_be_possible_to_turn_off_attributes(self):
         tok = Tokeniser(withDefaultImports=False, withDescribeAttrs=False)
-        (tok, 'describe "Something testable"') |should| result_in('class TestSomething_Testable (object )')
+        (tok, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object )')
     
     def test_it_should_not_have_newline_in_default_imports(self):
         tok = Tokeniser()
@@ -83,7 +83,7 @@ TestSomething_Testable .is_noy_spec =True '''
     
     def test_it_should_be_possible_to_specify_extra_imports_without_default_imports(self):
         tok = Tokeniser(withDefaultImports=False, extraImports="import thing")
-        (tok, '') |should| result_in('import thing ;')
+        (tok, '') |should| result_in('import thing ')
     
     def test_it_should_import_nose_and_should_dsl_by_default(self):
         (Tokeniser(), '') |should| result_in('import nose ;from nose .tools import *;from should_dsl import *')
@@ -98,12 +98,12 @@ class Test_Tokenisor_translation(object):
         self.tokb = Tokeniser(withDefaultImports=False, withDescribeAttrs=False, defaultKls = 'other')
         
     def test_it_should_translate_a_describe(self):
-        (self.toka, 'describe "Something testable"') |should| result_in('class TestSomething_Testable (object )')
-        (self.tokb, 'describe "Something testable"') |should| result_in('class TestSomething_Testable (other )')
+        (self.toka, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object )')
+        (self.tokb, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (other )')
         
         # Same tests, but with newlines in front
-        (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomething_Testable (object )')
-        (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomething_Testable (other )')
+        (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (object )')
+        (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (other )')
         
     def test_it_should_translate_an_it(self):
         (self.toka, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing (self ):')
@@ -343,8 +343,8 @@ class TestThing (object ):
         '''
         
         desired = '''%s
-class TestThis_Thing (TestCase ):pass 
-class TestAnother_Thing (%s ):pass '''
+class TestThisThing (TestCase ):pass 
+class TestAnotherThing (%s ):pass '''
         
         (self.toka, test) |should| result_in(desired % ('', 'object'))
         (self.tokb, test) |should| result_in(desired % ('', 'other'))
