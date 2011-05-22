@@ -1,4 +1,5 @@
 from encodings import utf_8
+from string import capwords
 from tokenize import *
 import cStringIO
 import encodings
@@ -6,7 +7,11 @@ import codecs
 import re
 from string import join
 
-whitespace = re.compile('\s+')
+regexes = {
+      'joins': re.compile('[ -]')
+    , 'whitespace': re.compile('\s+')
+    , 'punctuation': re.compile('[\'",.;?{()}#]')
+    }
 
 SUP_TEMPLATE = """
 
@@ -80,7 +85,7 @@ class Tokeniser(object):
         return default
 
     def acceptable(self, value, capitalize=False):
-        name = re.sub('[\'",.;?{()}#]', '', re.sub('[ -]', '_', value))
+        name = regexes['punctuation'].sub("", regexes['joins'].sub("_", value))
         if capitalize:
             name = ''.join([word[0].upper() + word[1:] for word in name.split('_')])
         return name
@@ -152,9 +157,9 @@ class Tokeniser(object):
             use = nextDescribeKls
             if use.startswith('Test'):
                 use = use[4:]
-            name = 'Test{}_{}'.format(use, name)
+            name = 'Test{0}_{1}'.format(use, name)
         else:
-            name = 'Test{}'.format(name)
+            name = 'Test{0}'.format(name)
 
         result = [ (NAME, name)
                  , (OP, '(')
@@ -428,7 +433,7 @@ class Tokeniser(object):
 
             else:
                 afterSpace = False
-                if lookAtSpace and (value == '' or whitespace.match(value)):
+                if lookAtSpace and (value == '' or regexes['whitespace'].match(value)):
                     afterSpace = True
 
                     if tokenum != INDENT:
