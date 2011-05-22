@@ -191,12 +191,11 @@ class Tokeniser(object):
         return result
 
     def makeSupHelperMethod(self, method, indentType):
-        supTemplate = """
+        supTemplate = ('\n\n'
+                       'def _sup_{0}(sup):\n'
+                       '{1}if hasattr(sup, "{0}"):\n'
+                       '{1}{1}sup.{0}()\n')
 
-def _sup_{0}(sup):
-{1}if hasattr(sup, "{0}"):
-{1}{1}sup.{0}()
-"""
         method = self.getEquivalence(method)
         indentation = {'\t': '\t', ' ': '    '}[indentType]
         return self.tokensIn(supTemplate.format(method, indentation), False)
