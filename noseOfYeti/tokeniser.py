@@ -8,6 +8,13 @@ from string import join
 
 whitespace = re.compile('\s+')
 
+SUP_TEMPLATE = """
+
+def _sup_{0}(sup):
+{1}if hasattr(sup, "{0}"):
+{1}{1}sup.{0}()
+"""
+
 class Tokeniser(object):
 
     def __init__(self, defaultKls='object', extraImports=None, withDefaultImports=True, withDescribeAttrs=True):
@@ -16,7 +23,6 @@ class Tokeniser(object):
         self.defaultImports = self.determineImports(extraImports)
         self.defaultKls = self.tokensIn(defaultKls)
         self.constructReplacements()
-        self.usedSuper = {'before_each': False, 'after_each': False}
 
     ########################
     ###   REGISTER
@@ -161,8 +167,6 @@ class Tokeniser(object):
         return result, name
 
     def makeSuper(self, nextDescribeKls, method):
-        self.usedSuper[method] = True
-
         if nextDescribeKls:
             kls = self.tokensIn(nextDescribeKls)
         else:
@@ -224,6 +228,7 @@ class Tokeniser(object):
         lastToken = ' '
         endedIt = False
         emptyDescr = False
+        usedSuper = {'before_each': False, 'after_each': False}
 
         # Looking at all the tokens
         for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
@@ -348,6 +353,7 @@ class Tokeniser(object):
                         adjustIndentAt.append(len(result))
                         result.append((INDENT, ''))
                         result.extend(self.makeSuper(describeStack[-1][1], value))
+                        usedSuper[value] = True
 
                 else:
                     skippedTest = False
@@ -441,19 +447,10 @@ class Tokeniser(object):
 
         # Add superclass set-up helper method.
         for method in ('before_each', 'after_each'):
-            if self.usedSuper[method]:
+            if usedSuper[method]:
                 method = self.getEquivalence(method)
-                result.extend(
-                    self.tokensIn(
-                        """
-
-def _sup_{method}(sup):
-    if hasattr(sup, "{method}"):
-        sup.{method}()
-                        """.replace('{method}', method),
-                        False
-                    )
-                )
+                indentation = {'\t': '\t', ' ': '    '}[indentType]
+                result.extend(self.tokensIn(SUP_TEMPLATE.format(method, indentation), False))
 
         # Add attributes to our Describes so that the plugin can handle some nesting issues
         # Where we have tests in upper level describes being run in lower level describes
