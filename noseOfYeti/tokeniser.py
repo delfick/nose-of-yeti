@@ -13,12 +13,6 @@ regexes = {
     , 'punctuation': re.compile('[\'",.;?{()}#]')
     }
 
-SUP_TEMPLATE = """
-
-def _sup_{0}(sup):
-{1}if hasattr(sup, "{0}"):
-{1}{1}sup.{0}()
-"""
 
 class Tokeniser(object):
 
@@ -195,6 +189,17 @@ class Tokeniser(object):
         )
 
         return result
+
+    def makeSupHelperMethod(self, method, indentType):
+        supTemplate = """
+
+def _sup_{0}(sup):
+{1}if hasattr(sup, "{0}"):
+{1}{1}sup.{0}()
+"""
+        method = self.getEquivalence(method)
+        indentation = {'\t': '\t', ' ': '    '}[indentType]
+        return self.tokensIn(supTemplate.format(method, indentation), False)
 
     def makeDescribeAttr(self, describe):
         return [ (NEWLINE, '\n')
@@ -453,9 +458,7 @@ class Tokeniser(object):
         # Add superclass set-up helper method.
         for method in ('before_each', 'after_each'):
             if usedSuper[method]:
-                method = self.getEquivalence(method)
-                indentation = {'\t': '\t', ' ': '    '}[indentType]
-                result.extend(self.tokensIn(SUP_TEMPLATE.format(method, indentation), False))
+                result.extend(self.makeSupHelperMethod(method, indentType))
 
         # Add attributes to our Describes so that the plugin can handle some nesting issues
         # Where we have tests in upper level describes being run in lower level describes
