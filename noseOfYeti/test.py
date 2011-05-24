@@ -344,12 +344,12 @@ def _sup_tearDown(sup):
     
     def test_it_should_allow_definition_of_different_base_class_for_next_describe(self):
         test = '''
-        describe TestCase "This thing":pass
+        describe unittest.TestCase "This thing":pass
         describe "Another thing":pass
         '''
         
         desired = '''%s
-class TestThisThing (TestCase ):pass 
+class TestThisThing (unittest .TestCase ):pass 
 class TestAnotherThing (%s ):pass '''
         
         (self.toka, test) |should| result_in(desired % ('', 'object'))
