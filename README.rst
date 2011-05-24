@@ -21,8 +21,10 @@ PyDebugger
 
 if you're using PyDev debugger, you are able to set breakpoints in spec files if you can patch:
 
-eclipse/plugins/org.python.pydev.debug_.../pysrc/pydevd_frame.py, in trace_dispatch():
+.. code-block:: plain
 
-    < if func_name in ('None', curr_func_name):
+    eclipse/plugins/org.python.pydev.debug_.../pysrc/pydevd_frame.py, in trace_dispatch():
 
-    > if func_name in ('None', '', curr_func_name):
+        < if func_name in ('None', curr_func_name):
+
+        > if func_name in ('None', '', curr_func_name):
