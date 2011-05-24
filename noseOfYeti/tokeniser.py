@@ -299,7 +299,28 @@ class Tokeniser(object):
                 endedIt = True
 
             # Determining what to replace and with what ::
-            if tokenum == OP:
+            if lastToken in ('describe', 'context'):
+                if tokenum == NAME or (tokenum == OP and value == '.'): # inherited class
+                    if nextDescribeKls is None:
+                        nextDescribeKls = value
+                    else:
+                        nextDescribeKls += value
+                    keepLastToken = True
+
+                elif tokenum == STRING: # the described object
+                    inheritance = False
+                    if describeStack:
+                        if not nextDescribeKls:
+                            inheritance = True
+                            nextDescribeKls = describeStack[-1][1]
+
+                    res, name = self.makeDescribe(value, nextDescribeKls, inheritance)
+                    describeStack.append([currentDescribeLevel, name])
+                    allDescribes.append(name)
+
+                    result.extend(res)
+
+            elif tokenum == OP:
                 if value in ['(', '[', '{']:
                     # add to the stack because we started a list
                     groupStack.append(value)
@@ -375,19 +396,6 @@ class Tokeniser(object):
                     startingAnIt = True
                     result.extend(self.startIt(value))
 
-                elif lastToken in ('describe', 'context'):
-                    inheritance = False
-                    if describeStack:
-                        if not nextDescribeKls:
-                            inheritance = True
-                            nextDescribeKls = describeStack[-1][1]
-
-                    res, name = self.makeDescribe(value, nextDescribeKls, inheritance)
-                    describeStack.append([currentDescribeLevel, name])
-                    allDescribes.append(name)
-
-                    result.extend(res)
-
                 elif lastToken == 'ignore':
                     endedIt = False
                     startingAnIt = True
@@ -396,10 +404,6 @@ class Tokeniser(object):
                 else:
                     emptyDescr = False
                     justAppend = True
-
-            elif tokenum == NAME and lastToken in ('describe', 'context'):
-                nextDescribeKls = value
-                keepLastToken = True
 
             elif tokenum == NEWLINE and lastToken != ':' and startingAnIt:
                 result.extend(self.testSkip)
@@ -467,6 +471,12 @@ class Tokeniser(object):
 
             for describe in allDescribes:
                 result.extend(self.makeDescribeAttr(describe))
+
+        # Uncomment this for debugging:
+        #data = untokenize(result)
+        #f = file('./spec.out', 'w')
+        #f.write(data)
+        #f.close()
 
         #Gone through all the tokens, returning now
         return result

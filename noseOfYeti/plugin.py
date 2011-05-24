@@ -85,7 +85,7 @@ class Plugin(Plugin):
                 
                 return False
         else:
-            return True
+            return None
         
         return False
         
