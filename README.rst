@@ -11,12 +11,14 @@ Using this we're able to make it so when you have "# coding: spec" at the top of
 
 http://somethingaboutorange.com/mrl/projects/nose/1.0.0/
 
-It was originally developed by Stephen Moore after borrowing the idea from a project by Fernando Meyer called Yeti (https://github.com/fmeyer/yeti)
+It was originally developed by Stephen Moore after borrowing the idea from a project by Fernando Meyer called Yeti
+
+https://github.com/fmeyer/yeti
 
 Usage
 =====
 
-Look at the files in the usage directory to see what using nose-of-yeti looks like.
+Look at the files in the examples directory to see what using nose-of-yeti looks like.
 
 PyDebugger
 ==========
