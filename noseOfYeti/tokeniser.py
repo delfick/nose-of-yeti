@@ -489,6 +489,4 @@ class Tokeniser(object):
             for describe in allDescribes:
                 result.extend(self.makeDescribeAttr(describe))
 
-        # We return the result in the method's data argument so that we get at
-        # least a partial result even in the case of an exception.
-        return
+        return result
