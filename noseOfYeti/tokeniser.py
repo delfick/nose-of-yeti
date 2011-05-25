@@ -8,7 +8,7 @@ import re
 from string import join
 
 regexes = {
-      'joins': re.compile('[ -]')
+      'joins': re.compile('[- /]')
     , 'whitespace': re.compile('\s+')
     , 'punctuation': re.compile('[\'",.;?{()}#<>\[\]]')
     }
@@ -73,7 +73,7 @@ class Tokeniser(object):
             if default and tuple(default[-1]) != (OP, ';'):
                 default.append((OP, ';'))
             default.extend(
-                self.tokensIn('import nose; from nose.tools import *; from should_dsl import *;')
+                self.tokensIn('import nose; from nose.tools import *; from should_dsl import *; from noy_helper import *;')
             )
 
         return default
@@ -171,7 +171,7 @@ class Tokeniser(object):
         else:
             kls = self.defaultKls
 
-        result = [ (NAME, '_sup_%s' % self.getEquivalence(method))
+        result = [ (NAME, 'noy_sup_%s' % self.getEquivalence(method))
                  , (OP, '(')
                  , (NAME, 'super')
                  , (OP, '(')
@@ -189,16 +189,6 @@ class Tokeniser(object):
         )
 
         return result
-
-    def makeSupHelperMethod(self, method, indentType):
-        supTemplate = ('\n\n'
-                       'def _sup_{0}(sup):\n'
-                       '{1}if hasattr(sup, "{0}"):\n'
-                       '{1}{1}sup.{0}()\n')
-
-        method = self.getEquivalence(method)
-        indentation = {'\t': '\t', ' ': '    '}[indentType]
-        return self.tokensIn(supTemplate.format(method, indentation), False)
 
     def makeDescribeAttr(self, describe):
         return [ (NEWLINE, '\n')
@@ -237,240 +227,237 @@ class Tokeniser(object):
         lastToken = ' '
         endedIt = False
         emptyDescr = False
-        usedSuper = {'before_each': False, 'after_each': False}
 
-        # Looking at all the tokens
-        for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
-            # Sometimes we need to ignore stuff
-            if ignoreNext:
-                nextIgnore = ignoreNext
-                if type(ignoreNext) is list:
-                    nextIgnore = ignoreNext.pop(0)
+        try:
+            # Looking at all the tokens
+            for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
+                # Sometimes we need to ignore stuff
+                if ignoreNext:
+                    nextIgnore = ignoreNext
+                    if type(ignoreNext) is list:
+                        nextIgnore = ignoreNext.pop(0)
 
-                if nextIgnore == (tokenum, value):
-                    continue
-                else:
-                    nextIgnore = None
-
-            # By default, we don't just append the value
-            justAppend = False
-
-            # Determine if working with spaces or tabs
-            if tokenum == INDENT:
-                indentType = value[0]
-
-            # Ensuring NEWLINE tokens are actually specified as such
-            if tokenum != NEWLINE and value == '\n':
-                tokenum = NEWLINE
-
-            # Determine next level of indentation
-            if afterSpace and tokenum not in (NEWLINE, DEDENT, INDENT):
-                if not groupStack:
-                    # We don't care about indentation inside a group (list, tuple or dictionary)
-                    if not indentAmounts or scol > indentAmounts[-1]:
-                        indentAmounts.append(scol)
-
-                    while adjustIndentAt:
-                        result[adjustIndentAt.pop()] = (INDENT, indentType * (scol - currentDescribeLevel))
-
-            # I want to change dedents into indents, because they seem to screw nesting up
-            if tokenum == DEDENT:
-                # Dedent means go back to last indentation
-                if indentAmounts:
-                    indentAmounts.pop()
-
-                # Change the token
-                tokenum = INDENT
-
-                # Get last indent amount
-                lastIndent = 0
-                if indentAmounts:
-                    lastIndent = indentAmounts[-1]
-
-                # Make sure we don't have multiple indents in a row
-                if result[-1][0] == INDENT:
-                    result.pop()
-
-                value = indentType * lastIndent
-
-            #Determine if we have an it to close
-            if startingAnIt and not endedIt and (value == ":" or tokenum == NEWLINE):
-                result.extend(self.endIt)
-                endedIt = True
-
-            # Determining what to replace and with what ::
-            if lastToken in ('describe', 'context'):
-                if tokenum == NAME or (tokenum == OP and value == '.'): # inherited class
-                    if nextDescribeKls is None:
-                        nextDescribeKls = value
+                    if nextIgnore == (tokenum, value):
+                        continue
                     else:
-                        nextDescribeKls += value
-                    keepLastToken = True
+                        nextIgnore = None
 
-                elif tokenum == STRING: # the described object
-                    inheritance = False
-                    if describeStack:
-                        if not nextDescribeKls:
-                            inheritance = True
-                            nextDescribeKls = describeStack[-1][1]
+                # By default, we don't just append the value
+                justAppend = False
 
-                    res, name = self.makeDescribe(value, nextDescribeKls, inheritance)
-                    describeStack.append([currentDescribeLevel, name])
-                    allDescribes.append(name)
+                # Determine if working with spaces or tabs
+                if tokenum == INDENT:
+                    indentType = value[0]
 
-                    result.extend(res)
+                # Ensuring NEWLINE tokens are actually specified as such
+                if tokenum != NEWLINE and value == '\n':
+                    tokenum = NEWLINE
 
-            elif tokenum == OP:
-                if value in ['(', '[', '{']:
-                    # add to the stack because we started a list
-                    groupStack.append(value)
-                    emptyDescr = False
+                # Determine next level of indentation
+                if afterSpace and tokenum not in (NEWLINE, DEDENT, INDENT):
+                    if not groupStack:
+                        # We don't care about indentation inside a group (list, tuple or dictionary)
+                        if not indentAmounts or scol > indentAmounts[-1]:
+                            indentAmounts.append(scol)
 
-                elif value in [')', ']', '}']:
-                    # not necessary to check for correctness
-                    groupStack.pop()
+                        while adjustIndentAt:
+                            result[adjustIndentAt.pop()] = (INDENT, indentType * (scol - currentDescribeLevel))
 
-                justAppend = True
+                # I want to change dedents into indents, because they seem to screw nesting up
+                if tokenum == DEDENT:
+                    # Dedent means go back to last indentation
+                    if indentAmounts:
+                        indentAmounts.pop()
 
-            elif afterSpace and tokenum == NAME:
-                if value in ('describe', 'context'):
-                    # Make sure we dedent if we just made a skip test
-                    if skippedTest:
-                        result.append((INDENT, indentType * (scol - currentDescribeLevel)))
+                    # Change the token
+                    tokenum = INDENT
+
+                    # Get last indent amount
+                    lastIndent = 0
+                    if indentAmounts:
+                        lastIndent = indentAmounts[-1]
+
+                    # Make sure we don't have multiple indents in a row
+                    if result[-1][0] == INDENT:
+                        result.pop()
+
+                    value = indentType * lastIndent
+
+                #Determine if we have an it to close
+                if startingAnIt and not endedIt and (value == ":" or tokenum == NEWLINE):
+                    result.extend(self.endIt)
+                    endedIt = True
+
+                # Determining what to replace and with what ::
+                if lastToken in ('describe', 'context'):
+                    if tokenum == NAME or (tokenum == OP and value == '.'): # inherited class
+                        if nextDescribeKls is None:
+                            nextDescribeKls = value
+                        else:
+                            nextDescribeKls += value
+                        keepLastToken = True
+
+                    elif tokenum == STRING: # the described object
+                        inheritance = False
+                        if describeStack:
+                            if not nextDescribeKls:
+                                inheritance = True
+                                nextDescribeKls = describeStack[-1][1]
+
+                        res, name = self.makeDescribe(value, nextDescribeKls, inheritance)
+                        describeStack.append([currentDescribeLevel, name])
+                        allDescribes.append(name)
+
+                        result.extend(res)
+
+                elif tokenum == OP:
+                    if value in ['(', '[', '{']:
+                        # add to the stack because we started a list
+                        groupStack.append(value)
+                        emptyDescr = False
+
+                    elif value in [')', ']', '}']:
+                        # not necessary to check for correctness
+                        groupStack.pop()
+
+                    justAppend = True
+
+                elif afterSpace and tokenum == NAME:
+                    if value in ('describe', 'context'):
+                        # Make sure we dedent if we just made a skip test
+                        if skippedTest:
+                            result.append((INDENT, indentType * (scol - currentDescribeLevel)))
+                            skippedTest = False
+
+                        # Make sure we insert a pass if we inserted an empty describe.
+                        if emptyDescr and scol > currentDescribeLevel:
+                            while result[-1][0] in (INDENT, NEWLINE):
+                                result.pop()
+                            result.append((NAME, 'pass'))
+                            result.append((NEWLINE, '\n'))
+                            result.append((INDENT, indentType * scol))
+
+                        emptyDescr = True
+
+                        # Dedenting describes removes them from being inheritable
+                        while describeStack and describeStack[-1][0] >= scol:
+                            describeStack.pop()
+
+                        currentDescribeLevel = scol
+                        nextDescribeKls = None
+
+                        # Making sure this line starts at the beginning
+                        # By editing previous INDENT
+                        if result and result[-1][0] == INDENT:
+                            result[-1] = (INDENT, result[-1][1][currentDescribeLevel:])
+
+                        result.append((NAME, 'class'))
+
+                    elif value in ('it', 'ignore'):
                         skippedTest = False
+                        emptyDescr = False
+                        result.append((NAME, 'def'))
 
-                    # Make sure we insert a pass if we inserted an empty describe.
-                    if emptyDescr and scol > currentDescribeLevel:
-                        while result[-1][0] in (INDENT, NEWLINE):
-                            result.pop()
-                        result.append((NAME, 'pass'))
-                        result.append((NEWLINE, '\n'))
-                        result.append((INDENT, indentType * scol))
+                    elif value in ('before_each', 'after_each'):
+                        skippedTest = False
+                        emptyDescr = False
+                        result.extend(getattr(self, value))
+                        if describeStack:
+                            expecting = [ (OP, ':')
+                                        , (NEWLINE, '\n')
+                                        ]
 
-                    emptyDescr = True
+                            result.extend(expecting)
+                            ignoreNext = expecting
 
-                    # Dedenting describes removes them from being inheritable
-                    while describeStack and describeStack[-1][0] >= scol:
-                        describeStack.pop()
+                            adjustIndentAt.append(len(result))
+                            result.append((INDENT, ''))
+                            result.extend(self.makeSuper(describeStack[-1][1], value))
 
-                    currentDescribeLevel = scol
-                    nextDescribeKls = None
+                    else:
+                        skippedTest = False
+                        emptyDescr = False
+                        justAppend = True
 
-                    # Making sure this line starts at the beginning
-                    # By editing previous INDENT
-                    if result and result[-1][0] == INDENT:
-                        result[-1] = (INDENT, result[-1][1][currentDescribeLevel:])
+                elif tokenum == STRING:
+                    if lastToken == 'it':
+                        endedIt = False
+                        startingAnIt = True
+                        result.extend(self.startIt(value))
 
-                    result.append((NAME, 'class'))
+                    elif lastToken == 'ignore':
+                        endedIt = False
+                        startingAnIt = True
+                        result.extend(self.startIgnore(value))
 
-                elif value in ('it', 'ignore'):
-                    skippedTest = False
-                    emptyDescr = False
-                    result.append((NAME, 'def'))
+                    else:
+                        emptyDescr = False
+                        justAppend = True
 
-                elif value in ('before_each', 'after_each'):
-                    skippedTest = False
-                    emptyDescr = False
-                    result.extend(getattr(self, value))
-                    if describeStack:
-                        expecting = [ (OP, ':')
-                                    , (NEWLINE, '\n')
-                                    ]
-
-                        result.extend(expecting)
-                        ignoreNext = expecting
-
-                        adjustIndentAt.append(len(result))
-                        result.append((INDENT, ''))
-                        result.extend(self.makeSuper(describeStack[-1][1], value))
-                        usedSuper[value] = True
-
-                else:
-                    skippedTest = False
-                    emptyDescr = False
-                    justAppend = True
-
-            elif tokenum == STRING:
-                if lastToken == 'it':
-                    endedIt = False
-                    startingAnIt = True
-                    result.extend(self.startIt(value))
-
-                elif lastToken == 'ignore':
-                    endedIt = False
-                    startingAnIt = True
-                    result.extend(self.startIgnore(value))
-
-                else:
-                    emptyDescr = False
-                    justAppend = True
-
-            elif tokenum == NEWLINE and lastToken != ':' and startingAnIt:
-                result.extend(self.testSkip)
-                startingAnIt = False
-                skippedTest = True
-                justAppend = True
-
-            else:
-                if tokenum == NEWLINE and lastToken == ':' and startingAnIt:
+                elif tokenum == NEWLINE and lastToken != ':' and startingAnIt:
+                    result.extend(self.testSkip)
                     startingAnIt = False
-                if tokenum not in (NEWLINE, INDENT):
-                    emptyDescr = False
-                justAppend = True
+                    skippedTest = True
+                    justAppend = True
 
-            # Just apending if token isn't replaced and should be kept
-            if justAppend:
-                v = value
+                else:
+                    if tokenum == NEWLINE and lastToken == ':' and startingAnIt:
+                        startingAnIt = False
+                    if tokenum not in (NEWLINE, INDENT):
+                        emptyDescr = False
+                    justAppend = True
 
-                # First ensure, the indentation has been normalised (incase of nesting)
-                if tokenum == INDENT and currentDescribeLevel > 0:
-                    v = value[currentDescribeLevel:]
+                # Just apending if token isn't replaced and should be kept
+                if justAppend:
+                    v = value
 
-                result.append([tokenum, v])
+                    # First ensure, the indentation has been normalised (incase of nesting)
+                    if tokenum == INDENT and currentDescribeLevel > 0:
+                        v = value[currentDescribeLevel:]
 
-            # Storing current token if allowed to
-            if not keepLastToken:
-                lastToken = value
-            else:
-                keepLastToken = False
+                    result.append([tokenum, v])
 
-            # Determining if this token is whitespace at the beginning of the line so next token knows
-            if value == '\n':
-                afterSpace = True
-                lookAtSpace = True
+                # Storing current token if allowed to
+                if keepLastToken:
+                    keepLastToken = False
+                else:
+                    lastToken = value
 
-            else:
-                afterSpace = False
-                if lookAtSpace and (value == '' or regexes['whitespace'].match(value)):
+                # Determining if this token is whitespace at the beginning of the line so next token knows
+                if value == '\n':
                     afterSpace = True
+                    lookAtSpace = True
 
-                    if tokenum != INDENT:
-                        # Only want to count at the beginning of the line
-                        # Isn't reset till we have a newline
-                        lookAtSpace = False
+                else:
+                    afterSpace = False
+                    if lookAtSpace and (value == '' or regexes['whitespace'].match(value)):
+                        afterSpace = True
 
-        if startingAnIt and not endedIt:
-            result.extend(self.endIt)
-            if lastToken != ':':
-                result.extend(self.testSkip)
+                        if tokenum != INDENT:
+                            # Only want to count at the beginning of the line
+                            # Isn't reset till we have a newline
+                            lookAtSpace = False
 
-        # Remove trailing indents and dedents
-        while result and result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
-            result.pop(-2)
+            if startingAnIt and not endedIt:
+                result.extend(self.endIt)
+                if lastToken != ':':
+                    result.extend(self.testSkip)
 
-        # Add superclass set-up helper method.
-        for method in ('before_each', 'after_each'):
-            if usedSuper[method]:
-                result.extend(self.makeSupHelperMethod(method, indentType))
+            # Remove trailing indents and dedents
+            while result and result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
+                result.pop(-2)
 
-        # Add attributes to our Describes so that the plugin can handle some nesting issues
-        # Where we have tests in upper level describes being run in lower level describes
-        if self.withDescribeAttrs and allDescribes:
-            result.append((NEWLINE, '\n'))
-            result.append((INDENT, ''))
+            # Add attributes to our Describes so that the plugin can handle some nesting issues
+            # Where we have tests in upper level describes being run in lower level describes
+            if self.withDescribeAttrs and allDescribes:
+                result.append((NEWLINE, '\n'))
+                result.append((INDENT, ''))
 
-            for describe in allDescribes:
-                result.extend(self.makeDescribeAttr(describe))
+                for describe in allDescribes:
+                    result.extend(self.makeDescribeAttr(describe))
+
+        except Exception as e:
+            result.append((STRING, '# --- internal spec codec error: %s ---' % e.message))
 
         # Uncomment this for debugging:
         #data = untokenize(result)
