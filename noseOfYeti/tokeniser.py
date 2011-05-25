@@ -48,7 +48,7 @@ class Tokeniser(object):
                 data = untokenize(data)
 
                 # Uncomment the following line for debugging:
-                with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
+                # with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
                 
                 sr.stream = cStringIO.StringIO(data)
 
