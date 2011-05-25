@@ -11,6 +11,7 @@ regexes = {
       'joins': re.compile('[- /]')
     , 'whitespace': re.compile('\s+')
     , 'punctuation': re.compile('[\'",.;?{()}#<>\[\]]')
+    , 'repeated_underscore': re.compile('_{2,}')
     }
 
 class Tokeniser(object):
@@ -33,23 +34,26 @@ class Tokeniser(object):
                 codecs.StreamReader.__init__(sr, stream, *args, **kwargs)
                 data = []
                 try:
+                    # We pass in the data variable as an argument so that we
+                    # get partial output even in the case of an exception.
                     self.translate(sr.stream.readline, data)
                 except Exception as e:
-                    data = [
-                          (NAME,   'raise')
-                        , (NAME,   'Exception')
-                        , (OP,     '(')
-                        , (OP,     '"""')
-                        , (STRING, '--- internal spec codec error ---\n%s' % e)
-                        , (OP,     '"""')
-                        , (OP,     ')')
-                    ]
-                
-                data = untokenize(data)
+                    # Comment out partial output so that it doesn't result in
+                    # a syntax error when received by the interpreter.
+                    data = '\n'.join([
+                          re.sub('^', '#', untokenize(data), 0, re.MULTILINE)
+                        , 'raise Exception("""--- internal spec codec error ---\n%s""")' % e
+                        ])
+                    # Join two lines at the beginning of the partial output so that
+                    # we get the exception in the right line and still can see
+                    # all code in the debug output.
+                    data = ''.join(data.split('\n', 2))
+                else:
+                    data = untokenize(data)
 
                 # Uncomment the following line for debugging:
-                # with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
-                
+                #with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
+
                 sr.stream = cStringIO.StringIO(data)
 
         def searchFunction(s):
@@ -97,8 +101,18 @@ class Tokeniser(object):
 
     def acceptable(self, value, capitalize=False):
         name = regexes['punctuation'].sub("", regexes['joins'].sub("_", value))
+        # Clean up irregularities in underscores.
+        name = regexes['repeated_underscore'].sub("_", name.strip('_'))
         if capitalize:
-            name = ''.join([word[0].upper() + word[1:] for word in name.split('_')])
+            # We don't use python's built in capitalize method here because it
+            # turns all upper chars into lower chars if not at the start of
+            # the string and we only want to change the first character.
+            name_parts = []
+            for word in name.split('_'):
+                name_parts.append(word[0].upper())
+                if len(word) > 1:
+                    name_parts.append(word[1:])
+            name = ''.join(name_parts)
         return name
 
     def tokensIn(self, s, strip_it=True):
@@ -223,7 +237,7 @@ class Tokeniser(object):
     def translate(self, readline, result=None):
         if result is None:
             result = []
-            
+
         result.extend([d for d in self.defaultImports])
 
         currentDescribeLevel = 0
@@ -247,7 +261,7 @@ class Tokeniser(object):
         lastToken = ' '
         endedIt = False
         emptyDescr = False
-        
+
         # Looking at all the tokens
         for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
             # Sometimes we need to ignore stuff
@@ -475,5 +489,6 @@ class Tokeniser(object):
             for describe in allDescribes:
                 result.extend(self.makeDescribeAttr(describe))
 
-        #Gone through all the tokens, returning now
-        return result
+        # We return the result in the method's data argument so that we get at
+        # least a partial result even in the case of an exception.
+        return
