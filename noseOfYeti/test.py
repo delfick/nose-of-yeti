@@ -61,7 +61,7 @@ TestSomethingTestable .is_noy_spec =True '''
     def test_it_should_not_have_newline_in_extended_default_imports(self):
         tok = Tokeniser(extraImports='import another.class')
         tok.defaultImports |should_not| contain([NEWLINE, '\n'])
-        (tok, '') |should| result_in('import another .class ;import nose ;from nose .tools import *;from should_dsl import *;from noy_helper import *;')
+        (tok, '') |should| result_in('import another .class ;import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .noy_helper import *;')
     
     def test_it_should_default_to_giving_describes_base_of_object(self):
         tok = Tokeniser()
@@ -85,8 +85,8 @@ TestSomethingTestable .is_noy_spec =True '''
         tok = Tokeniser(withDefaultImports=False, extraImports="import thing")
         (tok, '') |should| result_in('import thing ')
     
-    def test_it_should_import_nose_and_should_dsl_by_default(self):
-        (Tokeniser(), '') |should| result_in('import nose ;from nose .tools import *;from should_dsl import *;from noy_helper import *;')
+    def test_it_should_import_nose_and_nose_helpers_and_should_dsl_by_default(self):
+        (Tokeniser(), '') |should| result_in('import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .noy_helper import *;')
    
 ########################
 ###   TRANSLATION TESTS
