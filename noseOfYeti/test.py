@@ -61,7 +61,7 @@ TestSomethingTestable .is_noy_spec =True '''
     def test_it_should_not_have_newline_in_extended_default_imports(self):
         tok = Tokeniser(extraImports='import another.class')
         tok.defaultImports |should_not| contain([NEWLINE, '\n'])
-        (tok, '') |should| result_in('import another .class ;import nose ;from nose .tools import *;from should_dsl import *;')
+        (tok, '') |should| result_in('import another .class ;import nose ;from nose .tools import *;from should_dsl import *;from noy_helper import *;')
     
     def test_it_should_default_to_giving_describes_base_of_object(self):
         tok = Tokeniser()
@@ -86,7 +86,7 @@ TestSomethingTestable .is_noy_spec =True '''
         (tok, '') |should| result_in('import thing ')
     
     def test_it_should_import_nose_and_should_dsl_by_default(self):
-        (Tokeniser(), '') |should| result_in('import nose ;from nose .tools import *;from should_dsl import *;')
+        (Tokeniser(), '') |should| result_in('import nose ;from nose .tools import *;from should_dsl import *;from noy_helper import *;')
    
 ########################
 ###   TRANSLATION TESTS
@@ -282,12 +282,7 @@ class TestThing_That (TestThing ):
         desired = '''
 class TestThing (object ):
     def setUp (self ):
-        _sup_setUp (super (TestThing ,self ));self .x =5 
-
-def _sup_setUp(sup):
-    if hasattr(sup, "setUp"):
-        sup.setUp()
-'''
+        noy_sup_setUp (super (TestThing ,self ));self .x =5 '''
         
         (self.toka, test) |should| result_in(desired)
         # and with tabs
@@ -309,12 +304,7 @@ def _sup_setUp(sup):
         desired = '''
 class TestThing (object ):
     def tearDown (self ):
-        _sup_tearDown (super (TestThing ,self ));self .x =5 
-
-def _sup_tearDown(sup):
-    if hasattr(sup, "tearDown"):
-        sup.tearDown()
-'''
+        noy_sup_tearDown (super (TestThing ,self ));self .x =5 '''
         
         (self.toka, test) |should| result_in(desired)
         # and with tabs
@@ -529,27 +519,17 @@ class Test_Tokeniser_More_Nesting(object):
         '''
 class TestThis (%(o)s ):
     def setUp (self ):
-        _sup_setUp (super (TestThis ,self ));self .x =5 
+        noy_sup_setUp (super (TestThis ,self ));self .x =5 
 class TestThis_That (TestThis ):
     def setUp (self ):
-        _sup_setUp (super (TestThis_That ,self ));self .y =6 
+        noy_sup_setUp (super (TestThis_That ,self ));self .y =6 
 class TestThis_That_Meh (TestThis_That ):
     def tearDown (self ):
-        _sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
+        noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
 class TestThis_Blah (TestThis ):pass 
 class TestAnother (%(o)s ):
     def setUp (self ):
-        _sup_setUp (super (TestAnother ,self ));self .z =8 
-
-def _sup_setUp(sup):
-    if hasattr(sup, "setUp"):
-        sup.setUp()
-
-
-def _sup_tearDown(sup):
-    if hasattr(sup, "tearDown"):
-        sup.tearDown()
-
+        noy_sup_setUp (super (TestAnother ,self ));self .z =8 
 
 TestThis .is_noy_spec =True 
 TestThis_That .is_noy_spec =True 
@@ -601,7 +581,7 @@ TestAnother .is_noy_spec =True '''
         '''
 class TestThis (%(o)s ):
     def setUp (self ):
-        _sup_setUp (super (TestThis ,self ));self .x =5 
+        noy_sup_setUp (super (TestThis ,self ));self .x =5 
     def test_should (self ):
         if x :
             pass 
@@ -609,10 +589,10 @@ class TestThis (%(o)s ):
             x +=9 
 class TestThis_That (TestThis ):
     def setUp (self ):
-        _sup_setUp (super (TestThis_That ,self ));self .y =6 
+        noy_sup_setUp (super (TestThis_That ,self ));self .y =6 
 class TestThis_That_Meh (TestThis_That ):
     def tearDown (self ):
-        _sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
+        noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
     def test_should (self ):
         if y :
             pass 
@@ -623,7 +603,7 @@ class TestThis_That_Meh (TestThis_That ):
 class TestThis_Blah (TestThis ):pass 
 class TestAnother (%(o)s ):
     def setUp (self ):
-        _sup_setUp (super (TestAnother ,self ));self .z =8 
+        noy_sup_setUp (super (TestAnother ,self ));self .z =8 
     def test_should (self ):
         if z :
             if u :
@@ -633,16 +613,6 @@ class TestAnother (%(o)s ):
                 print "no"
         else :
             pass 
-
-def _sup_setUp(sup):
-    if hasattr(sup, "setUp"):
-        sup.setUp()
-
-
-def _sup_tearDown(sup):
-    if hasattr(sup, "tearDown"):
-        sup.tearDown()
-
 
 TestThis .is_noy_spec =True 
 TestThis_That .is_noy_spec =True 

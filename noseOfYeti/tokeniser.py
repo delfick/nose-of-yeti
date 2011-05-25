@@ -73,7 +73,7 @@ class Tokeniser(object):
             if default and tuple(default[-1]) != (OP, ';'):
                 default.append((OP, ';'))
             default.extend(
-                self.tokensIn('import nose; from nose.tools import *; from should_dsl import *;')
+                self.tokensIn('import nose; from nose.tools import *; from should_dsl import *; from noy_helper import *;')
             )
 
         return default
@@ -171,7 +171,7 @@ class Tokeniser(object):
         else:
             kls = self.defaultKls
 
-        result = [ (NAME, '_sup_%s' % self.getEquivalence(method))
+        result = [ (NAME, 'noy_sup_%s' % self.getEquivalence(method))
                  , (OP, '(')
                  , (NAME, 'super')
                  , (OP, '(')
@@ -189,16 +189,6 @@ class Tokeniser(object):
         )
 
         return result
-
-    def makeSupHelperMethod(self, method, indentType):
-        supTemplate = ('\n\n'
-                       'def _sup_{0}(sup):\n'
-                       '{1}if hasattr(sup, "{0}"):\n'
-                       '{1}{1}sup.{0}()\n')
-
-        method = self.getEquivalence(method)
-        indentation = {'\t': '\t', ' ': '    '}[indentType]
-        return self.tokensIn(supTemplate.format(method, indentation), False)
 
     def makeDescribeAttr(self, describe):
         return [ (NEWLINE, '\n')
@@ -237,7 +227,6 @@ class Tokeniser(object):
         lastToken = ' '
         endedIt = False
         emptyDescr = False
-        usedSuper = {'before_each': False, 'after_each': False}
 
         try:
             # Looking at all the tokens
@@ -384,7 +373,6 @@ class Tokeniser(object):
                             adjustIndentAt.append(len(result))
                             result.append((INDENT, ''))
                             result.extend(self.makeSuper(describeStack[-1][1], value))
-                            usedSuper[value] = True
 
                     else:
                         skippedTest = False
@@ -458,11 +446,6 @@ class Tokeniser(object):
             # Remove trailing indents and dedents
             while result and result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
                 result.pop(-2)
-
-            # Add superclass set-up helper method.
-            for method in ('before_each', 'after_each'):
-                if usedSuper[method]:
-                    result.extend(self.makeSupHelperMethod(method, indentType))
 
             # Add attributes to our Describes so that the plugin can handle some nesting issues
             # Where we have tests in upper level describes being run in lower level describes
