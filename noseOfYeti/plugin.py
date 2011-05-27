@@ -75,9 +75,7 @@ class Plugin(Plugin):
         
         if hasattr(kls, 'is_noy_spec'):
             if method.__name__ in kls.__dict__ \
-            and not method.__name__.startswith("setUp") \
-            and not method.__name__.startswith("tearDown") :
-
+            and method.__name__.startswith("test_"):
                 key = '%s.%s' % (kls.__name__, method.__name__)
                 if key not in self.done:
                     self.done[key] = True
