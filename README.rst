@@ -36,7 +36,7 @@ Pinocchio - Spec Extension
 
 There exists a patch to improve spec when using nose-of-yeti together with the pinocchio spec extension.
 
-This patch will enable hierarchichal output of specifications, like this:
+This patch will enable hierarchichal output of specifications, like this::
 
     Transaction:
       - persists its state across requests (SKIPPED)
