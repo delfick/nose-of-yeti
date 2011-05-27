@@ -20,8 +20,8 @@ Usage
 
 Look at the files in the examples directory to see what using nose-of-yeti looks like.
 
-PyDebugger
-==========
+PyDev - Debugger
+================
 
 If you're using PyDev debugger, you are able to set breakpoints in spec files if you can patch::
 
