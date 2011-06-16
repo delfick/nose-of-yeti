@@ -20,13 +20,33 @@ Usage
 
 Look at the files in the examples directory to see what using nose-of-yeti looks like.
 
-PyDebugger
-==========
+PyDev - Debugger
+================
 
-if you're using PyDev debugger, you are able to set breakpoints in spec files if you can patch::
+If you're using PyDev debugger, you are able to set breakpoints in spec files if you can patch::
 
     eclipse/plugins/org.python.pydev.debug_.../pysrc/pydevd_frame.py, in trace_dispatch():
 
         < if func_name in ('None', curr_func_name):
 
         > if func_name in ('None', '', curr_func_name):
+
+Pinocchio - Spec Extension
+==========================
+
+There exists a patch to improve spec when using nose-of-yeti together with the pinocchio spec extension.
+
+This patch will enable hierarchichal output of specifications, like this::
+
+    Transaction:
+      - persists its state across requests (SKIPPED)
+         add command:
+          - throws an error if is running is false
+             when the command is invalid:
+              - rejects the command with a validation error
+             when the command is valid:
+              - adds the command to the stack
+
+    etc.
+
+Please download the patch from <https://github.com/jerico-dev/pinocchio/commit/b7f76560d5664a99ed5de7315d21c4727fe5b905.patch>.
