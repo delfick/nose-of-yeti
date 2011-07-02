@@ -288,13 +288,13 @@ class TestThing (object ):
         # and with tabs
         (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
         
-    def test_it_should_turn_after_each_into_tearDown(self):
-        (self.toka, 'after_each:') |should| result_in('def tearDown (self ):')
+    def test_it_should_turn_after_each_into_teardown(self):
+        (self.toka, 'after_each:') |should| result_in('def teardown (self ):')
         
         # Same tests, but with newlines in front
-        (self.toka, '\nafter_each:') |should| result_in('\ndef tearDown (self ):')
+        (self.toka, '\nafter_each:') |should| result_in('\ndef teardown (self ):')
     
-    def test_it_should_give_tearDowns_super_call_when_in_describes(self):
+    def test_it_should_give_teardowns_super_call_when_in_describes(self):
         test = '''
         describe "Thing":
             after_each:
@@ -303,8 +303,8 @@ class TestThing (object ):
         
         desired = '''
 class TestThing (object ):
-    def tearDown (self ):
-        noy_sup_tearDown (super (TestThing ,self ));self .x =5 '''
+    def teardown (self ):
+        noy_sup_teardown (super (TestThing ,self ));self .x =5 '''
         
         (self.toka, test) |should| result_in(desired)
         # and with tabs
@@ -524,8 +524,8 @@ class TestThis_That (TestThis ):
     def setup (self ):
         noy_sup_setup (super (TestThis_That ,self ));self .y =6 
 class TestThis_That_Meh (TestThis_That ):
-    def tearDown (self ):
-        noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
+    def teardown (self ):
+        noy_sup_teardown (super (TestThis_That_Meh ,self ));self .y =None 
 class TestThis_Blah (TestThis ):pass 
 class TestAnother (%(o)s ):
     def setup (self ):
@@ -591,8 +591,8 @@ class TestThis_That (TestThis ):
     def setup (self ):
         noy_sup_setup (super (TestThis_That ,self ));self .y =6 
 class TestThis_That_Meh (TestThis_That ):
-    def tearDown (self ):
-        noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
+    def teardown (self ):
+        noy_sup_teardown (super (TestThis_That_Meh ,self ));self .y =None 
     def test_should (self ):
         if y :
             pass 
