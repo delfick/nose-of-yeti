@@ -178,11 +178,11 @@ class Test_Tokenisor_translation(object):
             '\ndef test_should_not_be_skipped (self ):'
         )
         
-    def test_it_should_turn_before_each_into_setUp(self):
-        (self.toka, 'before_each:') |should| result_in('def setUp (self ):')
+    def test_it_should_turn_before_each_into_setup(self):
+        (self.toka, 'before_each:') |should| result_in('def setup (self ):')
         
         # Same tests, but with newlines in front
-        (self.toka, '\nbefore_each:') |should| result_in('\ndef setUp (self ):')
+        (self.toka, '\nbefore_each:') |should| result_in('\ndef setup (self ):')
     
     def test_indentation_should_work_regardless_of_crazy_groups(self):
         test = """
@@ -281,8 +281,8 @@ class TestThing_That (TestThing ):
         
         desired = '''
 class TestThing (object ):
-    def setUp (self ):
-        noy_sup_setUp (super (TestThing ,self ));self .x =5 '''
+    def setup (self ):
+        noy_sup_setup (super (TestThing ,self ));self .x =5 '''
         
         (self.toka, test) |should| result_in(desired)
         # and with tabs
@@ -518,18 +518,18 @@ class Test_Tokeniser_More_Nesting(object):
         ,
         '''
 class TestThis (%(o)s ):
-    def setUp (self ):
-        noy_sup_setUp (super (TestThis ,self ));self .x =5 
+    def setup (self ):
+        noy_sup_setup (super (TestThis ,self ));self .x =5 
 class TestThis_That (TestThis ):
-    def setUp (self ):
-        noy_sup_setUp (super (TestThis_That ,self ));self .y =6 
+    def setup (self ):
+        noy_sup_setup (super (TestThis_That ,self ));self .y =6 
 class TestThis_That_Meh (TestThis_That ):
     def tearDown (self ):
         noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
 class TestThis_Blah (TestThis ):pass 
 class TestAnother (%(o)s ):
-    def setUp (self ):
-        noy_sup_setUp (super (TestAnother ,self ));self .z =8 
+    def setup (self ):
+        noy_sup_setup (super (TestAnother ,self ));self .z =8 
 
 TestThis .is_noy_spec =True 
 TestThis_That .is_noy_spec =True 
@@ -580,16 +580,16 @@ TestAnother .is_noy_spec =True '''
         ,
         '''
 class TestThis (%(o)s ):
-    def setUp (self ):
-        noy_sup_setUp (super (TestThis ,self ));self .x =5 
+    def setup (self ):
+        noy_sup_setup (super (TestThis ,self ));self .x =5 
     def test_should (self ):
         if x :
             pass 
         else :
             x +=9 
 class TestThis_That (TestThis ):
-    def setUp (self ):
-        noy_sup_setUp (super (TestThis_That ,self ));self .y =6 
+    def setup (self ):
+        noy_sup_setup (super (TestThis_That ,self ));self .y =6 
 class TestThis_That_Meh (TestThis_That ):
     def tearDown (self ):
         noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
@@ -602,8 +602,8 @@ class TestThis_That_Meh (TestThis_That ):
         blah |should |be_good ()
 class TestThis_Blah (TestThis ):pass 
 class TestAnother (%(o)s ):
-    def setUp (self ):
-        noy_sup_setUp (super (TestAnother ,self ));self .z =8 
+    def setup (self ):
+        noy_sup_setup (super (TestAnother ,self ));self .z =8 
     def test_should (self ):
         if z :
             if u :

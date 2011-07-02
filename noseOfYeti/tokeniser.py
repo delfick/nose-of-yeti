@@ -252,7 +252,6 @@ class Tokeniser(object):
 
         skippedTest = True
         lookAtSpace = False
-        inheriting = False
         afterSpace = True
         justAppend = False
         indentType = ' '
