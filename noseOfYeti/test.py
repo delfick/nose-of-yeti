@@ -272,6 +272,24 @@ class TestThing_That (TestThing ):
     pass '''
         (self.toka, test) |should| result_in(desired)
         
+    def test_indentation_should_work_for_inline_python_code(self):
+        test = '''
+describe 'this':
+    describe 'that':
+        pass
+
+class SomeMockObject(object):
+    def indented_method()'''
+
+        desired = '''
+class TestThis (object ):pass 
+class TestThis_That (TestThis ):
+    pass 
+
+class SomeMockObject (object ):
+    def indented_method ()'''
+        (self.toka, test) | should | result_in(desired)
+
     def test_it_should_give_setups_super_call_when_in_describes(self):
         test = '''
         describe "Thing":

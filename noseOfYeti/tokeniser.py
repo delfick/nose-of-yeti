@@ -292,6 +292,13 @@ class Tokeniser(object):
                     if not indentAmounts or scol > indentAmounts[-1]:
                         indentAmounts.append(scol)
 
+                    # Dedenting describes removes them from being inheritable
+                    while describeStack and describeStack[-1][0] >= scol:
+                        describeStack.pop()
+
+                    if not describeStack:
+                        currentDescribeLevel = 0
+
                     while adjustIndentAt:
                         result[adjustIndentAt.pop()] = (INDENT, indentType * (scol - currentDescribeLevel))
 
@@ -370,10 +377,6 @@ class Tokeniser(object):
                         result.append((INDENT, indentType * scol))
 
                     emptyDescr = True
-
-                    # Dedenting describes removes them from being inheritable
-                    while describeStack and describeStack[-1][0] >= scol:
-                        describeStack.pop()
 
                     currentDescribeLevel = scol
                     nextDescribeKls = None
