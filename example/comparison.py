@@ -92,4 +92,4 @@ class Test_numbers_testing_number_3_lets_change_a_number(Test_numbers_testing_nu
 Test_numbers.is_noy_spec = True
 Test_numbers_testing_number_3.is_noy_spec = True
 Test_numbers_testing_number_3_lets_change_a_number.is_noy_spec = True
-Test_numbers_testing_number_3.test_shouldnt_fail_when_non_alphanumeric_characters_are_in_the_name.__testname__ = "shouldn't fail when non alphanumeric characters are in the name"
+Test_numbers_testing_number_3.test_shouldnt_fail_when_non_alphanumeric_characters_are_in_the_name.__func__.__testname__ = "shouldn't fail when non alphanumeric characters are in the name"

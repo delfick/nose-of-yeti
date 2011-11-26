@@ -390,10 +390,10 @@ class TestSomeTests_NestedDescribe (TestSomeTests ):
     def test_asdf_asdf (self ):
         1 |should |be (2 )
 def test_root_level_should_also_work (self ):raise nose.SkipTest 
-test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
-test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
-TestSomeTests_NestedDescribe .test_asdf_asdf .__testname__ ="asdf $%% asdf"
-TestSomeTests .test_doesnt_get_phased_by_special_characters .__testname__ ="doesn't get phased by $special characters"'''
+test_root_level_should_work_well .__func__ .__testname__ ="(root level) should work {well}"
+test_root_level_should_also_work .__func__ .__testname__ ="(root level) should also [work]"
+TestSomeTests_NestedDescribe .test_asdf_asdf .__func__ .__testname__ ="asdf $%% asdf"
+TestSomeTests .test_doesnt_get_phased_by_special_characters .__func__ .__testname__ ="doesn't get phased by $special characters"'''
         (self.toka, test) |should| result_in(desired % "object")
         (self.tokb, test) |should| result_in(desired % "other")
         
@@ -673,8 +673,8 @@ TestThis_That .is_noy_spec =True
 TestThis_That_Meh .is_noy_spec =True 
 TestThis_Blah .is_noy_spec =True 
 TestAnother .is_noy_spec =True 
-ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"
-TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__testname__ ="should set __testname__ for non alpha names ' $^"'''
+ignore__root_level_pecial_method .__func__ .__testname__ ="root level $pecial-method*+"
+TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__func__ .__testname__ ="should set __testname__ for non alpha names ' $^"'''
         ]
         
     ###   TESTS

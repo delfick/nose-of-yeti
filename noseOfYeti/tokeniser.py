@@ -246,6 +246,8 @@ class Tokeniser(object):
         result.extend(
             [ (NAME, cleaned)
             , (OP, '.')
+            , (NAME, "__func__")
+            , (OP, '.')
             , (NAME, "__testname__")
             , (OP, '=')
             , (STRING, english)
