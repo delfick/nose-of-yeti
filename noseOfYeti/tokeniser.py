@@ -52,7 +52,7 @@ class Tokeniser(object):
                     data = untokenize(data)
 
                 # Uncomment the following line for debugging:
-                # with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
+                with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
 
                 sr.stream = cStringIO.StringIO(data)
 
@@ -140,8 +140,8 @@ class Tokeniser(object):
         return [(t, v) for t, v, _, _, _ in generate_tokens(get)][:-1]
 
     def getEquivalence(self, name):
-        return { 'before_each' : 'setup'
-               , 'after_each'  : 'teardown'
+        return { 'before_each' : 'setUp'
+               , 'after_each'  : 'tearDown'
                }.get(name, name)
 
     ########################

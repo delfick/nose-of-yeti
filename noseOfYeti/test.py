@@ -179,10 +179,10 @@ class Test_Tokenisor_translation(object):
         )
         
     def test_it_should_turn_before_each_into_setup(self):
-        (self.toka, 'before_each:') |should| result_in('def setup (self ):')
+        (self.toka, 'before_each:') |should| result_in('def setUp (self ):')
         
         # Same tests, but with newlines in front
-        (self.toka, '\nbefore_each:') |should| result_in('\ndef setup (self ):')
+        (self.toka, '\nbefore_each:') |should| result_in('\ndef setUp (self ):')
     
     def test_indentation_should_work_regardless_of_crazy_groups(self):
         test = """
@@ -299,18 +299,18 @@ class SomeMockObject (object ):
         
         desired = '''
 class TestThing (object ):
-    def setup (self ):
-        noy_sup_setup (super (TestThing ,self ));self .x =5 '''
+    def setUp (self ):
+        noy_sup_setUp (super (TestThing ,self ));self .x =5 '''
         
         (self.toka, test) |should| result_in(desired)
         # and with tabs
         (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
         
     def test_it_should_turn_after_each_into_teardown(self):
-        (self.toka, 'after_each:') |should| result_in('def teardown (self ):')
+        (self.toka, 'after_each:') |should| result_in('def tearDown (self ):')
         
         # Same tests, but with newlines in front
-        (self.toka, '\nafter_each:') |should| result_in('\ndef teardown (self ):')
+        (self.toka, '\nafter_each:') |should| result_in('\ndef tearDown (self ):')
     
     def test_it_should_give_teardowns_super_call_when_in_describes(self):
         test = '''
@@ -321,8 +321,8 @@ class TestThing (object ):
         
         desired = '''
 class TestThing (object ):
-    def teardown (self ):
-        noy_sup_teardown (super (TestThing ,self ));self .x =5 '''
+    def tearDown (self ):
+        noy_sup_tearDown (super (TestThing ,self ));self .x =5 '''
         
         (self.toka, test) |should| result_in(desired)
         # and with tabs
@@ -566,18 +566,18 @@ class Test_Tokeniser_More_Nesting(object):
         ,
         '''
 class TestThis (%(o)s ):
-    def setup (self ):
-        noy_sup_setup (super (TestThis ,self ));self .x =5 
+    def setUp (self ):
+        noy_sup_setUp (super (TestThis ,self ));self .x =5 
 class TestThis_That (TestThis ):
-    def setup (self ):
-        noy_sup_setup (super (TestThis_That ,self ));self .y =6 
+    def setUp (self ):
+        noy_sup_setUp (super (TestThis_That ,self ));self .y =6 
 class TestThis_That_Meh (TestThis_That ):
-    def teardown (self ):
-        noy_sup_teardown (super (TestThis_That_Meh ,self ));self .y =None 
+    def tearDown (self ):
+        noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
 class TestThis_Blah (TestThis ):pass 
 class TestAnother (%(o)s ):
-    def setup (self ):
-        noy_sup_setup (super (TestAnother ,self ));self .z =8 
+    def setUp (self ):
+        noy_sup_setUp (super (TestAnother ,self ));self .z =8 
 
 TestThis .is_noy_spec =True 
 TestThis_That .is_noy_spec =True 
@@ -631,19 +631,19 @@ TestAnother .is_noy_spec =True '''
         ,
         '''
 class TestThis (%(o)s ):
-    def setup (self ):
-        noy_sup_setup (super (TestThis ,self ));self .x =5 
+    def setUp (self ):
+        noy_sup_setUp (super (TestThis ,self ));self .x =5 
     def test_should (self ):
         if x :
             pass 
         else :
             x +=9 
 class TestThis_That (TestThis ):
-    def setup (self ):
-        noy_sup_setup (super (TestThis_That ,self ));self .y =6 
+    def setUp (self ):
+        noy_sup_setUp (super (TestThis_That ,self ));self .y =6 
 class TestThis_That_Meh (TestThis_That ):
-    def teardown (self ):
-        noy_sup_teardown (super (TestThis_That_Meh ,self ));self .y =None 
+    def tearDown (self ):
+        noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
     def test_should_set_testname_for_non_alpha_names (self ):
         pass 
     def test_should (self ):
@@ -656,8 +656,8 @@ class TestThis_That_Meh (TestThis_That ):
 class TestThis_Blah (TestThis ):pass 
 def ignore__root_level_pecial_method (self ):raise nose.SkipTest 
 class TestAnother (%(o)s ):
-    def setup (self ):
-        noy_sup_setup (super (TestAnother ,self ));self .z =8 
+    def setUp (self ):
+        noy_sup_setUp (super (TestAnother ,self ));self .z =8 
     def test_should (self ):
         if z :
             if u :
