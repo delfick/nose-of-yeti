@@ -10,7 +10,7 @@ from string import join
 regexes = {
       'joins': re.compile('[- /]')
     , 'whitespace': re.compile('\s+')
-    , 'punctuation': re.compile('[\'",.;?{()}#<>\[\]]')
+    , 'punctuation': re.compile('[+\-*/=\$%^&\'",.;?{()}#<>\[\]]')
     , 'repeated_underscore': re.compile('_{2,}')
     }
 
@@ -74,6 +74,15 @@ class Tokeniser(object):
     ########################
     ###   UTILITY
     ########################
+                
+    def recordName(self, record, describeStack, use, cleaned, english):
+        if cleaned.replace("_", " ") != english[1:-1]:
+            kls = None
+            if describeStack:
+                kls = describeStack[-1][1]
+            v = record.get(kls, [])
+            v.append((use, english))
+            record[kls] = v
 
     def determineImports(self, extra):
         default = []
@@ -164,14 +173,8 @@ class Tokeniser(object):
 
         self.endIt = [ (OP, ')')]
 
-    def startIt(self, value):
-        return  [ (NAME, 'test_%s' % self.acceptable(value))
-                , (OP, '(')
-                , (NAME, 'self')
-                ]
-
-    def startIgnore(self, value):
-        return  [ (NAME, 'ignore__%s' % self.acceptable(value))
+    def startFunction(self, funcName):
+        return  [ (NAME, funcName)
                 , (OP, '(')
                 , (NAME, 'self')
                 ]
@@ -229,6 +232,27 @@ class Tokeniser(object):
                , (OP, '=')
                , (NAME, 'True')
                ]
+   
+    def makeNameModifier(self, kls, cleaned, english):
+        result = [ (NEWLINE, '\n') ]
+        
+        if kls:
+            result.extend(
+                [ (NAME, kls)
+                , (OP, '.')
+                ]
+            )
+        
+        result.extend(
+            [ (NAME, cleaned)
+            , (OP, '.')
+            , (NAME, "__testname__")
+            , (OP, '=')
+            , (STRING, english)
+            ]
+        )
+        
+        return result
 
     ########################
     ###   TRANSLATE
@@ -249,6 +273,7 @@ class Tokeniser(object):
         keepLastToken = False
         startingAnIt = False
         allDescribes = []
+        methodNames = {}
 
         skippedTest = True
         lookAtSpace = False
@@ -418,12 +443,18 @@ class Tokeniser(object):
                 if lastToken == 'it':
                     endedIt = False
                     startingAnIt = True
-                    result.extend(self.startIt(value))
+                    cleaned = self.acceptable(value)
+                    funcName = "test_%s" % cleaned
+                    result.extend(self.startFunction(funcName))
+                    self.recordName(methodNames, describeStack, funcName, cleaned, value)
 
                 elif lastToken == 'ignore':
                     endedIt = False
                     startingAnIt = True
-                    result.extend(self.startIgnore(value))
+                    cleaned = self.acceptable(value)
+                    funcName = "ignore__%s" % cleaned
+                    result.extend(self.startFunction(funcName))
+                    self.recordName(methodNames, describeStack, funcName, cleaned, value)
 
                 else:
                     emptyDescr = False
@@ -490,5 +521,9 @@ class Tokeniser(object):
 
             for describe in allDescribes:
                 result.extend(self.makeDescribeAttr(describe))
+        
+        for kls, names in methodNames.items():
+            for cleaned, english in names:
+                result.extend(self.makeNameModifier(kls, cleaned, english))
 
         return result

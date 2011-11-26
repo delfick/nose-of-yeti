@@ -29,6 +29,9 @@ describe 'numbers':
         it 'should also have number3':
             self.number3 |should| equal_to(3)
         
+        it "shouldn't fail when non alphanumeric characters are in the name":
+            5 |should| be(5)
+        
         describe "let's change a number":
             before_each:
                 self.number1 = 4
@@ -71,6 +74,9 @@ class Test_numbers_testing_number_3(Test_numbers):
 
     def test_should_also_have_number3(self):
         self.number3 |should| equal_to(3)
+    
+    def test_shouldnt_fail_when_non_alphanumeric_characters_are_in_the_name(self):
+        5 |should| be(5)
 
 class Test_numbers_testing_number_3_lets_change_a_number(Test_numbers_testing_number_3):
     def setUp(self):
@@ -86,3 +92,4 @@ class Test_numbers_testing_number_3_lets_change_a_number(Test_numbers_testing_nu
 Test_numbers.is_noy_spec = True
 Test_numbers_testing_number_3.is_noy_spec = True
 Test_numbers_testing_number_3_lets_change_a_number.is_noy_spec = True
+Test_numbers_testing_number_3.test_shouldnt_fail_when_non_alphanumeric_characters_are_in_the_name.__testname__ = "shouldn't fail when non alphanumeric characters are in the name"

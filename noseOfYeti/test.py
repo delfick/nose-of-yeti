@@ -366,6 +366,36 @@ class TestAnotherThing (%s ):pass '''
         # Same tests, but with newlines in front
         (self.toka, '\n%s' % test) |should| result_in(desired % ('\n', 'object'))
         (self.tokb, '\n%s' % test) |should| result_in(desired % ('\n', 'other'))
+    
+    def test_it_should_set__testname__on_non_alphanumeric_test_names(self):
+        test = '''
+        it "(root level) should work {well}"
+            3 |should| be(4)
+        describe "SomeTests":
+            it "doesn't get phased by $special characters"
+            
+            describe "NestedDescribe":
+                it "asdf $% asdf":
+                    1 |should| be(2)
+        it "(root level) should also [work]"
+        '''
+        
+        desired = '''
+        def test_root_level_should_work_well (self ):raise nose.SkipTest 
+            3 |should |be (4 )
+class TestSomeTests (%s ):
+    def test_doesnt_get_phased_by_special_characters (self ):raise nose.SkipTest 
+
+class TestSomeTests_NestedDescribe (TestSomeTests ):
+    def test_asdf_asdf (self ):
+        1 |should |be (2 )
+def test_root_level_should_also_work (self ):raise nose.SkipTest 
+test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
+test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
+TestSomeTests_NestedDescribe .test_asdf_asdf .__testname__ ="asdf $%% asdf"
+TestSomeTests .test_doesnt_get_phased_by_special_characters .__testname__ ="doesn't get phased by $special characters"'''
+        (self.toka, test) |should| result_in(desired % "object")
+        (self.tokb, test) |should| result_in(desired % "other")
         
 ########################
 ###   NESTING TESTS
@@ -574,6 +604,8 @@ TestAnother .is_noy_spec =True '''
                 describe "Meh":
                     after_each:
                         self.y = None
+                    it "should set __testname__ for non alpha names ' $^":
+                        pass
                     it 'should':
                         if y:
                             pass
@@ -582,6 +614,7 @@ TestAnother .is_noy_spec =True '''
                     it 'should have args', arg1, arg2:
                         blah |should| be_good()
             describe "Blah":pass
+        ignore "root level $pecial-method*+"
         describe "Another":
             before_each:
                 self.z = 8
@@ -611,6 +644,8 @@ class TestThis_That (TestThis ):
 class TestThis_That_Meh (TestThis_That ):
     def teardown (self ):
         noy_sup_teardown (super (TestThis_That_Meh ,self ));self .y =None 
+    def test_should_set_testname_for_non_alpha_names (self ):
+        pass 
     def test_should (self ):
         if y :
             pass 
@@ -619,6 +654,7 @@ class TestThis_That_Meh (TestThis_That ):
     def test_should_have_args (self ,arg1 ,arg2 ):
         blah |should |be_good ()
 class TestThis_Blah (TestThis ):pass 
+def ignore__root_level_pecial_method (self ):raise nose.SkipTest 
 class TestAnother (%(o)s ):
     def setup (self ):
         noy_sup_setup (super (TestAnother ,self ));self .z =8 
@@ -636,7 +672,9 @@ TestThis .is_noy_spec =True
 TestThis_That .is_noy_spec =True 
 TestThis_That_Meh .is_noy_spec =True 
 TestThis_Blah .is_noy_spec =True 
-TestAnother .is_noy_spec =True '''
+TestAnother .is_noy_spec =True 
+ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"
+TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__testname__ ="should set __testname__ for non alpha names ' $^"'''
         ]
         
     ###   TESTS
