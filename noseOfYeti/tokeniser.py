@@ -10,7 +10,7 @@ from string import join
 regexes = {
       'joins': re.compile('[- /]')
     , 'whitespace': re.compile('\s+')
-    , 'punctuation': re.compile('[+\-*/=\$%^&\'",.;?{()}#<>\[\]]')
+    , 'punctuation': re.compile('[+\-*/=\$%^&\'",.:;?{()}#<>\[\]]')
     , 'repeated_underscore': re.compile('_{2,}')
     }
 
