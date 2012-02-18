@@ -29,32 +29,45 @@ class Tokeniser(object):
 
     def register(self):
 
+        def outputForDebugging(stream, data):
+            """It will write the translated version of the file"""
+            with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
+        
+        def dealwith(readline):
+            data = []
+            try:
+                # We pass in the data variable as an argument so that we
+                # get partial output even in the case of an exception.
+                self.translate(readline, data)
+            except Exception as e:
+                # Comment out partial output so that it doesn't result in
+                # a syntax error when received by the interpreter.
+                data = '\n'.join([
+                      re.sub('^', '#', untokenize(data), 0, re.MULTILINE)
+                    , 'raise Exception("""--- internal spec codec error ---\n%s""")' % e
+                    ])
+                # Join two lines at the beginning of the partial output so that
+                # we get the exception in the right line and still can see
+                # all code in the debug output.
+                data = ''.join(data.split('\n', 2))
+            else:
+                data = untokenize(data)
+            
+            return data
+        
         class StreamReader(utf_8.StreamReader):
+            # Normal python uses StreamRader
             def __init__(sr, stream, *args, **kwargs):
                 codecs.StreamReader.__init__(sr, stream, *args, **kwargs)
-                data = []
-                try:
-                    # We pass in the data variable as an argument so that we
-                    # get partial output even in the case of an exception.
-                    self.translate(sr.stream.readline, data)
-                except Exception as e:
-                    # Comment out partial output so that it doesn't result in
-                    # a syntax error when received by the interpreter.
-                    data = '\n'.join([
-                          re.sub('^', '#', untokenize(data), 0, re.MULTILINE)
-                        , 'raise Exception("""--- internal spec codec error ---\n%s""")' % e
-                        ])
-                    # Join two lines at the beginning of the partial output so that
-                    # we get the exception in the right line and still can see
-                    # all code in the debug output.
-                    data = ''.join(data.split('\n', 2))
-                else:
-                    data = untokenize(data)
-
-                # Uncomment the following line for debugging:
-                # with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
-
+                data = dealwith(sr.stream.readline)
                 sr.stream = cStringIO.StringIO(data)
+        
+        def decode(text, *args):
+            # pypy uses decode
+            utf8 = encodings.search_function('utf8') # Assume utf8 encoding
+            reader = utf8.streamreader(cStringIO.StringIO(text))
+            data = dealwith(reader.readline)
+            return unicode(data), len(data)
 
         def searchFunction(s):
             if s != 'spec': return None
@@ -62,7 +75,7 @@ class Tokeniser(object):
             return codecs.CodecInfo(
                   name='spec'
                 , encode=utf8.encode
-                , decode=utf8.decode
+                , decode=decode
                 , streamreader=StreamReader
                 , streamwriter=utf8.streamwriter
                 , incrementalencoder=utf8.incrementalencoder
