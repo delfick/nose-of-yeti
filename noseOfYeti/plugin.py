@@ -69,8 +69,10 @@ class Plugin(Plugin):
         if hasattr(method, '__test__') and not method.__test__:
             return False
         
-        # For some reason, I keep getting None for im_class....
-        kls = [v for k, v in getmembers(method) if k == 'im_self'][0].__class__
+        kls = method.im_class
+        if not kls:
+            # im_class seems to be None in pypy
+            kls = [v for k, v in getmembers(method) if k == 'im_self'][0].__class__
                
         if kls.__name__ in self.ignoreKls:
             return False
