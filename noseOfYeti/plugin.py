@@ -57,6 +57,14 @@ class Plugin(Plugin):
             , dest    = 'ignoreKls'
             , help    = '''Set class name to ignore in wantMethod'''
             )
+            
+        parser.add_option(
+              '--without-should-dsl'
+            , default = [env.get('NOSE_NOY_WITHOUT_SHOULD_DSL')] or []
+            , action  = 'store_true'
+            , dest    = 'withoutShouldDsl'
+            , help    = '''Make it not try to import should-dsl'''
+            )
     
     def wantModule(self, mod):
         self.done = {}
@@ -99,6 +107,7 @@ class Plugin(Plugin):
             self.done = {}
             tok = Tokeniser( withDefaultImports = not options.noDefaultImports
                            , withDescribeAttrs  = not options.noDescribeAttrs
+                           , withoutShouldDsl   = options.withoutShouldDsl
                            , extraImports       = ';'.join([d for d in options.extraImport if d])
                            , defaultKls         = options.defaultKls
                            )

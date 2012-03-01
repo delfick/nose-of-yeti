@@ -16,9 +16,10 @@ regexes = {
 
 class Tokeniser(object):
 
-    def __init__(self, defaultKls='object', extraImports=None, withDefaultImports=True, withDescribeAttrs=True):
+    def __init__(self, defaultKls='object', extraImports=None, withDefaultImports=True, withDescribeAttrs=True, withoutShouldDsl=False):
         self.withDefaultImports = withDefaultImports
         self.withDescribeAttrs = withDescribeAttrs
+        self.withoutShouldDsl = withoutShouldDsl
         self.defaultImports = self.determineImports(extraImports)
         self.defaultKls = self.tokensIn(defaultKls)
         self.constructReplacements()
@@ -115,8 +116,13 @@ class Tokeniser(object):
         if self.withDefaultImports:
             if default and tuple(default[-1]) != (OP, ';'):
                 default.append((OP, ';'))
+
+            should_dsl = "from should_dsl import *;"
+            if self.withoutShouldDsl:
+                should_dsl = ""
+            
             default.extend(
-                self.tokensIn('import nose; from nose.tools import *; from should_dsl import *; from noseOfYeti.noy_helper import *;')
+                self.tokensIn('import nose; from nose.tools import *; %s from noseOfYeti.noy_helper import *;' % should_dsl)
             )
 
         return default
