@@ -60,7 +60,7 @@ class Plugin(Plugin):
             
         parser.add_option(
               '--without-should-dsl'
-            , default = [env.get('NOSE_NOY_WITHOUT_SHOULD_DSL')] or []
+            , default = env.get('NOSE_NOY_WITHOUT_SHOULD_DSL') or False
             , action  = 'store_true'
             , dest    = 'withoutShouldDsl'
             , help    = '''Make it not try to import should-dsl'''
