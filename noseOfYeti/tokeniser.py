@@ -192,11 +192,16 @@ class Tokeniser(object):
 
         self.endIt = [ (OP, ')')]
 
-    def startFunction(self, funcName):
-        return  [ (NAME, funcName)
-                , (OP, '(')
-                , (NAME, 'self')
-                ]
+    def startFunction(self, funcName, withSelf=True):
+        lst =  [
+              (NAME, funcName)
+            , (OP, '(')
+            ]
+
+        if withSelf:
+            lst.append((NAME, 'self'))
+
+        return lst
 
     def makeDescribe(self, value, nextDescribeKls, inheriting=False):
         name = self.acceptable(value, True)
@@ -261,12 +266,18 @@ class Tokeniser(object):
                 , (OP, '.')
                 ]
             )
-        
+
+        result.append((NAME, cleaned))
+
+        if kls:
+            result.extend(
+                [ (OP, '.')
+                , (NAME, "__func__")
+                ]
+            )
+
         result.extend(
-            [ (NAME, cleaned)
-            , (OP, '.')
-            , (NAME, "__func__")
-            , (OP, '.')
+            [ (OP, '.')
             , (NAME, "__testname__")
             , (OP, '=')
             , (STRING, english)
@@ -295,6 +306,7 @@ class Tokeniser(object):
         startingAnIt = False
         allDescribes = []
         methodNames = {}
+        argsForIt = []
 
         skippedTest = True
         lookAtSpace = False
@@ -406,6 +418,8 @@ class Tokeniser(object):
                     groupStack.pop()
 
                 justAppend = True
+                if value == ',' and startingAnIt and not len(describeStack) and not len(argsForIt):
+                    justAppend = False
 
             elif afterSpace and tokenum == NAME:
                 if value in ('describe', 'context'):
@@ -459,22 +473,26 @@ class Tokeniser(object):
                     skippedTest = False
                     emptyDescr = False
                     justAppend = True
+                    if startingAnIt:
+                        argsForIt.append(value)
 
             elif tokenum == STRING:
                 if lastToken == 'it':
                     endedIt = False
+                    argsForIt = []
                     startingAnIt = True
                     cleaned = self.acceptable(value)
                     funcName = "test_%s" % cleaned
-                    result.extend(self.startFunction(funcName))
+                    result.extend(self.startFunction(funcName, withSelf=len(describeStack)))
                     self.recordName(methodNames, describeStack, funcName, cleaned, value)
 
                 elif lastToken == 'ignore':
                     endedIt = False
+                    argsForIt = []
                     startingAnIt = True
                     cleaned = self.acceptable(value)
                     funcName = "ignore__%s" % cleaned
-                    result.extend(self.startFunction(funcName))
+                    result.extend(self.startFunction(funcName, withSelf=len(describeStack)))
                     self.recordName(methodNames, describeStack, funcName, cleaned, value)
 
                 else:
@@ -488,6 +506,8 @@ class Tokeniser(object):
                 justAppend = True
 
             else:
+                if tokenum == NAME and startingAnIt:
+                    argsForIt.append(value)
                 if tokenum == NEWLINE and lastToken == ':' and startingAnIt:
                     startingAnIt = False
                 if tokenum not in (NEWLINE, INDENT):
