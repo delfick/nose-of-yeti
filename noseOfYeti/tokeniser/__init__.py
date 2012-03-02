@@ -1,1 +1,2 @@
-from tokeniser import *
+from spec_codec import TokeniserCodec
+from tokeniser import Tokeniser
