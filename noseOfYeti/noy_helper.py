@@ -8,7 +8,6 @@ NB: We pull this into it's own module to:
 2) avoid errors when inspecting the stack (e.g. in flexmock)
 """
 
-
 def noy_sup_setUp(sup):
     if hasattr(sup, "setup"):
         return sup.setup()
