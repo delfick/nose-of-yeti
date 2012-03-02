@@ -10,24 +10,40 @@ regexes = {
     , 'repeated_underscore': re.compile('_{2,}')
     }
 
-class Tokeniser(object):
-    def __init__(self, defaultKls='object', withDescribeAttrs=True, importTokens=None):
-        self.tokens = Tokens(defaultKls)
-        self.importTokens = importTokens
-        self.withDescribeAttrs = withDescribeAttrs
+class Tracker(object):
+    def __init__(self, result, tokens):
+        self.currentDescribeLevel = 0
+
+        self.nextDescribeKls = None
+        self.adjustIndentAt = []
+        self.describeStack = []
+        self.indentAmounts = []
+        self.keepLastToken = False
+        self.startingAnIt = False
+        self.allDescribes = []
+        self.methodNames = {}
+        self.argsForIt = []
+
+        self.skippedTest = True
+        self.lookAtSpace = False
+        self.afterSpace = True
+        self.justAppend = False
+        self.indentType = ' '
+        self.ignoreNext = None
+        self.groupStack = []
+        self.lastToken = ' '
+        self.endedIt = False
+        self.emptyDescr = False
+        self.nextIgnore = None
+        
+        if result is None:
+            result = []
+        self.result = result
+        self.tokens = tokens
 
     ########################
     ###   UTILITY
     ########################
-                
-    def recordName(self, record, describeStack, use, cleaned, english):
-        if cleaned.replace("_", " ") != english[1:-1]:
-            kls = None
-            if describeStack:
-                kls = describeStack[-1][1]
-            v = record.get(kls, [])
-            v.append((use, english))
-            record[kls] = v
 
     def acceptable(self, value, capitalize=False):
         name = regexes['punctuation'].sub("", regexes['joins'].sub("_", value))
@@ -46,285 +62,355 @@ class Tokeniser(object):
         return name
 
     ########################
+    ###   TRACK
+    ########################
+    
+    def nameForGroup(self):
+        return self.lastToken in ('describe', 'context')
+                
+    def recordName(self, record, use, cleaned, english):
+        if cleaned.replace("_", " ") != english[1:-1]:
+            kls = None
+            if self.describeStack:
+                kls = self.describeStack[-1][1]
+            v = record.get(kls, [])
+            v.append((use, english))
+            record[kls] = v
+    
+    def ignore_token(self, tokenum, value):
+        if self.ignoreNext:
+            nextIgnore = self.ignoreNext
+            if type(self.ignoreNext) is list:
+                nextIgnore = self.ignoreNext.pop(0)
+
+            if nextIgnore == (tokenum, value):
+                return True
+            else:
+                self.nextIgnore = None
+                return False
+                
+    def inheritedClass(self, value):
+        if self.nextDescribeKls is None:
+            self.nextDescribeKls = value
+        else:
+            self.nextDescribeKls += value
+        self.keepLastToken = True
+    
+    def nameDescribe(self, value):
+        inheritance = False
+        if self.describeStack:
+            if not self.nextDescribeKls:
+                inheritance = True
+                self.nextDescribeKls = self.describeStack[-1][1]
+
+        res, name = self.tokens.makeDescribe(self.acceptable(value, True), value, self.nextDescribeKls, inheritance)
+        self.describeStack.append([self.currentDescribeLevel, name])
+        self.allDescribes.append(name)
+
+        self.result.extend(res)
+                
+    def next_token(self, tokenum, value):
+        # By default, we don't just append the value
+        self.justAppend = False
+
+        # Determine if working with spaces or tabs
+        if tokenum == INDENT:
+            self.indentType = value[0]
+            
+    def closing_an_it(self, tokenum, value):
+        #Determine if we have an it to close
+        return self.startingAnIt and not self.endedIt and (value == ":" or tokenum == NEWLINE)
+    
+    def close_it(self):
+        self.result.extend(self.tokens.endIt)
+        self.endedIt = True
+        
+    def determineIndentation(self, tokenum, scol):
+        if self.afterSpace and tokenum not in (NEWLINE, DEDENT, INDENT):
+            if not self.groupStack:
+                # We don't care about indentation inside a group (list, tuple or dictionary)
+                if not self.indentAmounts or scol > self.indentAmounts[-1]:
+                    self.indentAmounts.append(scol)
+
+                # Dedenting describes removes them from being inheritable
+                while self.describeStack and self.describeStack[-1][0] >= scol:
+                    self.describeStack.pop()
+
+                if not self.describeStack:
+                    self.currentDescribeLevel = 0
+
+                while self.adjustIndentAt:
+                    self.result[self.adjustIndentAt.pop()] = (INDENT, self.indentType * (scol - self.currentDescribeLevel))
+            
+    def convertDedent(self):
+        # Dedent means go back to last indentation
+        if self.indentAmounts:
+            self.indentAmounts.pop()
+
+        # Change the token
+        tokenum = INDENT
+
+        # Get last indent amount
+        lastIndent = 0
+        if self.indentAmounts:
+            lastIndent = self.indentAmounts[-1]
+
+        # Make sure we don't have multiple indents in a row
+        if self.result[-1][0] == INDENT:
+            self.result.pop()
+
+        value = self.indentType * lastIndent
+        return tokenum, value
+            
+    def foundOperator(self, value):
+        if value in ['(', '[', '{']:
+            # add to the stack because we started a list
+            self.groupStack.append(value)
+            self.emptyDescr = False
+
+        elif value in [')', ']', '}']:
+            # not necessary to check for correctness
+            self.groupStack.pop()
+
+        self.justAppend = True
+        if value == ',' and self.startingAnIt and not len(self.describeStack) and not len(self.argsForIt):
+            self.justAppend = False
+    
+    def nameAfterSpace(self, tokenum):
+        return self.afterSpace and tokenum == NAME
+    
+    def beginTest(self):
+        self.skippedTest = False
+        self.emptyDescr = False
+        self.result.append((NAME, 'def'))
+    
+    def beginGroup(self, scol):
+        # Make sure we dedent if we just made a skip test
+        if self.skippedTest:
+            self.result.append((INDENT, self.indentType * (scol - self.currentDescribeLevel)))
+            self.skippedTest = False
+
+        # Make sure we insert a pass if we inserted an empty describe.
+        if self.emptyDescr and scol > self.currentDescribeLevel:
+            while self.result[-1][0] in (INDENT, NEWLINE):
+                self.result.pop()
+            self.result.append((NAME, 'pass'))
+            self.result.append((NEWLINE, '\n'))
+            self.result.append((INDENT, self.indentType * scol))
+
+        self.emptyDescr = True
+
+        self.currentDescribeLevel = scol
+        self.nextDescribeKls = None
+
+        # Making sure this line starts at the beginning
+        # By editing previous INDENT
+        if self.result and self.result[-1][0] == INDENT:
+            self.result[-1] = (INDENT, self.result[-1][1][self.currentDescribeLevel:])
+
+        self.result.append((NAME, 'class'))
+                
+    def beginTestAdmin(self, value):
+        self.skippedTest = False
+        self.emptyDescr = False
+        self.result.extend(getattr(self.tokens, value))
+        if self.describeStack:
+            expecting = [ (OP, ':')
+                        , (NEWLINE, '\n')
+                        ]
+
+            self.result.extend(expecting)
+            self.ignoreNext = expecting
+
+            self.adjustIndentAt.append(len(self.result))
+            self.result.append((INDENT, ''))
+            self.result.extend(self.tokens.makeSuper(self.describeStack[-1][1], value))
+                
+    def unknownNameAfterSpace(self, value):
+        self.skippedTest = False
+        self.emptyDescr = False
+        self.justAppend = True
+        if self.startingAnIt:
+            self.argsForIt.append(value)
+            
+    def addString(self, value):
+        if self.lastToken in ('it', 'ignore'):
+            if self.lastToken == 'it':
+                prefix = 'test'
+            else:
+                prefix = 'ignore_'
+            
+            self.endedIt = False
+            self.argsForIt = []
+            self.startingAnIt = True
+            cleaned = self.acceptable(value)
+            funcName = "%s_%s" % (prefix, cleaned)
+            self.result.extend(self.tokens.startFunction(funcName, withSelf=len(self.describeStack)))
+            self.recordName(self.methodNames, funcName, cleaned, value)
+
+        else:
+            self.emptyDescr = False
+            self.justAppend = True
+            
+    def ignoringTest(self, tokenum):
+        return tokenum == NEWLINE and self.lastToken != ':' and self.startingAnIt
+    
+    def ignoreTest(self):
+        self.result.extend(self.tokens.testSkip)
+        self.startingAnIt = False
+        self.skippedTest = True
+        self.justAppend = True
+            
+    def defaultAction(self, tokenum, value):
+        if tokenum == NAME and self.startingAnIt:
+            self.argsForIt.append(value)
+        if tokenum == NEWLINE and self.lastToken == ':' and self.startingAnIt:
+            self.startingAnIt = False
+        if tokenum not in (NEWLINE, INDENT):
+            self.emptyDescr = False
+        self.justAppend = True
+    
+    def appendToken(self, tokenum, value):
+        if self.justAppend:
+            v = value
+
+            # First ensure, the indentation has been normalised (incase of nesting)
+            if tokenum == INDENT and self.currentDescribeLevel > 0:
+                v = value[self.currentDescribeLevel:]
+
+            self.result.append([tokenum, v])
+        
+        # Storing current token if allowed to
+        if self.keepLastToken:
+            self.keepLastToken = False
+        else:
+            self.lastToken = value
+        
+    def isWhitespace(self, tokenum, value):
+        if value == '\n':
+            self.afterSpace = True
+            self.lookAtSpace = True
+
+        else:
+            self.afterSpace = False
+            if self.lookAtSpace and (value == '' or regexes['whitespace'].match(value)):
+                self.afterSpace = True
+
+                if tokenum != INDENT:
+                    # Only want to count at the beginning of the line
+                    # Isn't reset till we have a newline
+                    self.lookAtSpace = False
+    
+    def skipTestIfNecessary(self):
+        if self.startingAnIt and not self.endedIt:
+            self.result.extend(self.tokens.endIt)
+            if self.lastToken != ':':
+                self.result.extend(self.tokens.testSkip)
+    
+    def removeTrailingIndents(self):
+        while self.result and self.result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
+            self.result.pop(-2)
+    
+    def addDescribeAttrs(self):
+        if self.allDescribes:
+            self.result.append((NEWLINE, '\n'))
+            self.result.append((INDENT, ''))
+
+            for describe in self.allDescribes:
+                self.result.extend(self.tokens.makeDescribeAttr(describe))
+    
+    def addMethodNames(self):
+        for kls, names in self.methodNames.items():
+            for cleaned, english in names:
+                self.result.extend(self.tokens.makeNameModifier(kls, cleaned, english))
+
+class Tokeniser(object):
+    def __init__(self, defaultKls='object', withDescribeAttrs=True, importTokens=None):
+        self.tokens = Tokens(defaultKls)
+        self.importTokens = importTokens
+        self.withDescribeAttrs = withDescribeAttrs
+
+    ########################
     ###   TRANSLATE
     ########################
 
     def translate(self, readline, result=None):
-        if result is None:
-            result = []
+        # Tracker to keep track of information as the file is processed
+        self.tracker = Tracker(result, self.tokens)
         
         if self.importTokens:
-            result.extend([d for d in self.importTokens])
-
-        currentDescribeLevel = 0
-
-        nextDescribeKls = None
-        adjustIndentAt = []
-        describeStack = []
-        indentAmounts = []
-        keepLastToken = False
-        startingAnIt = False
-        allDescribes = []
-        methodNames = {}
-        argsForIt = []
-
-        skippedTest = True
-        lookAtSpace = False
-        afterSpace = True
-        justAppend = False
-        indentType = ' '
-        ignoreNext = None
-        groupStack = []
-        lastToken = ' '
-        endedIt = False
-        emptyDescr = False
+            self.tracker.result.extend([d for d in self.importTokens])
 
         # Looking at all the tokens
-        for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
-            # Sometimes we need to ignore stuff
-            if ignoreNext:
-                nextIgnore = ignoreNext
-                if type(ignoreNext) is list:
-                    nextIgnore = ignoreNext.pop(0)
-
-                if nextIgnore == (tokenum, value):
-                    continue
-                else:
-                    nextIgnore = None
-
-            # By default, we don't just append the value
-            justAppend = False
-
-            # Determine if working with spaces or tabs
-            if tokenum == INDENT:
-                indentType = value[0]
-
+        for tokenum, value, (_, scol), _, _ in generate_tokens(readline):
+            # Determine if we need to ignore this value
+            if self.tracker.ignore_token(tokenum, value):
+                continue
+            
+            self.tracker.next_token(tokenum, value)
+            
             # Ensuring NEWLINE tokens are actually specified as such
             if tokenum != NEWLINE and value == '\n':
                 tokenum = NEWLINE
-
+            
             # Determine next level of indentation
-            if afterSpace and tokenum not in (NEWLINE, DEDENT, INDENT):
-                if not groupStack:
-                    # We don't care about indentation inside a group (list, tuple or dictionary)
-                    if not indentAmounts or scol > indentAmounts[-1]:
-                        indentAmounts.append(scol)
-
-                    # Dedenting describes removes them from being inheritable
-                    while describeStack and describeStack[-1][0] >= scol:
-                        describeStack.pop()
-
-                    if not describeStack:
-                        currentDescribeLevel = 0
-
-                    while adjustIndentAt:
-                        result[adjustIndentAt.pop()] = (INDENT, indentType * (scol - currentDescribeLevel))
+            self.tracker.determineIndentation(tokenum, scol)
 
             # I want to change dedents into indents, because they seem to screw nesting up
             if tokenum == DEDENT:
-                # Dedent means go back to last indentation
-                if indentAmounts:
-                    indentAmounts.pop()
-
-                # Change the token
-                tokenum = INDENT
-
-                # Get last indent amount
-                lastIndent = 0
-                if indentAmounts:
-                    lastIndent = indentAmounts[-1]
-
-                # Make sure we don't have multiple indents in a row
-                if result[-1][0] == INDENT:
-                    result.pop()
-
-                value = indentType * lastIndent
-
-            #Determine if we have an it to close
-            if startingAnIt and not endedIt and (value == ":" or tokenum == NEWLINE):
-                result.extend(self.tokens.endIt)
-                endedIt = True
+                tokenum, value = self.tracker.convertDedent()
+            
+            if self.tracker.closing_an_it(tokenum, value):
+                self.tracker.close_it()
 
             # Determining what to replace and with what ::
-            if lastToken in ('describe', 'context'):
-                if tokenum == NAME or (tokenum == OP and value == '.'): # inherited class
-                    if nextDescribeKls is None:
-                        nextDescribeKls = value
-                    else:
-                        nextDescribeKls += value
-                    keepLastToken = True
+            if self.tracker.nameForGroup():
+                if tokenum == NAME or (tokenum == OP and value == '.'):
+                    self.tracker.inheritedClass(value)
 
-                elif tokenum == STRING: # the described object
-                    inheritance = False
-                    if describeStack:
-                        if not nextDescribeKls:
-                            inheritance = True
-                            nextDescribeKls = describeStack[-1][1]
-
-                    res, name = self.tokens.makeDescribe(self.acceptable(value, True), value, nextDescribeKls, inheritance)
-                    describeStack.append([currentDescribeLevel, name])
-                    allDescribes.append(name)
-
-                    result.extend(res)
+                elif tokenum == STRING:
+                    self.tracker.nameDescribe(value)
 
             elif tokenum == OP:
-                if value in ['(', '[', '{']:
-                    # add to the stack because we started a list
-                    groupStack.append(value)
-                    emptyDescr = False
-
-                elif value in [')', ']', '}']:
-                    # not necessary to check for correctness
-                    groupStack.pop()
-
-                justAppend = True
-                if value == ',' and startingAnIt and not len(describeStack) and not len(argsForIt):
-                    justAppend = False
-
-            elif afterSpace and tokenum == NAME:
+                self.tracker.foundOperator(value)
+            
+            elif self.tracker.nameAfterSpace(tokenum):
                 if value in ('describe', 'context'):
-                    # Make sure we dedent if we just made a skip test
-                    if skippedTest:
-                        result.append((INDENT, indentType * (scol - currentDescribeLevel)))
-                        skippedTest = False
-
-                    # Make sure we insert a pass if we inserted an empty describe.
-                    if emptyDescr and scol > currentDescribeLevel:
-                        while result[-1][0] in (INDENT, NEWLINE):
-                            result.pop()
-                        result.append((NAME, 'pass'))
-                        result.append((NEWLINE, '\n'))
-                        result.append((INDENT, indentType * scol))
-
-                    emptyDescr = True
-
-                    currentDescribeLevel = scol
-                    nextDescribeKls = None
-
-                    # Making sure this line starts at the beginning
-                    # By editing previous INDENT
-                    if result and result[-1][0] == INDENT:
-                        result[-1] = (INDENT, result[-1][1][currentDescribeLevel:])
-
-                    result.append((NAME, 'class'))
-
+                    self.tracker.beginGroup(scol)
+                    
                 elif value in ('it', 'ignore'):
-                    skippedTest = False
-                    emptyDescr = False
-                    result.append((NAME, 'def'))
+                    self.tracker.beginTest()
 
                 elif value in ('before_each', 'after_each'):
-                    skippedTest = False
-                    emptyDescr = False
-                    result.extend(getattr(self.tokens, value))
-                    if describeStack:
-                        expecting = [ (OP, ':')
-                                    , (NEWLINE, '\n')
-                                    ]
-
-                        result.extend(expecting)
-                        ignoreNext = expecting
-
-                        adjustIndentAt.append(len(result))
-                        result.append((INDENT, ''))
-                        result.extend(self.tokens.makeSuper(describeStack[-1][1], value))
+                    self.tracker.beginTestAdmin(value)
 
                 else:
-                    skippedTest = False
-                    emptyDescr = False
-                    justAppend = True
-                    if startingAnIt:
-                        argsForIt.append(value)
+                    self.tracker.unknownNameAfterSpace(value)
 
             elif tokenum == STRING:
-                if lastToken == 'it':
-                    endedIt = False
-                    argsForIt = []
-                    startingAnIt = True
-                    cleaned = self.acceptable(value)
-                    funcName = "test_%s" % cleaned
-                    result.extend(self.tokens.startFunction(funcName, withSelf=len(describeStack)))
-                    self.recordName(methodNames, describeStack, funcName, cleaned, value)
+                self.tracker.addString(value)
 
-                elif lastToken == 'ignore':
-                    endedIt = False
-                    argsForIt = []
-                    startingAnIt = True
-                    cleaned = self.acceptable(value)
-                    funcName = "ignore__%s" % cleaned
-                    result.extend(self.tokens.startFunction(funcName, withSelf=len(describeStack)))
-                    self.recordName(methodNames, describeStack, funcName, cleaned, value)
-
-                else:
-                    emptyDescr = False
-                    justAppend = True
-
-            elif tokenum == NEWLINE and lastToken != ':' and startingAnIt:
-                result.extend(self.tokens.testSkip)
-                startingAnIt = False
-                skippedTest = True
-                justAppend = True
+            elif self.tracker.ignoringTest(tokenum):
+                self.tracker.ignoreTest()
 
             else:
-                if tokenum == NAME and startingAnIt:
-                    argsForIt.append(value)
-                if tokenum == NEWLINE and lastToken == ':' and startingAnIt:
-                    startingAnIt = False
-                if tokenum not in (NEWLINE, INDENT):
-                    emptyDescr = False
-                justAppend = True
+                self.tracker.defaultAction(tokenum, value)
 
             # Just apending if token isn't replaced and should be kept
-            if justAppend:
-                v = value
-
-                # First ensure, the indentation has been normalised (incase of nesting)
-                if tokenum == INDENT and currentDescribeLevel > 0:
-                    v = value[currentDescribeLevel:]
-
-                result.append([tokenum, v])
-
-            # Storing current token if allowed to
-            if keepLastToken:
-                keepLastToken = False
-            else:
-                lastToken = value
+            self.tracker.appendToken(tokenum, value)
 
             # Determining if this token is whitespace at the beginning of the line so next token knows
-            if value == '\n':
-                afterSpace = True
-                lookAtSpace = True
-
-            else:
-                afterSpace = False
-                if lookAtSpace and (value == '' or regexes['whitespace'].match(value)):
-                    afterSpace = True
-
-                    if tokenum != INDENT:
-                        # Only want to count at the beginning of the line
-                        # Isn't reset till we have a newline
-                        lookAtSpace = False
-
-        if startingAnIt and not endedIt:
-            result.extend(self.tokens.endIt)
-            if lastToken != ':':
-                result.extend(self.tokens.testSkip)
+            self.tracker.isWhitespace(tokenum, value)
+        
+        self.tracker.skipTestIfNecessary()
 
         # Remove trailing indents and dedents
-        while result and result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
-            result.pop(-2)
+        self.tracker.removeTrailingIndents()
 
         # Add attributes to our Describes so that the plugin can handle some nesting issues
         # Where we have tests in upper level describes being run in lower level describes
-        if self.withDescribeAttrs and allDescribes:
-            result.append((NEWLINE, '\n'))
-            result.append((INDENT, ''))
-
-            for describe in allDescribes:
-                result.extend(self.tokens.makeDescribeAttr(describe))
+        if self.withDescribeAttrs:
+            self.tracker.addDescribeAttrs()
         
-        for kls, names in methodNames.items():
-            for cleaned, english in names:
-                result.extend(self.tokens.makeNameModifier(kls, cleaned, english))
-
-        return result
+        self.tracker.addMethodNames()
+        return self.tracker.result
