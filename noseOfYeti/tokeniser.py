@@ -18,25 +18,28 @@ regexes = {
 ########################
 
 class TokeniserCodec(object):
+    """Class to register the spec codec"""
     def __init__(self, tokeniser):
         self.tokeniser = tokeniser
     
     def register(self):
+        """Register spec codec"""
         class StreamReader(utf_8.StreamReader):
-            # Normal python uses StreamRader
+            """Used by cPython to deal with a spec file"""
             def __init__(sr, stream, *args, **kwargs):
                 codecs.StreamReader.__init__(sr, stream, *args, **kwargs)
                 data = self.dealwith(sr.stream.readline)
                 sr.stream = cStringIO.StringIO(data)
         
         def decode(text, *args):
-            # pypy uses decode
+            """Used by pypy to deal with a spec file"""
             utf8 = encodings.search_function('utf8') # Assume utf8 encoding
             reader = utf8.streamreader(cStringIO.StringIO(text))
             data = self.dealwith(reader.readline)
             return unicode(data), len(data)
 
         def searchFunction(s):
+            """Determine if a file is of spec encoding and return special CodecInfo if it is"""
             if s != 'spec': return None
             utf8 = encodings.search_function('utf8') # Assume utf8 encoding
             return codecs.CodecInfo(
@@ -48,10 +51,16 @@ class TokeniserCodec(object):
                 , incrementalencoder=utf8.incrementalencoder
                 , incrementaldecoder=utf8.incrementaldecoder
                 )
-
+            
+        # Do the register
         codecs.register(searchFunction)
     
     def dealwith(readline):
+        """
+            Replace the contents of spec file with the translated version
+            readline should be a callable object
+            , which provides the same interface as the readline() method of built-in file objects 
+        """
         data = []
         try:
             # We pass in the data variable as an argument so that we
@@ -69,6 +78,7 @@ class TokeniserCodec(object):
             # all code in the debug output.
             data = ''.join(data.split('\n', 2))
         else:
+            # At this point, data is a list of tokens
             data = untokenize(data)
         
         return data
