@@ -1,5 +1,5 @@
 from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN
-from tokenize import generate_tokens
+from tokens import Tokens
 import re
 
 regexes = {
@@ -15,12 +15,13 @@ class Tokeniser(object):
         , defaultKls='object', extraImports=None, withDefaultImports=True
         , withDescribeAttrs=True, withoutShouldDsl=False
         ):
+        self.tokens = Tokens(defaultKls)
+        self.defaultKls = self.tokens.defaultKls
         self.withDefaultImports = withDefaultImports
         self.withDescribeAttrs = withDescribeAttrs
         self.withoutShouldDsl = withoutShouldDsl
         self.defaultImports = self.determineImports(extraImports)
-        self.defaultKls = self.tokensIn(defaultKls)
-        self.constructReplacements()
+        self.tokens.constructReplacements()
 
     ########################
     ###   UTILITY
@@ -40,7 +41,7 @@ class Tokeniser(object):
 
         if extra:
             if type(extra) in (str, unicode):
-                default.extend(self.tokensIn(extra))
+                default.extend(self.tokens.tokensIn(extra))
             else:
                 for d in extra:
                     if d[0] == NEWLINE:
@@ -59,7 +60,7 @@ class Tokeniser(object):
                 should_dsl = ""
             
             default.extend(
-                self.tokensIn('import nose; from nose.tools import *; %s from noseOfYeti.noy_helper import *;' % should_dsl)
+                self.tokens.tokensIn('import nose; from nose.tools import *; %s from noseOfYeti.noy_helper import *;' % should_dsl)
             )
 
         return default
@@ -79,149 +80,6 @@ class Tokeniser(object):
                     name_parts.append(word[1:])
             name = ''.join(name_parts)
         return name
-
-    def tokensIn(self, s, strip_it=True):
-        self.taken = False
-        def get():
-            #Making generate_tokens not loop forever
-            if not self.taken:
-                self.taken = True
-                if strip_it:
-                    return s.strip()
-                else:
-                    return s
-            else:
-                return ''
-
-        return [(t, v) for t, v, _, _, _ in generate_tokens(get)][:-1]
-
-    def getEquivalence(self, name):
-        return { 'before_each' : 'setUp'
-               , 'after_each'  : 'tearDown'
-               }.get(name, name)
-
-    ########################
-    ###   MAKERS
-    ########################
-
-    def constructReplacements(self):
-        self.before_each = [
-              (NAME, 'def')
-            , (NAME, self.getEquivalence('before_each'))
-            , (OP, '(')
-            , (NAME, 'self')
-            , (OP, ')')
-            ]
-
-        self.after_each = [
-              (NAME, 'def')
-            , (NAME, self.getEquivalence('after_each'))
-            , (OP, '(')
-            , (NAME, 'self')
-            , (OP, ')')
-            ]
-
-        self.testSkip = [
-              (OP, ':')
-            , (NAME, 'raise')
-            , (NAME, 'nose.SkipTest')
-            ]
-
-        self.endIt = [ (OP, ')')]
-
-    def startFunction(self, funcName, withSelf=True):
-        lst =  [
-              (NAME, funcName)
-            , (OP, '(')
-            ]
-
-        if withSelf:
-            lst.append((NAME, 'self'))
-
-        return lst
-
-    def makeDescribe(self, value, nextDescribeKls, inheriting=False):
-        name = self.acceptable(value, True)
-        if nextDescribeKls and inheriting:
-            use = nextDescribeKls
-            if use.startswith('Test'):
-                use = use[4:]
-            name = 'Test{0}_{1}'.format(use, name)
-        else:
-            name = 'Test{0}'.format(name)
-
-        result = [ (NAME, name)
-                 , (OP, '(')
-                 ]
-        if nextDescribeKls:
-            result.extend(self.tokensIn(nextDescribeKls))
-        else:
-            result.extend(self.defaultKls)
-        result.append((OP, ')'))
-        return result, name
-
-    def makeSuper(self, nextDescribeKls, method):
-        if nextDescribeKls:
-            kls = self.tokensIn(nextDescribeKls)
-        else:
-            kls = self.defaultKls
-
-        result = [ (NAME, 'noy_sup_%s' % self.getEquivalence(method))
-                 , (OP, '(')
-                 , (NAME, 'super')
-                 , (OP, '(')
-                 ]
-
-        result.extend(kls)
-
-        result.extend(
-            [ (OP, ',')
-            , (NAME, 'self')
-            , (OP, ')')
-            , (OP, ')')
-            , (OP, ';')
-            ]
-        )
-
-        return result
-
-    def makeDescribeAttr(self, describe):
-        return [ (NEWLINE, '\n')
-               , (NAME, describe)
-               , (OP, '.')
-               , (NAME, 'is_noy_spec')
-               , (OP, '=')
-               , (NAME, 'True')
-               ]
-   
-    def makeNameModifier(self, kls, cleaned, english):
-        result = [ (NEWLINE, '\n') ]
-        
-        if kls:
-            result.extend(
-                [ (NAME, kls)
-                , (OP, '.')
-                ]
-            )
-
-        result.append((NAME, cleaned))
-
-        if kls:
-            result.extend(
-                [ (OP, '.')
-                , (NAME, "__func__")
-                ]
-            )
-
-        result.extend(
-            [ (OP, '.')
-            , (NAME, "__testname__")
-            , (OP, '=')
-            , (STRING, english)
-            ]
-        )
-        
-        return result
 
     ########################
     ###   TRANSLATE
@@ -257,7 +115,7 @@ class Tokeniser(object):
         emptyDescr = False
 
         # Looking at all the tokens
-        for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
+        for tokenum, value, (_, scol), (_, ecol), _ in self.tokens.generate(readline):
             # Sometimes we need to ignore stuff
             if ignoreNext:
                 nextIgnore = ignoreNext
@@ -319,7 +177,7 @@ class Tokeniser(object):
 
             #Determine if we have an it to close
             if startingAnIt and not endedIt and (value == ":" or tokenum == NEWLINE):
-                result.extend(self.endIt)
+                result.extend(self.tokens.endIt)
                 endedIt = True
 
             # Determining what to replace and with what ::
@@ -338,7 +196,7 @@ class Tokeniser(object):
                             inheritance = True
                             nextDescribeKls = describeStack[-1][1]
 
-                    res, name = self.makeDescribe(value, nextDescribeKls, inheritance)
+                    res, name = self.tokens.makeDescribe(self.acceptable(value, True), value, nextDescribeKls, inheritance)
                     describeStack.append([currentDescribeLevel, name])
                     allDescribes.append(name)
 
@@ -393,7 +251,7 @@ class Tokeniser(object):
                 elif value in ('before_each', 'after_each'):
                     skippedTest = False
                     emptyDescr = False
-                    result.extend(getattr(self, value))
+                    result.extend(getattr(self.tokens, value))
                     if describeStack:
                         expecting = [ (OP, ':')
                                     , (NEWLINE, '\n')
@@ -404,7 +262,7 @@ class Tokeniser(object):
 
                         adjustIndentAt.append(len(result))
                         result.append((INDENT, ''))
-                        result.extend(self.makeSuper(describeStack[-1][1], value))
+                        result.extend(self.tokens.makeSuper(describeStack[-1][1], value))
 
                 else:
                     skippedTest = False
@@ -420,7 +278,7 @@ class Tokeniser(object):
                     startingAnIt = True
                     cleaned = self.acceptable(value)
                     funcName = "test_%s" % cleaned
-                    result.extend(self.startFunction(funcName, withSelf=len(describeStack)))
+                    result.extend(self.tokens.startFunction(funcName, withSelf=len(describeStack)))
                     self.recordName(methodNames, describeStack, funcName, cleaned, value)
 
                 elif lastToken == 'ignore':
@@ -429,7 +287,7 @@ class Tokeniser(object):
                     startingAnIt = True
                     cleaned = self.acceptable(value)
                     funcName = "ignore__%s" % cleaned
-                    result.extend(self.startFunction(funcName, withSelf=len(describeStack)))
+                    result.extend(self.tokens.startFunction(funcName, withSelf=len(describeStack)))
                     self.recordName(methodNames, describeStack, funcName, cleaned, value)
 
                 else:
@@ -437,7 +295,7 @@ class Tokeniser(object):
                     justAppend = True
 
             elif tokenum == NEWLINE and lastToken != ':' and startingAnIt:
-                result.extend(self.testSkip)
+                result.extend(self.tokens.testSkip)
                 startingAnIt = False
                 skippedTest = True
                 justAppend = True
@@ -483,9 +341,9 @@ class Tokeniser(object):
                         lookAtSpace = False
 
         if startingAnIt and not endedIt:
-            result.extend(self.endIt)
+            result.extend(self.tokens.endIt)
             if lastToken != ':':
-                result.extend(self.testSkip)
+                result.extend(self.tokens.testSkip)
 
         # Remove trailing indents and dedents
         while result and result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
@@ -498,10 +356,10 @@ class Tokeniser(object):
             result.append((INDENT, ''))
 
             for describe in allDescribes:
-                result.extend(self.makeDescribeAttr(describe))
+                result.extend(self.tokens.makeDescribeAttr(describe))
         
         for kls, names in methodNames.items():
             for cleaned, english in names:
-                result.extend(self.makeNameModifier(kls, cleaned, english))
+                result.extend(self.tokens.makeNameModifier(kls, cleaned, english))
 
         return result
