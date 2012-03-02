@@ -1,3 +1,4 @@
+from textwrap import dedent
 from should_dsl import *
 from tokenize import *
 import cStringIO
@@ -19,8 +20,10 @@ class ResultIn(object):
             self._expected = untokenize(tokens)
         finally:
             s.close()
-            
-        return self._expected == self._radicand
+        
+        self._expected = dedent(self._expected).strip()
+        self._radicand = dedent(self._radicand).strip()
+        return self._expected == dedent(self._radicand).strip()
 
     def message_for_failed_should(self):
         return 'expected "{0}"\n======================>\n"{1}"\n\n======================$\n"{2}"'.format(
