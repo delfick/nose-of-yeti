@@ -27,13 +27,6 @@ class Tokens(object):
         self.defaultKls = tokensIn(defaultKls)
         self.constructReplacements()
 
-    ########################
-    ###   UTILITY
-    ########################
-        
-    def generate(self, readline):
-        return generate_tokens(readline)
-
     def getEquivalence(self, name):
         return { 'before_each' : 'setUp'
                , 'after_each'  : 'tearDown'

@@ -1,4 +1,5 @@
 from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN
+from tokenize import generate_tokens
 from tokens import Tokens, tokensIn
 import re
 
@@ -79,7 +80,7 @@ class Tokeniser(object):
         emptyDescr = False
 
         # Looking at all the tokens
-        for tokenum, value, (_, scol), (_, ecol), _ in self.tokens.generate(readline):
+        for tokenum, value, (_, scol), (_, ecol), _ in generate_tokens(readline):
             # Sometimes we need to ignore stuff
             if ignoreNext:
                 nextIgnore = ignoreNext
