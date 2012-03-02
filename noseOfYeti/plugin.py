@@ -1,9 +1,14 @@
+from test_chooser import TestChooser
 from nose.plugins import Plugin
 from tokeniser import Tokeniser
 from inspect import getmembers
 
 class Plugin(Plugin):
     name = "noseOfYeti"
+    
+    def __init__(self, *args, **kwargs):
+        self.test_chooser = TestChooser()
+        super(Plugin, self).__init__(*args, **kwargs)
 
     def options(self, parser, env={}):
         super(Plugin, self).options(parser, env)
@@ -67,37 +72,10 @@ class Plugin(Plugin):
             )
     
     def wantModule(self, mod):
-        self.done = {}
+        self.test_chooser.new_module()
         
     def wantMethod(self, method):
-        
-        if method.__name__.startswith("ignore__"):
-            return False
-        
-        if hasattr(method, '__test__') and not method.__test__:
-            return False
-        
-        kls = method.im_class
-        if not kls:
-            # im_class seems to be None in pypy
-            kls = [v for k, v in getmembers(method) if k == 'im_self'][0].__class__
-               
-        if kls.__name__ in self.ignoreKls:
-            return False
-        
-        if hasattr(kls, 'is_noy_spec'):
-            if method.__name__ in kls.__dict__ \
-            and method.__name__.startswith("test_"):
-                key = '%s.%s' % (kls.__name__, method.__name__)
-                if key not in self.done:
-                    self.done[key] = True
-                    return True
-                
-                return False
-        else:
-            return None
-        
-        return False
+        return self.test_chooser.consider(method, self.ignoreKls)
         
     def configure(self, options, conf):
         super(Plugin, self).configure(options, conf)
