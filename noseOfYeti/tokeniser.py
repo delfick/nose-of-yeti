@@ -5,7 +5,6 @@ import cStringIO
 import encodings
 import codecs
 import re
-from string import join
 
 regexes = {
       'joins': re.compile('[- /]')
@@ -14,60 +13,27 @@ regexes = {
     , 'repeated_underscore': re.compile('_{2,}')
     }
 
-class Tokeniser(object):
+########################
+###   REGISTER
+########################
 
-    def __init__(self, defaultKls='object', extraImports=None, withDefaultImports=True, withDescribeAttrs=True, withoutShouldDsl=False):
-        self.withDefaultImports = withDefaultImports
-        self.withDescribeAttrs = withDescribeAttrs
-        self.withoutShouldDsl = withoutShouldDsl
-        self.defaultImports = self.determineImports(extraImports)
-        self.defaultKls = self.tokensIn(defaultKls)
-        self.constructReplacements()
-
-    ########################
-    ###   REGISTER
-    ########################
-
+class TokeniserCodec(object):
+    def __init__(self, tokeniser):
+        self.tokeniser = tokeniser
+    
     def register(self):
-
-        def outputForDebugging(stream, data):
-            """It will write the translated version of the file"""
-            with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
-        
-        def dealwith(readline):
-            data = []
-            try:
-                # We pass in the data variable as an argument so that we
-                # get partial output even in the case of an exception.
-                self.translate(readline, data)
-            except Exception as e:
-                # Comment out partial output so that it doesn't result in
-                # a syntax error when received by the interpreter.
-                data = '\n'.join([
-                      re.sub('^', '#', untokenize(data), 0, re.MULTILINE)
-                    , 'raise Exception("""--- internal spec codec error ---\n%s""")' % e
-                    ])
-                # Join two lines at the beginning of the partial output so that
-                # we get the exception in the right line and still can see
-                # all code in the debug output.
-                data = ''.join(data.split('\n', 2))
-            else:
-                data = untokenize(data)
-            
-            return data
-        
         class StreamReader(utf_8.StreamReader):
             # Normal python uses StreamRader
             def __init__(sr, stream, *args, **kwargs):
                 codecs.StreamReader.__init__(sr, stream, *args, **kwargs)
-                data = dealwith(sr.stream.readline)
+                data = self.dealwith(sr.stream.readline)
                 sr.stream = cStringIO.StringIO(data)
         
         def decode(text, *args):
             # pypy uses decode
             utf8 = encodings.search_function('utf8') # Assume utf8 encoding
             reader = utf8.streamreader(cStringIO.StringIO(text))
-            data = dealwith(reader.readline)
+            data = self.dealwith(reader.readline)
             return unicode(data), len(data)
 
         def searchFunction(s):
@@ -84,6 +50,49 @@ class Tokeniser(object):
                 )
 
         codecs.register(searchFunction)
+    
+    def dealwith(readline):
+        data = []
+        try:
+            # We pass in the data variable as an argument so that we
+            # get partial output even in the case of an exception.
+            self.tokeniser.translate(readline, data)
+        except Exception as e:
+            # Comment out partial output so that it doesn't result in
+            # a syntax error when received by the interpreter.
+            data = '\n'.join([
+                  re.sub('^', '#', untokenize(data), 0, re.MULTILINE)
+                , 'raise Exception("""--- internal spec codec error ---\n%s""")' % e
+                ])
+            # Join two lines at the beginning of the partial output so that
+            # we get the exception in the right line and still can see
+            # all code in the debug output.
+            data = ''.join(data.split('\n', 2))
+        else:
+            data = untokenize(data)
+        
+        return data
+        
+    def outputForDebugging(stream, data):
+        """It will write the translated version of the file"""
+        with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)
+
+########################
+###   Tokeniser
+########################
+
+class Tokeniser(object):
+
+    def __init__(self
+        , defaultKls='object', extraImports=None, withDefaultImports=True
+        , withDescribeAttrs=True, withoutShouldDsl=False
+        ):
+        self.withDefaultImports = withDefaultImports
+        self.withDescribeAttrs = withDescribeAttrs
+        self.withoutShouldDsl = withoutShouldDsl
+        self.defaultImports = self.determineImports(extraImports)
+        self.defaultKls = self.tokensIn(defaultKls)
+        self.constructReplacements()
 
     ########################
     ###   UTILITY

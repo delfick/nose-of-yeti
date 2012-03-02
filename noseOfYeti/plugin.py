@@ -1,6 +1,6 @@
+from tokeniser import Tokeniser, TokeniserCodec
 from test_chooser import TestChooser
 from nose.plugins import Plugin
-from tokeniser import Tokeniser
 from inspect import getmembers
 
 class Plugin(Plugin):
@@ -89,4 +89,4 @@ class Plugin(Plugin):
                            , extraImports       = ';'.join([d for d in options.extraImport if d])
                            , defaultKls         = options.defaultKls
                            )
-            tok.register()
+            TokeniserCodec(tok).register()
