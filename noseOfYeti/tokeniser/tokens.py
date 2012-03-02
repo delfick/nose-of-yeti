@@ -1,9 +1,31 @@
 from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN
 from tokenize import generate_tokens
 
+########################
+###   TOKENS IN GENERATOR
+########################
+    
+def tokensIn(s, strip_it=True):
+    closure = {'processed': False}
+    def get():
+        if closure['processed']:
+            return ''
+        
+        closure['processed'] = True
+        if strip_it:
+            return s.strip()
+        else:
+            return s
+    return [(t, v) for t, v, _, _, _ in generate_tokens(get)][:-1]
+
+########################
+###   TOKENS
+########################
+
 class Tokens(object):
     def __init__(self, defaultKls):
-        self.defaultKls = self.tokensIn(defaultKls)
+        self.defaultKls = tokensIn(defaultKls)
+        self.constructReplacements()
 
     ########################
     ###   UTILITY
@@ -12,29 +34,14 @@ class Tokens(object):
     def generate(self, readline):
         return generate_tokens(readline)
 
-    def tokensIn(self, s, strip_it=True):
-        self.taken = False
-        def get():
-            #Making generate_tokens not loop forever
-            if not self.taken:
-                self.taken = True
-                if strip_it:
-                    return s.strip()
-                else:
-                    return s
-            else:
-                return ''
-
-        return [(t, v) for t, v, _, _, _ in generate_tokens(get)][:-1]
-
-    ########################
-    ###   MAKERS
-    ########################
-
     def getEquivalence(self, name):
         return { 'before_each' : 'setUp'
                , 'after_each'  : 'tearDown'
                }.get(name, name)
+
+    ########################
+    ###   Initializers
+    ########################
 
     def constructReplacements(self):
         self.before_each = [
@@ -61,6 +68,10 @@ class Tokens(object):
 
         self.endIt = [ (OP, ')')]
 
+    ########################
+    ###   MAKERS
+    ########################
+
     def startFunction(self, funcName, withSelf=True):
         lst =  [
               (NAME, funcName)
@@ -85,7 +96,7 @@ class Tokens(object):
                  , (OP, '(')
                  ]
         if nextDescribeKls:
-            result.extend(self.tokensIn(nextDescribeKls))
+            result.extend(tokensIn(nextDescribeKls))
         else:
             result.extend(self.defaultKls)
         result.append((OP, ')'))
@@ -93,7 +104,7 @@ class Tokens(object):
 
     def makeSuper(self, nextDescribeKls, method):
         if nextDescribeKls:
-            kls = self.tokensIn(nextDescribeKls)
+            kls = tokensIn(nextDescribeKls)
         else:
             kls = self.defaultKls
 

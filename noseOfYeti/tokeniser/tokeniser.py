@@ -1,5 +1,5 @@
 from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN
-from tokens import Tokens
+from tokens import Tokens, tokensIn
 import re
 
 regexes = {
@@ -10,18 +10,10 @@ regexes = {
     }
 
 class Tokeniser(object):
-
-    def __init__(self
-        , defaultKls='object', extraImports=None, withDefaultImports=True
-        , withDescribeAttrs=True, withoutShouldDsl=False
-        ):
+    def __init__(self, defaultKls='object', withDescribeAttrs=True, importTokens=None):
         self.tokens = Tokens(defaultKls)
-        self.defaultKls = self.tokens.defaultKls
-        self.withDefaultImports = withDefaultImports
+        self.importTokens = importTokens
         self.withDescribeAttrs = withDescribeAttrs
-        self.withoutShouldDsl = withoutShouldDsl
-        self.defaultImports = self.determineImports(extraImports)
-        self.tokens.constructReplacements()
 
     ########################
     ###   UTILITY
@@ -35,35 +27,6 @@ class Tokeniser(object):
             v = record.get(kls, [])
             v.append((use, english))
             record[kls] = v
-
-    def determineImports(self, extra):
-        default = []
-
-        if extra:
-            if type(extra) in (str, unicode):
-                default.extend(self.tokens.tokensIn(extra))
-            else:
-                for d in extra:
-                    if d[0] == NEWLINE:
-                        # I want to make sure the extra imports don't 
-                        # Take up extra lines in the code than the "# coding: spec"
-                        default.append((OP, ';'))
-                    else:
-                        default.append(d)
-
-        if self.withDefaultImports:
-            if default and tuple(default[-1]) != (OP, ';'):
-                default.append((OP, ';'))
-
-            should_dsl = "from should_dsl import *;"
-            if self.withoutShouldDsl:
-                should_dsl = ""
-            
-            default.extend(
-                self.tokens.tokensIn('import nose; from nose.tools import *; %s from noseOfYeti.noy_helper import *;' % should_dsl)
-            )
-
-        return default
 
     def acceptable(self, value, capitalize=False):
         name = regexes['punctuation'].sub("", regexes['joins'].sub("_", value))
@@ -88,8 +51,9 @@ class Tokeniser(object):
     def translate(self, readline, result=None):
         if result is None:
             result = []
-
-        result.extend([d for d in self.defaultImports])
+        
+        if self.importTokens:
+            result.extend([d for d in self.importTokens])
 
         currentDescribeLevel = 0
 

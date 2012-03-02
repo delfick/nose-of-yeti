@@ -4,8 +4,8 @@ from matchers import *
 
 class Test_Tokeniser_Complex(object):
     def setUp(self):
-        self.toka = Tokeniser(withDefaultImports=False)
-        self.tokb = Tokeniser(withDefaultImports=False, defaultKls = 'other')
+        self.toka = Tokeniser()
+        self.tokb = Tokeniser(defaultKls = 'other')
         
         ###   SMALL EXAMPLE
         
