@@ -1,3 +1,4 @@
+from tokenize import untokenize
 from encodings import utf_8
 from string import capwords
 import cStringIO
@@ -43,7 +44,7 @@ class TokeniserCodec(object):
         # Do the register
         codecs.register(searchFunction)
     
-    def dealwith(readline):
+    def dealwith(self, readline):
         """
             Replace the contents of spec file with the translated version
             readline should be a callable object
