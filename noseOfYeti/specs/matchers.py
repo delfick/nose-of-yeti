@@ -14,6 +14,7 @@ class ResultIn(object):
 
     def match(self, actual):
         tokeniser, self._actual = actual
+        self._actual = dedent(self._actual).strip()
         s = cStringIO.StringIO(self._actual)
         try:
             tokens = tokeniser.translate(s.readline)

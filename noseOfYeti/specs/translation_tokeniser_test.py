@@ -119,27 +119,28 @@ class Test_Tokenisor_translation(object):
             it 'asdf2'"""
         
         desired = """
-class TestA (object ):
-    def test_asdf (self ):
-        l =[True 
-        ,False 
-        ,1 
-        ,2 
-        ]
+        class TestA (object ):
+            def test_asdf (self ):
+                l =[True 
+                ,False 
+                ,1 
+                ,2 
+                ]
 
-        t =(1 
-        ,2 
-        ,3 
-        ,4 
-        ,5 ,
-        )
+                t =(1 
+                ,2 
+                ,3 
+                ,4 
+                ,5 ,
+                )
 
-        d ={'asdf':True }
+                d ={'asdf':True }
 
-        t2 =(True 
-        ,False 
-        )
-    def test_asdf2 (self ):raise nose.SkipTest """
+                t2 =(True 
+                ,False 
+                )
+            def test_asdf2 (self ):raise nose.SkipTest 
+        """
     
         (self.toka, test) |should| result_in(desired)
             
@@ -156,15 +157,16 @@ class TestA (object ):
                 print 'hi'"""
         
         desired = """
-class TestThing (object ):
-    def test_should_be_skipped (self ):raise nose.SkipTest 
-    def test_shouldnt_be_skipped (self ):
-        print 'hi'
+        class TestThing (object ):
+            def test_should_be_skipped (self ):raise nose.SkipTest 
+            def test_shouldnt_be_skipped (self ):
+                print 'hi'
 
-    def test_another_that_should_be_skipped (self ):raise nose.SkipTest 
+            def test_another_that_should_be_skipped (self ):raise nose.SkipTest 
 
-    def test_another_that_shouldnt_be_skipped (self ):
-        print 'hi'"""
+            def test_another_that_shouldnt_be_skipped (self ):
+                print 'hi'
+        """
         
         (self.toka, test) |should| result_in(desired)
     
@@ -176,28 +178,32 @@ class TestThing (object ):
                 pass'''
         
         desired = '''
-class TestThing (object ):
-    def test_should_be_skipped (self ):raise nose.SkipTest 
-class TestThing_That (TestThing ):
-    pass '''
+        class TestThing (object ):
+            def test_should_be_skipped (self ):raise nose.SkipTest 
+        class TestThing_That (TestThing ):
+            pass 
+        '''
         (self.toka, test) |should| result_in(desired)
         
     def test_indentation_should_work_for_inline_python_code(self):
         test = '''
-describe 'this':
-    describe 'that':
-        pass
+        describe 'this':
+            describe 'that':
+                pass
 
-class SomeMockObject(object):
-    def indented_method()'''
+        class SomeMockObject(object):
+            def indented_method()
+        '''
 
         desired = '''
-class TestThis (object ):pass 
-class TestThis_That (TestThis ):
-    pass 
+        class TestThis (object ):pass 
+        class TestThis_That (TestThis ):
+            pass 
 
-class SomeMockObject (object ):
-    def indented_method ()'''
+        class SomeMockObject (object ):
+            def indented_method ()
+        '''
+        
         (self.toka, test) | should | result_in(desired)
 
     def test_it_should_give_setups_super_call_when_in_describes(self):
@@ -208,9 +214,10 @@ class SomeMockObject (object ):
         '''
         
         desired = '''
-class TestThing (object ):
-    def setUp (self ):
-        noy_sup_setUp (super (TestThing ,self ));self .x =5 '''
+        class TestThing (object ):
+            def setUp (self ):
+                noy_sup_setUp (super (TestThing ,self ));self .x =5 
+        '''
         
         (self.toka, test) |should| result_in(desired)
         # and with tabs
@@ -230,9 +237,10 @@ class TestThing (object ):
         '''
         
         desired = '''
-class TestThing (object ):
-    def tearDown (self ):
-        noy_sup_tearDown (super (TestThing ,self ));self .x =5 '''
+        class TestThing (object ):
+            def tearDown (self ):
+                noy_sup_tearDown (super (TestThing ,self ));self .x =5 
+        '''
         
         (self.toka, test) |should| result_in(desired)
         # and with tabs
@@ -267,8 +275,9 @@ class TestThing (object ):
         '''
         
         desired = '''%s
-class TestThisThing (unittest .TestCase ):pass 
-class TestAnotherThing (%s ):pass '''
+        class TestThisThing (unittest .TestCase ):pass 
+        class TestAnotherThing (%s ):pass 
+        '''
         
         (self.toka, test) |should| result_in(desired % ('', 'object'))
         (self.tokb, test) |should| result_in(desired % ('', 'other'))
@@ -293,16 +302,18 @@ class TestAnotherThing (%s ):pass '''
         desired = '''
         def test_root_level_should_work_well ():raise nose.SkipTest 
             3 |should |be (4 )
-class TestSomeTests (%s ):
-    def test_doesnt_get_phased_by_special_characters (self ):raise nose.SkipTest 
+        class TestSomeTests (%s ):
+            def test_doesnt_get_phased_by_special_characters (self ):raise nose.SkipTest 
 
-class TestSomeTests_NestedDescribe (TestSomeTests ):
-    def test_asdf_asdf (self ):
-        1 |should |be (2 )
-def test_root_level_should_also_work ():raise nose.SkipTest 
-test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
-test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
-TestSomeTests_NestedDescribe .test_asdf_asdf .__func__ .__testname__ ="asdf $%% asdf"
-TestSomeTests .test_doesnt_get_phased_by_special_characters .__func__ .__testname__ ="doesn't get phased by $special characters"'''
+        class TestSomeTests_NestedDescribe (TestSomeTests ):
+            def test_asdf_asdf (self ):
+                1 |should |be (2 )
+        def test_root_level_should_also_work ():raise nose.SkipTest 
+        test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
+        test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
+        TestSomeTests_NestedDescribe .test_asdf_asdf .__func__ .__testname__ ="asdf $%% asdf"
+        TestSomeTests .test_doesnt_get_phased_by_special_characters .__func__ .__testname__ ="doesn't get phased by $special characters"
+        '''
+        
         (self.toka, test) |should| result_in(desired % "object")
         (self.tokb, test) |should| result_in(desired % "other")

@@ -19,11 +19,12 @@ class Test_Tokeniser_Nesting(object):
         describe "Another":pass '''
         ,
         '''
-class TestThis (%(o)s ):pass 
-class TestThis_That (TestThis ):pass 
-class TestThis_That_Meh (TestThis_That ):pass 
-class TestThis_Blah (TestThis ):pass 
-class TestAnother (%(o)s ):pass '''
+        class TestThis (%(o)s ):pass 
+        class TestThis_That (TestThis ):pass 
+        class TestThis_That_Meh (TestThis_That ):pass 
+        class TestThis_Blah (TestThis ):pass 
+        class TestAnother (%(o)s ):pass 
+        '''
         ]
         
         ###   SMALL EXAMPLE (WITH PATH FOR BW COMPAT)
@@ -37,11 +38,12 @@ class TestAnother (%(o)s ):pass '''
         describe "Another":pass '''
         ,
         '''
-class TestThis (%(o)s ):pass 
-class TestThis_That (TestThis ):pass 
-class TestThis_That_Meh (TestThis_That ):pass 
-class TestThis_Blah (TestThis ):pass 
-class TestAnother (%(o)s ):pass '''
+        class TestThis (%(o)s ):pass 
+        class TestThis_That (TestThis ):pass 
+        class TestThis_That_Meh (TestThis_That ):pass 
+        class TestThis_Blah (TestThis ):pass 
+        class TestAnother (%(o)s ):pass 
+        '''
         ]
         
         ###   BIG EXAMPLE
@@ -75,30 +77,31 @@ class TestAnother (%(o)s ):pass '''
         '''
         ,
         '''
-class TestThis (%(o)s ):
-    def test_should (self ):
-        if x :
-            pass 
-        else :
-            x +=9 
-class TestThis_That (TestThis ):pass 
-class TestThis_That_Meh (TestThis_That ):
-    def test_should (self ):
-        if y :
-            pass 
-        else :
-            pass 
-class TestThis_Blah (TestThis ):pass 
-class TestAnother (%(o)s ):
-    def test_should (self ):
-        if z :
-            if u :
-                print "hello \
+        class TestThis (%(o)s ):
+            def test_should (self ):
+                if x :
+                    pass 
+                else :
+                    x +=9 
+        class TestThis_That (TestThis ):pass 
+        class TestThis_That_Meh (TestThis_That ):
+            def test_should (self ):
+                if y :
+                    pass 
+                else :
+                    pass 
+        class TestThis_Blah (TestThis ):pass 
+        class TestAnother (%(o)s ):
+            def test_should (self ):
+                if z :
+                    if u :
+                        print "hello \
                             there"
-            else :
-                print "no"
-        else :
-            pass '''
+                    else :
+                        print "no"
+                else :
+                    pass 
+        '''
         ]
         
     ###   TESTS
