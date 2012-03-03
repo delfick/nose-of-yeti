@@ -8,9 +8,11 @@ class Test_Tokeniser(object):
         imports = determineImports(withDefaultImports=False)
         tok = Tokeniser(importTokens = imports)
         (tok, 'describe "Something testable"') |should| result_in(
-        '''class TestSomethingTestable (object )
+        '''
+        class TestSomethingTestable (object )
 
-TestSomethingTestable .is_noy_spec =True '''
+        TestSomethingTestable .is_noy_spec =True 
+        '''
         )
     
     def test_it_should_be_possible_to_turn_off_attributes(self):
@@ -26,21 +28,9 @@ TestSomethingTestable .is_noy_spec =True '''
         imports = determineImports(extraImports='import another.class')
         tok = Tokeniser(importTokens=imports)
         tok.importTokens |should_not| contain([NEWLINE, '\n'])
-        (tok, '') |should| result_in('import another .class ;import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .noy_helper import *;')
-    
-    def test_it_should_default_to_giving_describes_base_of_object(self):
-        tok = Tokeniser()
-        tok.tokens.defaultKls |should| equal_to([(NAME, 'object')])
-    
-    def test_it_should_handle_custom_base_class_for_describes(self):
-        tok = Tokeniser(defaultKls='django.test.TestCase')
-        tok.tokens.defaultKls |should| equal_to([
-              (NAME, 'django')
-            , (OP,   '.')
-            , (NAME, 'test')
-            , (OP,   '.')
-            , (NAME, 'TestCase')
-            ])
+        (tok, '') |should| result_in(
+            'import another .class ;import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .noy_helper import *;'
+        )
     
     def test_it_should_have_no_default_imports_by_default(self):
         tok = Tokeniser()
@@ -54,4 +44,6 @@ TestSomethingTestable .is_noy_spec =True '''
     def test_it_should_import_nose_and_nose_helpers_and_should_dsl_by_default(self):
         imports = determineImports()
         tok = Tokeniser(importTokens=imports)
-        (tok, '') |should| result_in('import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .noy_helper import *;')
+        (tok, '') |should| result_in(
+            'import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .noy_helper import *;'
+        )
