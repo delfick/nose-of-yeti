@@ -240,56 +240,6 @@ class Tracker(object):
             self.afterSpace = self.isSpace
 
     ########################
-    ###   UTILITY
-    ########################
-        
-    def addTokens(self, tokens):
-        """Add tokens to result"""
-        self.result.extend([d for d in tokens])
-    
-    def resetIndentation(self, amount):
-        """Replace previous indentation with desired amount"""
-        while self.result and self.result[-1][0] == INDENT:
-            self.result.pop()
-        self.result.append((INDENT, amount))
-    
-    def ignore_token(self):
-        """Determine if we should ignore current token"""
-        if self.ignoreNext:
-            nextIgnore = self.ignoreNext
-            if type(nextIgnore) in (list, tuple):
-                nextIgnore = self.ignoreNext.pop(0)
-            
-            if nextIgnore == (self.current.tokenum, self.current.value):
-                return True
-            else:
-                self.nextIgnore = None
-                return False
-    
-    def makeMethodNames(self):
-        """Create tokens for setting __testname__ on functions"""
-        lst = []
-        for group in self.allGroups:
-            for single in group.singles:
-                name, english = single.name, single.english
-                if english[1:-1] != name.replace('_', ' '):
-                    lst.extend(self.tokens.makeNameModifier(not group.root, single.identifier, english))
-        return lst
-    
-    def makeDescribeAttrs(self):
-        """Create tokens for setting is_noy_spec on describes"""
-        lst = []
-        if self.allGroups:
-            lst.append((NEWLINE, '\n'))
-            lst.append((INDENT, ''))
-
-            for group in self.allGroups:
-                if group.name:
-                    lst.extend(self.tokens.makeDescribeAttr(group.klsName))
-        
-        return lst
-
-    ########################
     ###   PROGRESS
     ########################
             
@@ -380,6 +330,56 @@ class Tracker(object):
         # Just append if token should be
         if justAppend:
             self.result.append([tokenum, value])
+
+    ########################
+    ###   UTILITY
+    ########################
+        
+    def addTokens(self, tokens):
+        """Add tokens to result"""
+        self.result.extend([d for d in tokens])
+    
+    def resetIndentation(self, amount):
+        """Replace previous indentation with desired amount"""
+        while self.result and self.result[-1][0] == INDENT:
+            self.result.pop()
+        self.result.append((INDENT, amount))
+    
+    def ignore_token(self):
+        """Determine if we should ignore current token"""
+        if self.ignoreNext:
+            nextIgnore = self.ignoreNext
+            if type(nextIgnore) in (list, tuple):
+                nextIgnore = self.ignoreNext.pop(0)
+            
+            if nextIgnore == (self.current.tokenum, self.current.value):
+                return True
+            else:
+                self.nextIgnore = None
+                return False
+    
+    def makeMethodNames(self):
+        """Create tokens for setting __testname__ on functions"""
+        lst = []
+        for group in self.allGroups:
+            for single in group.singles:
+                name, english = single.name, single.english
+                if english[1:-1] != name.replace('_', ' '):
+                    lst.extend(self.tokens.makeNameModifier(not group.root, single.identifier, english))
+        return lst
+    
+    def makeDescribeAttrs(self):
+        """Create tokens for setting is_noy_spec on describes"""
+        lst = []
+        if self.allGroups:
+            lst.append((NEWLINE, '\n'))
+            lst.append((INDENT, ''))
+
+            for group in self.allGroups:
+                if group.name:
+                    lst.extend(self.tokens.makeDescribeAttr(group.klsName))
+        
+        return lst
 
     ########################
     ###   ADD TOKENS
