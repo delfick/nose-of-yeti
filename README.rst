@@ -50,3 +50,11 @@ This patch will enable hierarchichal output of specifications, like this::
     etc.
 
 Please download the patch from <https://github.com/jerico-dev/pinocchio/commit/b7f76560d5664a99ed5de7315d21c4727fe5b905.patch>.
+
+Using with Pylint
+=================
+
+It is possible to use pylint with a noseOfYeti spec. All you have to do is add 'noseOfYeti.pylint_plugin' to pylint's 'load-plugins' option.
+This plugin will register the spec codec so that it can use it to determine what is in a spec file.
+
+The codec will also make an effort to return lines from the original file (with normalized indentation) so that you don't get too many errors about bad spacing. (codec doesn't have any control over spaces between things)

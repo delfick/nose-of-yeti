@@ -117,7 +117,6 @@ class Tokens(object):
             , (NAME, 'self')
             , (OP, ')')
             , (OP, ')')
-            , (OP, ';')
             ]
         )
         

@@ -45,6 +45,7 @@ describe 'numbers':
         
         describe "let's change a number":
             before_each:
+                
                 self.number1 = 4
             
             it 'should have changed number1 but kept others':
@@ -57,7 +58,7 @@ describe 'numbers':
 ### Note that I did clean it up very slightly
 ########################
 
-import nose; from nose.tools import *; from should_dsl import *; from noseOfYeti.noy_helper import *;
+import nose; from nose.tools import *; from should_dsl import *; from noseOfYeti.noy_helper import *
 
 def test_can_exist_without_a_describe(): raise nose.SkipTest
 
@@ -78,7 +79,8 @@ class Test_numbers(object):
 
 class Test_numbers_testing_number_3(Test_numbers):
     def setUp(self):
-        noy_sup_setUp (super (TestThing ,self )); self.number3 = 3
+        noy_sup_setUp (super (TestThing ,self ))
+        self.number3 = 3
 
     def test_should_have_number1_from_the_lower_level_describe(self):
         self.number1 | should| equal_to(1)

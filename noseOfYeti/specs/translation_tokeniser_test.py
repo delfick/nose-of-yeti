@@ -445,4 +445,35 @@ class Test_Tokenisor_translation(object):
         (self.toka, test) |should| result_in(desired)
         (self.tokb, test) |should| result_in(desired)
         
+    def test_it_doesnt_add_semicolon_after_noy_setup_if_not_necessary(self):
+        test = '''
+            describe "block with necessary semicolon":
+                before_each:
+                    two = 1 + 1
+            
+            describe "block with unecessary semiclon":
+                before_each:
+                    #comment
+                    pass
+                
+                after_each:
+                    
+                    pass
+        '''
         
+        desired = '''
+        class TestBlockWithNecessarySemicolon (%(dflt)s ):
+            def setUp (self ):
+                noy_sup_setUp (super (TestBlockWithNecessarySemicolon ,self ));two =1 +1 
+
+        class TestBlockWithUnecessarySemiclon (%(dflt)s ):
+            def setUp (self ):
+                noy_sup_setUp (super (TestBlockWithUnecessarySemiclon ,self ))#comment
+                pass 
+
+            def tearDown (self ):
+                noy_sup_tearDown (super (TestBlockWithUnecessarySemiclon ,self ))
+                pass
+        '''
+        (self.toka, test) |should| result_in(desired % {'dflt': "object"})
+        (self.tokb, test) |should| result_in(desired % {'dflt': "other"})

@@ -25,7 +25,7 @@ def determine_imports(with_default_imports=True, without_should_dsl=False, extra
             should_dsl = ""
         
         default.extend(
-            tokens_in('import nose; from nose.tools import *; %s from noseOfYeti.noy_helper import *;' % should_dsl)
+            tokens_in('import nose; from nose.tools import *; %s from noseOfYeti.noy_helper import *' % should_dsl)
         )
     
     return default

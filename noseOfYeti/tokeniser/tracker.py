@@ -1,4 +1,4 @@
-from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN
+from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMMENT
 from contextlib import contextmanager
 import re
 
@@ -29,6 +29,7 @@ class Tracker(object):
         
         self.indent_type = ' '
         self.after_space = True
+        self.inserted_line = False
         self.just_ended_container = False
         self.just_started_container = False
     
@@ -65,6 +66,16 @@ class Tracker(object):
             
             # Change indentation as necessary
             self.determine_indentation()
+            
+            # If we have a newline after an inserted line, then we don't need to worry about semicolons
+            if self.inserted_line and self.current.tokenum == NEWLINE:
+                self.inserted_line = False
+            
+            # If we have a non space, non comment after an inserted line, then insert a semicolon
+            if self.result and not self.is_space and self.inserted_line:
+                if self.current.tokenum != COMMENT:
+                    self.result.append((OP, ';'))
+                self.inserted_line = False
             
             # Progress the tracker
             self.progress()
@@ -254,6 +265,9 @@ class Tracker(object):
             
             # Add tokens for super call
             self.result.extend(self.tokens.make_super(self.indent_type * self.current.scol, self.groups.kls_name, value))
+            
+            # Tell the machine we inserted a line
+            self.inserted_line = True
             
             # Make sure colon and newline are ignored
             # Already added as part of making super
