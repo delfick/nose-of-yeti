@@ -1,12 +1,12 @@
 from noseOfYeti.tokeniser import Tokeniser
 from should_dsl import *
 from matchers import *
- 
+
 class Test_Tokenisor_translation(object):
     def setUp(self):
         self.toka = Tokeniser(with_describe_attrs=False)
         self.tokb = Tokeniser(with_describe_attrs=False, default_kls = 'other')
-        
+    
     def test_it_should_translate_a_describe(self):
         (self.toka, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object ):pass')
         (self.tokb, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (other ):pass')
@@ -14,7 +14,7 @@ class Test_Tokenisor_translation(object):
         # Same tests, but with newlines in front
         (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (object ):pass')
         (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (other ):pass')
-        
+    
     def test_it_should_translate_an_it(self):
         (self.toka, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing ():')
         (self.tokb, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing ():')
@@ -37,7 +37,8 @@ class Test_Tokenisor_translation(object):
             )
         (self.tokb, '\nit "should do this thing", blah, meh:') |should| result_in(
             '\ndef test_should_do_this_thing (blah ,meh ):'
-            )    
+            )
+    
     def test_it_should_add_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
         (self.toka, 'it "should do this thing", blah, meh') |should| result_in(
             'def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest '
@@ -53,7 +54,7 @@ class Test_Tokenisor_translation(object):
         (self.tokb, '\nit "should do this thing", blah, meh') |should| result_in(
             '\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest '
             )
-        
+    
     def test_it_should__not_add_arguments_to_its_if_not_declared_on_same_line(self):
         (self.toka, 'it "should do this thing"\n, blah, meh') |should| result_in(
             "def test_should_do_this_thing ():raise nose.SkipTest \n,blah ,meh "
@@ -69,7 +70,7 @@ class Test_Tokenisor_translation(object):
         (self.tokb, '\nit "should do this thing"\n, blah, meh') |should| result_in(
             "\ndef test_should_do_this_thing ():raise nose.SkipTest \n,blah ,meh "
             )
-        
+    
     def test_it_should_turn_an_it_without_colon_into_skippable(self):
         (self.toka, 'it "should be skipped"\n') |should| result_in(
             'def test_should_be_skipped ():raise nose.SkipTest '
@@ -87,7 +88,7 @@ class Test_Tokenisor_translation(object):
         (self.toka, '\nit "should not be skipped":\n') |should| result_in(
             '\ndef test_should_not_be_skipped ():'
         )
-        
+    
     def test_it_should_turn_before_each_into_setup(self):
         (self.toka, 'before_each:') |should| result_in('def setUp (self ):')
         

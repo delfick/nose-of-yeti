@@ -1,7 +1,7 @@
 from noseOfYeti.tokeniser import Tokeniser
 from should_dsl import *
 from matchers import *
- 
+
 class Test_Tokeniser_Nesting(object):
     def setUp(self):
         self.toka = Tokeniser(with_describe_attrs=False)
@@ -115,7 +115,7 @@ class Test_Tokeniser_Nesting(object):
         test, desired = [d.replace('    ', '\t') for d in self.small_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-        
+    
     def test_it_should_work_with_space_and_inline_pass(self):
         test, desired = self.small_example_with_pass
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
@@ -125,12 +125,12 @@ class Test_Tokeniser_Nesting(object):
         test, desired = [d.replace('    ', '\t') for d in self.small_example_with_pass]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-        
+    
     def test_it_should_keep_good_indentation_in_body_with_spaces(self):
         test, desired = self.big_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-        
+    
     def test_it_should_keep_good_indentation_in_body_with_tabs(self):
         test, desired = [d.replace('    ', '\t') for d in self.big_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})

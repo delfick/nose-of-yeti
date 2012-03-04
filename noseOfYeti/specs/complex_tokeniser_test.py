@@ -39,7 +39,7 @@ class Test_Tokeniser_Complex(object):
         class TestAnother (%(o)s ):
             def setUp (self ):
                 noy_sup_setUp (super (TestAnother ,self ));self .z =8 
-
+        
         TestThis .is_noy_spec =True 
         TestThis_That .is_noy_spec =True 
         TestThis_That_Meh .is_noy_spec =True 
@@ -129,7 +129,7 @@ class Test_Tokeniser_Complex(object):
                         print "no"
                 else :
                     pass 
-
+        
         TestThis .is_noy_spec =True 
         TestThis_That .is_noy_spec =True 
         TestThis_That_Meh .is_noy_spec =True 
@@ -139,7 +139,7 @@ class Test_Tokeniser_Complex(object):
         TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__func__ .__testname__ ="should set __testname__ for non alpha names ' $^"
         '''
         ]
-        
+    
     ###   TESTS
     
     def test_it_should_work_with_space(self):

@@ -35,7 +35,7 @@ class Tracker(object):
         
         # Make sure we output eveything
         self.finish_hanging()
-
+        
         # Remove trailing indents and dedents
         while len(self.result) > 1 and self.result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
             self.result.pop(-2)
@@ -71,11 +71,11 @@ class Tracker(object):
             
             # Set after_space so next line knows if it is after space
             self.after_space = self.is_space
-
+    
     ########################
     ###   PROGRESS
     ########################
-            
+    
     def progress(self):
         """
             Deal with next token
@@ -145,7 +145,7 @@ class Tracker(object):
                 
             elif value in ('it', 'ignore'):
                 self.single = self.groups.start_single(value, scol)
-
+            
             elif value in ('before_each', 'after_each'):
                 self.add_tokens_for_test_helpers(value)
             
@@ -163,7 +163,7 @@ class Tracker(object):
         # Just append if token should be
         if just_append:
             self.result.append([tokenum, value])
-
+    
     ########################
     ###   UTILITY
     ########################
@@ -207,13 +207,13 @@ class Tracker(object):
         if self.all_groups:
             lst.append((NEWLINE, '\n'))
             lst.append((INDENT, ''))
-
+            
             for group in self.all_groups:
                 if group.name:
                     lst.extend(self.tokens.make_describe_attr(group.kls_name))
         
         return lst
-
+    
     ########################
     ###   ADD TOKENS
     ########################
@@ -234,7 +234,7 @@ class Tracker(object):
             , (INDENT, self.indent_type * self.current.scol)
             ]
         )
-        
+    
     def add_tokens_for_test_helpers(self, value):
         """Add setup/teardown function to group"""
         # Add tokens for this block
@@ -251,7 +251,7 @@ class Tracker(object):
             
             # Make sure colon and newline are ignored
             # Already added as part of making super
-            self.ignore_next = [ 
+            self.ignore_next = [
                   (OP, ':')
                 , (NEWLINE, '\n')
                 ]
@@ -296,11 +296,11 @@ class Tracker(object):
             
             elif self.groups.starting_single:
                 self.add_tokens_for_single(ignore=True)
-
+    
     ########################
     ###   DETERMINE INFORMATION
     ########################
-        
+    
     def determine_if_whitespace(self):
         """
             Set is_space if current token is whitespace
@@ -336,7 +336,7 @@ class Tracker(object):
                 # add to the stack because we started a list
                 self.containers.append(value)
                 starting_container = True
-
+            
             elif value in [')', ']', '}']:
                 # not necessary to check for correctness
                 self.containers.pop()
@@ -345,9 +345,9 @@ class Tracker(object):
         just_ended = not len(self.containers) and ending_container
         just_started = len(self.containers) == 1 and not starting_container
         self.in_container = len(self.containers) or just_started or just_ended
-        
+    
     def determine_indentation(self):
-        """Reset indentation for current token and in self.result to be consistent and normalized"""      
+        """Reset indentation for current token and in self.result to be consistent and normalized"""
         # Ensuring NEWLINE tokens are actually specified as such
         if self.current.tokenum != NEWLINE and self.current.value == '\n':
             self.current.tokenum = NEWLINE
@@ -380,15 +380,15 @@ class Tracker(object):
         # Dedent means go back to last indentation
         if self.indent_amounts:
             self.indent_amounts.pop()
-
+        
         # Change the token
         tokenum = INDENT
-
+        
         # Get last indent amount
         last_indent = 0
         if self.indent_amounts:
             last_indent = self.indent_amounts[-1]
-
+        
         # Make sure we don't have multiple indents in a row
         while self.result[-1][0] == INDENT:
             self.result.pop()

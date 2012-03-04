@@ -37,7 +37,7 @@ class TokenDetails(object):
     
     def values(self):
         return self.tokenum, self.value, self.scol
-        
+
 class Single(object):
     """Container for a single block (i.e. it or ignore block)"""
     def __init__(self, group, typ=None, indent=0):

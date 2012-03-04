@@ -4,7 +4,7 @@ from tokenize import generate_tokens
 ########################
 ###   TOKENS IN GENERATOR
 ########################
-    
+
 def tokens_in(s, strip_it=True):
     closure = {'processed': False}
     def get():
@@ -26,7 +26,7 @@ class Tokens(object):
     def __init__(self, default_kls):
         self.default_kls = tokens_in(default_kls)
         
-        self.equivalence = { 
+        self.equivalence = {
               'after_each' : 'tearDown'
             , 'before_each' : 'setUp'
             }
@@ -38,7 +38,7 @@ class Tokens(object):
             , (NAME, 'self')
             , (OP, ')')
             ]
-
+        
         self.after_each = [
               (NAME, 'def')
             , (NAME, self.equivalence['after_each'])
@@ -46,22 +46,22 @@ class Tokens(object):
             , (NAME, 'self')
             , (OP, ')')
             ]
-
+        
         self.test_skip = [
               (NAME, 'raise')
             , (NAME, 'nose.SkipTest')
             ]
-
+    
     ########################
     ###   MAKERS
     ########################
-
+    
     def make_single(self, name, args):
         lst = [ (NAME, 'def')
               , (NAME, name)
               , (OP, '(')
               ]
-            
+        
         if args:
             lst.append((NAME, args[0]))
             
@@ -78,7 +78,7 @@ class Tokens(object):
             ]
         )
         return lst
-
+    
     def make_describe(self, kls, name):
         lst = [ (NAME, 'class')
                  , (NAME, name)
@@ -96,7 +96,7 @@ class Tokens(object):
         )
         
         return lst
-
+    
     def make_super(self, indent, kls, method):
         if kls:
             kls = tokens_in(kls)
@@ -112,9 +112,9 @@ class Tokens(object):
                  , (NAME, 'super')
                  , (OP, '(')
                  ]
-
+        
         result.extend(kls)
-
+        
         result.extend(
             [ (OP, ',')
             , (NAME, 'self')
@@ -123,9 +123,9 @@ class Tokens(object):
             , (OP, ';')
             ]
         )
-
+        
         return result
-
+    
     def make_describe_attr(self, describe):
         return [ (NEWLINE, '\n')
                , (NAME, describe)
@@ -134,7 +134,7 @@ class Tokens(object):
                , (OP, '=')
                , (NAME, 'True')
                ]
-   
+    
     def make_name_modifier(self, ismethod, cleaned, english):
         result = [ (NEWLINE, '\n') ]
         
@@ -147,14 +147,14 @@ class Tokens(object):
                 , (NAME, part)
                 ]
             )
-
+        
         if ismethod:
             result.extend(
                 [ (OP, '.')
                 , (NAME, "__func__")
                 ]
             )
-
+        
         result.extend(
             [ (OP, '.')
             , (NAME, "__testname__")

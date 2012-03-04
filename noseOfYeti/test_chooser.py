@@ -5,7 +5,7 @@ class TestChooser(object):
     def new_module(self):
         """Tells TestChooser that a new module has been entered"""
         self.done = {}
-                    
+    
     def already_visited(self, kls, name):
         """Determine if a method has already been accepted for this module"""
         key = '%s.%s' % (kls, name)
@@ -38,7 +38,7 @@ class TestChooser(object):
         if not kls:
             # im_class seems to be None in pypy
             kls = [v for k, v in getmembers(method) if k == 'im_self'][0].__class__
-               
+        
         if kls.__name__ in ignore_kls:
             # Kls should be ignored
             return False

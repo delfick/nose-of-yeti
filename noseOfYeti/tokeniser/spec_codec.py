@@ -26,7 +26,7 @@ class TokeniserCodec(object):
             reader = utf8.streamreader(cStringIO.StringIO(text))
             data = self.dealwith(reader.readline)
             return unicode(data), len(data)
-
+        
         def search_function(s):
             """Determine if a file is of spec encoding and return special CodecInfo if it is"""
             if s != 'spec': return None
@@ -48,7 +48,7 @@ class TokeniserCodec(object):
         """
             Replace the contents of spec file with the translated version
             readline should be a callable object
-            , which provides the same interface as the readline() method of built-in file objects 
+            , which provides the same interface as the readline() method of built-in file objects
         """
         data = []
         try:
@@ -71,7 +71,7 @@ class TokeniserCodec(object):
             data = untokenize(data)
         
         return data
-        
+    
     def output_for_debugging(stream, data):
         """It will write the translated version of the file"""
         with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)

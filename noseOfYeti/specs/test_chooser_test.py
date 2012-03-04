@@ -22,7 +22,7 @@ class Test_TestChooser(object):
         self.test_chooser.already_visited('c', 'd') |should| be(False)
         self.test_chooser.done |should| equal_to({'a.b' : True, 'c.d' : True})
         self.test_chooser.already_visited('c', 'd') |should| be(True)
-    
+
 class Test_TestChooser_Consider(object):
     
     def setup(self):
@@ -40,7 +40,7 @@ class Test_TestChooser_Consider(object):
         
         class TestKlsWithInherited(TestKlsForTest):
             def test_on_subclass(self): pass
-            
+        
         self.TestKlsForTest = TestKlsForTest
         self.TestIgnoredKls = TestIgnoredKls
         self.TestKlsWithInherited = TestKlsWithInherited
@@ -54,16 +54,16 @@ class Test_TestChooser_Consider(object):
     def it_ignores_if_method_has_kls_in_ignoreKls(self):
         self.test_chooser.consider(self.TestIgnoredKls().test_things) |should| be(True)
         self.test_chooser.consider(self.TestIgnoredKls().test_things, ignoreKls=['TestIgnoredKls']) |should| be(False)
-        
+    
     def it_returns_None_if_kls_does_not_have_is_noy_test_set(self):
         self.test_chooser.consider(self.TestKlsForTest().test_actual) |should| be(None)
-        
+    
     def it_ignores_inherited_tests_if_is_noy_test_is_set_on_kls(self):
         self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(None)
         self.TestKlsWithInherited.is_noy_spec = True
         self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(False)
         self.test_chooser.consider(self.TestKlsWithInherited().test_on_subclass) |should| be(True)
-        
+    
     def it_ignores_functions_already_visited(self):
         self.TestKlsWithInherited.is_noy_spec = True
         self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(True)

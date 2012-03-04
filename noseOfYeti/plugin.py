@@ -9,7 +9,7 @@ class Plugin(Plugin):
     def __init__(self, *args, **kwargs):
         self.test_chooser = TestChooser()
         super(Plugin, self).__init__(*args, **kwargs)
-
+    
     def options(self, parser, env={}):
         super(Plugin, self).options(parser, env)
         parser.add_option(
@@ -19,7 +19,7 @@ class Plugin(Plugin):
             , dest    = 'enabled'
             , help    = 'Enable nose of yeti'
             )
-            
+        
         parser.add_option(
               '--noy-no-default-imports'
             , default = env.get('NOSE_NOY_NO_DEFAULT_IMPORTS') or False
@@ -27,7 +27,7 @@ class Plugin(Plugin):
             , dest    = 'no_default_imports'
             , help    = 'Turn off default imports for spec files'
             )
-            
+        
         parser.add_option(
               '--noy-no-describe-attrs'
             , default = env.get('NOSE_NOY_NO_DESCRIBE_ATTRS') or False
@@ -35,7 +35,7 @@ class Plugin(Plugin):
             , dest    = 'no_describe_attrs'
             , help    = 'Turn off giving describes a is_noy_spec attribute'
             )
-            
+        
         parser.add_option(
               '--noy-default-kls'
             , default = env.get('NOSE_NOY_DEFAULT_KLS') or 'object'
@@ -43,18 +43,18 @@ class Plugin(Plugin):
             , dest    = 'default_kls'
             , help    = 'Set default class for describes'
             )
-            
+        
         parser.add_option(
               '--noy-extra-import'
             , default = [env.get('NOSE_NOY_EXTRA_IMPORTS')] or []
             , action  = 'append'
             , dest    = 'extra_import'
-            , help    = '''Set extra default imports 
+            , help    = '''Set extra default imports
                         (i.e. 'from something import *'
                               'import thing')
                         '''
             )
-            
+        
         parser.add_option(
               '--noy-ignore-kls'
             , default = [env.get('NOSE_NOY_IGNORE_KLS')] or []
@@ -62,7 +62,7 @@ class Plugin(Plugin):
             , dest    = 'ignore_kls'
             , help    = '''Set class name to ignore in wantMethod'''
             )
-            
+        
         parser.add_option(
               '--without-should-dsl'
             , default = env.get('NOSE_NOY_WITHOUT_SHOULD_DSL') or False
@@ -73,10 +73,10 @@ class Plugin(Plugin):
     
     def wantModule(self, mod):
         self.test_chooser.new_module()
-        
+    
     def wantMethod(self, method):
         return self.test_chooser.consider(method, self.ignore_kls)
-        
+    
     def configure(self, options, conf):
         super(Plugin, self).configure(options, conf)
         self.ignore_kls = options.ignore_kls

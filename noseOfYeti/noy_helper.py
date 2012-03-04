@@ -11,13 +11,13 @@ NB: We pull this into it's own module to:
 def noy_sup_setUp(sup):
     if hasattr(sup, "setup"):
         return sup.setup()
-
+    
     if hasattr(sup, "setUp"):
         return sup.setUp()
 
 def noy_sup_tearDown(sup):
     if hasattr(sup, "teardown"):
         return sup.teardown()
-
+    
     if hasattr(sup, "tearDown"):
         return sup.tearDown()

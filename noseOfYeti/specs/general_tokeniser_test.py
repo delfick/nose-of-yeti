@@ -10,7 +10,7 @@ class Test_Tokeniser(object):
         (tok, 'describe "Something testable"') |should| result_in(
         '''
         class TestSomethingTestable (object ):pass 
-
+        
         TestSomethingTestable .is_noy_spec =True 
         '''
         )
