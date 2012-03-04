@@ -1,7 +1,7 @@
 from setuptools import setup
 
-setup( name='noseOfYeti'
-     , version="1.0"
+setup( name = 'noseOfYeti'
+     , version = "1.0"
      , classifiers=[ 'Intended Audience :: Developers'
                    , 'Programming Language :: Python'
                    , 'Topic :: Software Development :: Documentation'
@@ -12,6 +12,7 @@ setup( name='noseOfYeti'
      , author = 'Stephen Moore'
      , author_email = 'delfick755@gmail.com'
      , license = 'GPL'
+     , url = "https://github.com/delfick/nose-of-yeti"
 
      , description = 'Nose plugin providing BDD dsl for python'
      , long_description = """\
