@@ -5,6 +5,10 @@
 ###   BEFORE
 ########################
 # coding: spec
+    
+it 'can exist without a describe'
+
+it 'can have args', blah
 
 describe 'numbers':
     before_each:
@@ -32,6 +36,13 @@ describe 'numbers':
         it "shouldn't fail when non alphanumeric characters are in the name":
             5 |should| be(5)
         
+        it "can have arguments", arg1, arg2=4
+        
+        it "maintains newlines to keep line numbers same in exceptions"
+        
+        
+            pass
+        
         describe "let's change a number":
             before_each:
                 self.number1 = 4
@@ -46,13 +57,15 @@ describe 'numbers':
 ### Note that I did clean it up very slightly
 ########################
 
-import nose; from nose.tools import *; from should_dsl import *
+import nose; from nose.tools import *; from should_dsl import *; from noseOfYeti.noy_helper import *;
+
+def test_can_exist_without_a_describe(): raise nose.SkipTest
+
+def test_can_have_args(blah): raise nose.SkipTest
 
 class Test_numbers(object):
     def setUp(self):
-        sup = super(Test_numbers, self)
-        if hasattr(sup, "setUp"): sup.setUp()
-        self.number1 = 1
+        noy_sup_setUp (super (TestThing ,self )); self.number1 = 1
         self.number2 = 2
 
     def test_should_have_number1_as_1(self):
@@ -65,9 +78,7 @@ class Test_numbers(object):
 
 class Test_numbers_testing_number_3(Test_numbers):
     def setUp(self):
-        sup = super(Test_numbers_testing_number_3, self)
-        if hasattr(sup, "setUp"): sup.setUp()
-        self.number3 = 3
+        noy_sup_setUp (super (TestThing ,self )); self.number3 = 3
 
     def test_should_have_number1_from_the_lower_level_describe(self):
         self.number1 | should| equal_to(1)
@@ -77,12 +88,17 @@ class Test_numbers_testing_number_3(Test_numbers):
     
     def test_shouldnt_fail_when_non_alphanumeric_characters_are_in_the_name(self):
         5 |should| be(5)
+    
+    def test_can_have_arguments(self, arg1, arg2=4): raise nose.SkipTest
+        
+    def test_maintains_newlines_to_keep_line_numbers_same_in_exceptions(self):
+    
+    
+        pass
 
 class Test_numbers_testing_number_3_lets_change_a_number(Test_numbers_testing_number_3):
     def setUp(self):
-        sup = super(Test_numbers_testing_number_3_lets_change_a_number, self)
-        if hasattr(sup, "setUp"): sup.setUp()
-        self.number1 =4
+        noy_sup_setUp (super (TestThing ,self )); self.number1 =4
 
     def test_should_have_changed_number1_but_kept_others(self):
         self.number1 |should| equal_to(4)

@@ -10,6 +10,13 @@
 
 # The test can then be specified using describes and its
 
+it "is possible to add numbers":
+    1 + 1 |should| be(2)
+
+it "is possible to add the number three", three=3:
+    # Contrived example of default arguments
+    1 + three |should| be(4)
+
 describe "Python Mathematics":
     # That is replaced with "class test_Python_Mathematics(object):"
     
