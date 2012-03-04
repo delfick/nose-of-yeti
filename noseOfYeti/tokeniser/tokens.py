@@ -54,8 +54,7 @@ class Tokens(object):
             ]
 
         self.testSkip = [
-              (OP, ':')
-            , (NAME, 'raise')
+              (NAME, 'raise')
             , (NAME, 'nose.SkipTest')
             ]
 
@@ -65,43 +64,57 @@ class Tokens(object):
     ###   MAKERS
     ########################
 
-    def startFunction(self, funcName, withSelf=True):
-        lst =  [
-              (NAME, funcName)
-            , (OP, '(')
+    def makeSingle(self, name, args):
+        lst = [ (NAME, 'def')
+              , (NAME, name)
+              , (OP, '(')
+              ]
+            
+        if args:
+            lst.append((NAME, args[0]))
+            
+            for arg in args[1:]:
+                lst.extend(
+                    [ (OP, ',')
+                    , (NAME, arg)
+                    ]
+                )
+        
+        lst.extend(
+            [ (OP, ')')
+            , (OP, ':')
             ]
-
-        if withSelf:
-            lst.append((NAME, 'self'))
-
+        )
         return lst
 
-    def makeDescribe(self, name, value, nextDescribeKls, inheriting=False):
-        if nextDescribeKls and inheriting:
-            use = nextDescribeKls
-            if use.startswith('Test'):
-                use = use[4:]
-            name = 'Test{0}_{1}'.format(use, name)
-        else:
-            name = 'Test{0}'.format(name)
-
-        result = [ (NAME, name)
+    def makeDescribe(self, kls, name):
+        lst = [ (NAME, 'class')
+                 , (NAME, name)
                  , (OP, '(')
                  ]
-        if nextDescribeKls:
-            result.extend(tokensIn(nextDescribeKls))
+        if kls:
+            lst.extend(tokensIn(kls))
         else:
-            result.extend(self.defaultKls)
-        result.append((OP, ')'))
-        return result, name
+            lst.extend(self.defaultKls)
+        
+        lst.extend(
+            [ (OP, ')')
+            , (OP, ':')
+            ]
+        )
+        
+        return lst
 
-    def makeSuper(self, nextDescribeKls, method):
-        if nextDescribeKls:
-            kls = tokensIn(nextDescribeKls)
+    def makeSuper(self, indent, kls, method):
+        if kls:
+            kls = tokensIn(kls)
         else:
             kls = self.defaultKls
 
-        result = [ (NAME, 'noy_sup_%s' % self.getEquivalence(method))
+        result = [ (OP, ':')
+                 , (NEWLINE, '\n')
+                 , (INDENT, indent)
+                 , (NAME, 'noy_sup_%s' % self.getEquivalence(method))
                  , (OP, '(')
                  , (NAME, 'super')
                  , (OP, '(')
@@ -129,19 +142,20 @@ class Tokens(object):
                , (NAME, 'True')
                ]
    
-    def makeNameModifier(self, kls, cleaned, english):
+    def makeNameModifier(self, ismethod, cleaned, english):
         result = [ (NEWLINE, '\n') ]
         
-        if kls:
+        parts = cleaned.split('.')
+        result.append((NAME, parts[0]))
+        
+        for part in parts[1:]:
             result.extend(
-                [ (NAME, kls)
-                , (OP, '.')
+                [ (OP, '.')
+                , (NAME, part)
                 ]
             )
 
-        result.append((NAME, cleaned))
-
-        if kls:
+        if ismethod:
             result.extend(
                 [ (OP, '.')
                 , (NAME, "__func__")

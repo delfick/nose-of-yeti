@@ -9,7 +9,7 @@ class Test_Tokeniser(object):
         tok = Tokeniser(importTokens = imports)
         (tok, 'describe "Something testable"') |should| result_in(
         '''
-        class TestSomethingTestable (object )
+        class TestSomethingTestable (object ):pass 
 
         TestSomethingTestable .is_noy_spec =True 
         '''
@@ -18,7 +18,7 @@ class Test_Tokeniser(object):
     def test_it_should_be_possible_to_turn_off_attributes(self):
         imports = determineImports(withDefaultImports=False)
         tok = Tokeniser(importTokens=imports, withDescribeAttrs=False)
-        (tok, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object )')
+        (tok, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object ):pass')
     
     def test_it_should_not_have_newline_in_default_imports(self):
         tok = Tokeniser(importTokens=determineImports())

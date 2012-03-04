@@ -8,12 +8,12 @@ class Test_Tokenisor_translation(object):
         self.tokb = Tokeniser(withDescribeAttrs=False, defaultKls = 'other')
         
     def test_it_should_translate_a_describe(self):
-        (self.toka, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object )')
-        (self.tokb, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (other )')
+        (self.toka, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object ):pass')
+        (self.tokb, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (other ):pass')
         
         # Same tests, but with newlines in front
-        (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (object )')
-        (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (other )')
+        (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (object ):pass')
+        (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (other ):pass')
         
     def test_it_should_translate_an_it(self):
         (self.toka, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing ():')
@@ -311,8 +311,8 @@ class Test_Tokenisor_translation(object):
         def test_root_level_should_also_work ():raise nose.SkipTest 
         test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
         test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
-        TestSomeTests_NestedDescribe .test_asdf_asdf .__func__ .__testname__ ="asdf $%% asdf"
         TestSomeTests .test_doesnt_get_phased_by_special_characters .__func__ .__testname__ ="doesn't get phased by $special characters"
+        TestSomeTests_NestedDescribe .test_asdf_asdf .__func__ .__testname__ ="asdf $%% asdf"
         '''
         
         (self.toka, test) |should| result_in(desired % "object")
