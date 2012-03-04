@@ -1,7 +1,8 @@
 from tokeniser import Tokeniser, TokeniserCodec, determine_imports
 from test_chooser import TestChooser
 from nose.plugins import Plugin
-from inspect import getmembers
+
+import spec_options
 
 class Plugin(Plugin):
     name = "noseOfYeti"
@@ -12,63 +13,13 @@ class Plugin(Plugin):
     
     def options(self, parser, env={}):
         super(Plugin, self).options(parser, env)
-        parser.add_option(
-              '--with-noy'
-            , default = False
+        spec_options.add_to_argparse(parser, env)
+        
+        parser.add_option('--with-noy'
+            ,  default = lambda env :False
             , action  = 'store_true'
             , dest    = 'enabled'
             , help    = 'Enable nose of yeti'
-            )
-        
-        parser.add_option(
-              '--noy-no-default-imports'
-            , default = env.get('NOSE_NOY_NO_DEFAULT_IMPORTS') or False
-            , action  = 'store_true'
-            , dest    = 'no_default_imports'
-            , help    = 'Turn off default imports for spec files'
-            )
-        
-        parser.add_option(
-              '--noy-no-describe-attrs'
-            , default = env.get('NOSE_NOY_NO_DESCRIBE_ATTRS') or False
-            , action  = 'store_true'
-            , dest    = 'no_describe_attrs'
-            , help    = 'Turn off giving describes a is_noy_spec attribute'
-            )
-        
-        parser.add_option(
-              '--noy-default-kls'
-            , default = env.get('NOSE_NOY_DEFAULT_KLS') or 'object'
-            , action  = 'store'
-            , dest    = 'default_kls'
-            , help    = 'Set default class for describes'
-            )
-        
-        parser.add_option(
-              '--noy-extra-import'
-            , default = [env.get('NOSE_NOY_EXTRA_IMPORTS')] or []
-            , action  = 'append'
-            , dest    = 'extra_import'
-            , help    = '''Set extra default imports
-                        (i.e. 'from something import *'
-                              'import thing')
-                        '''
-            )
-        
-        parser.add_option(
-              '--noy-ignore-kls'
-            , default = [env.get('NOSE_NOY_IGNORE_KLS')] or []
-            , action  = 'append'
-            , dest    = 'ignore_kls'
-            , help    = '''Set class name to ignore in wantMethod'''
-            )
-        
-        parser.add_option(
-              '--without-should-dsl'
-            , default = env.get('NOSE_NOY_WITHOUT_SHOULD_DSL') or False
-            , action  = 'store_true'
-            , dest    = 'without_should_dsl'
-            , help    = '''Make it not try to import should-dsl'''
             )
     
     def wantModule(self, mod):

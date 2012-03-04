@@ -13,13 +13,13 @@ class Tokeniser(object):
     ###   TRANSLATE
     ########################
     
-    def translate(self, readline, result=None):
+    def translate(self, readline, result=None, no_imports=None):
         # Tracker to keep track of information as the file is processed
         self.tokens = Tokens(self.default_kls)
         self.tracker = Tracker(result, self.tokens)
         
         # Add import stuff at the top of the file
-        if self.import_tokens:
+        if self.import_tokens and no_imports is not True:
             self.tracker.add_tokens(self.import_tokens)
         
         # Looking at all the tokens

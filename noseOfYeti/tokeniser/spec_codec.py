@@ -6,6 +6,13 @@ import encodings
 import codecs
 import re
 
+regexes = {
+      'whitespace' : re.compile('\s*')
+    , 'only_whitespace' : re.compile('^\s*$')
+    , 'encoding_matcher' : re.compile("#\s*coding\s*:\s*spec")
+    , 'leading_whitespace' : re.compile('^(\s*)[^\s]')
+    }
+
 class TokeniserCodec(object):
     """Class to register the spec codec"""
     def __init__(self, tokeniser):
@@ -21,10 +28,34 @@ class TokeniserCodec(object):
                 sr.stream = cStringIO.StringIO(data)
         
         def decode(text, *args):
-            """Used by pypy to deal with a spec file"""
+            """Used by pypy and pylint to deal with a spec file"""
+            buffered = cStringIO.StringIO(text)
+            
+            # Determine if we need to have imports for this string
+            # It may be a fragment of the file
+            has_spec = regexes['encoding_matcher'].search(buffered.readline())
+            no_imports = not has_spec
+            buffered.seek(0)
+            
+            # Translate the text
             utf8 = encodings.search_function('utf8') # Assume utf8 encoding
-            reader = utf8.streamreader(cStringIO.StringIO(text))
-            data = self.dealwith(reader.readline)
+            reader = utf8.streamreader(buffered)
+            data = self.dealwith(reader.readline, no_imports=no_imports)
+            
+            # If nothing was changed, then we want to use the original file/line
+            # Also have to replace indentation of original line with indentation of new line
+            # To take into account nested describes
+            if text and not regexes['only_whitespace'].match(text):
+                if regexes['whitespace'].sub('', text) == regexes['whitespace'].sub('', data):
+                    bad_indentation = regexes['leading_whitespace'].search(text).groups()[0]
+                    good_indentation = regexes['leading_whitespace'].search(data).groups()[0]
+                    data = '%s%s' % (good_indentation, text[len(bad_indentation):])
+            
+            # If text is empty and data isn't, then we should return text
+            if len(text) == 0 and len(data) == 1:
+                return unicode(text), 0
+            
+            # Return translated version and it's length
             return unicode(data), len(data)
         
         def search_function(s):
@@ -44,7 +75,7 @@ class TokeniserCodec(object):
         # Do the register
         codecs.register(search_function)
     
-    def dealwith(self, readline):
+    def dealwith(self, readline, **kwargs):
         """
             Replace the contents of spec file with the translated version
             readline should be a callable object
@@ -54,18 +85,25 @@ class TokeniserCodec(object):
         try:
             # We pass in the data variable as an argument so that we
             # get partial output even in the case of an exception.
-            self.tokeniser.translate(readline, data)
+            self.tokeniser.translate(readline, data, **kwargs)
         except Exception as e:
             # Comment out partial output so that it doesn't result in
             # a syntax error when received by the interpreter.
-            data = '\n'.join([
-                  re.sub('^', '#', untokenize(data), 0, re.MULTILINE)
-                , 'raise Exception("""--- internal spec codec error ---\n%s""")' % e
-                ])
-            # Join two lines at the beginning of the partial output so that
-            # we get the exception in the right line and still can see
-            # all code in the debug output.
-            data = ''.join(data.split('\n', 2))
+            lines = []
+            for line in untokenize(data).split('\n'):
+                lines.append("# %s" % line)
+            
+            # Create exception to put into code to announce error
+            exception = 'raise Exception("""--- internal spec codec error --- %s""")' % e
+            
+            # Need to make sure the exception doesn't add a new line and put out line numberes
+            if len(lines) == 1:
+                data = "%s%s" % (exception, lines[0])
+            else:
+                lines.append(exception)
+                first_line = lines.pop()
+                lines[0] = "%s %s" % (first_line, lines[0])
+                data = '\n'.join(lines)
         else:
             # At this point, data is a list of tokens
             data = untokenize(data)
