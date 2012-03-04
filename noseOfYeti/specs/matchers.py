@@ -24,7 +24,7 @@ class ResultIn(object):
         
         self._expected = dedent(self._expected).strip()
         self._radicand = dedent(self._radicand).strip()
-        return self._expected == dedent(self._radicand).strip()
+        return self._expected == self._radicand
     
     def message_for_failed_should(self):
         return 'expected "{0}"\n======================>\n"{1}"\n\n======================$\n"{2}"'.format(

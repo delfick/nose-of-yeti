@@ -318,3 +318,69 @@ class Test_Tokenisor_translation(object):
         
         (self.toka, test) |should| result_in(desired % "object")
         (self.tokb, test) |should| result_in(desired % "other")
+    
+    def test_it_maintains_line_numbers_when_pass_on_another_line(self):
+        test = '''
+        it "is a function with a pass": pass
+        
+        it "is a function with a pass on another line":
+            pass
+        
+        it "is a function with a pass on another line further below":
+            #comment or something
+            
+            
+            pass
+        
+        describe "block with a pass":
+            pass
+        
+        describe "block with comment and pass":
+            # comment or something
+            pass
+        
+        describe "Nesting and passes": pass
+            # comment
+            describe "Nested":
+                pass
+                
+                describe "More Nesting":
+                    # comment
+                    
+                    
+                    pass
+        '''
+        
+        desired = '''
+        def test_is_a_function_with_a_pass ():pass 
+
+        def test_is_a_function_with_a_pass_on_another_line ():
+            pass 
+
+        def test_is_a_function_with_a_pass_on_another_line_further_below ():
+        #comment or something
+            
+            
+            pass 
+
+        class TestBlockWithAPass (%(dflt)s ):
+            pass 
+
+        class TestBlockWithCommentAndPass (%(dflt)s ):
+        # comment or something
+            pass 
+
+        class TestNestingAndPasses (%(dflt)s ):pass 
+        # comment
+        class TestNestingAndPasses_Nested (TestNestingAndPasses ):
+            pass 
+
+        class TestNestingAndPasses_Nested_MoreNesting (TestNestingAndPasses_Nested ):
+        # comment
+        
+        
+            pass
+        '''
+        
+        (self.toka, test) |should| result_in(desired % {'dflt': "object"})
+        (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
