@@ -410,3 +410,39 @@ class Test_Tokenisor_translation(object):
         
         (self.toka, test) |should| result_in(desired % {'dflt': "object"})
         (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
+    
+    def test_can_properly_dedent_after_block_of_just_containers(self):
+        test = '''
+        it "should ensure askers are None or boolean or string":
+            for val in (None, False, 'asdf', u'asdf', lambda: 1):
+                (lambda : Step(askBeforeAction  = val)) |should_not| throw(Problem)
+                (lambda : Step(askDesiredResult = val)) |should_not| throw(Problem)
+                (lambda : Step(blockBeforeGet   = val)) |should_not| throw(Problem)
+                
+            for val in (1, True):
+                (lambda : Step(askBeforeAction  = val)) |should| throw(Problem)
+                (lambda : Step(askDesiredResult = val)) |should| throw(Problem)
+                (lambda : Step(blockBeforeGet   = val)) |should| throw(Problem)
+            
+            3 |should| be(3)
+        '''
+        
+        desired = '''
+        def test_should_ensure_askers_are_None_or_boolean_or_string ():
+            for val in (None ,False ,'asdf',u'asdf',lambda :1 ):
+                (lambda :Step (askBeforeAction =val ))|should_not |throw (Problem )
+                (lambda :Step (askDesiredResult =val ))|should_not |throw (Problem )
+                (lambda :Step (blockBeforeGet =val ))|should_not |throw (Problem )
+
+            for val in (1 ,True ):
+                (lambda :Step (askBeforeAction =val ))|should |throw (Problem )
+                (lambda :Step (askDesiredResult =val ))|should |throw (Problem )
+                (lambda :Step (blockBeforeGet =val ))|should |throw (Problem )
+            
+            3 |should |be (3 )
+        '''
+        
+        (self.toka, test) |should| result_in(desired)
+        (self.tokb, test) |should| result_in(desired)
+        
+        

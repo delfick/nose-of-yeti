@@ -29,6 +29,8 @@ class Tracker(object):
         
         self.indent_type = ' '
         self.after_space = True
+        self.just_ended_container = False
+        self.just_started_container = False
     
     @contextmanager
     def add_phase(self):
@@ -346,9 +348,9 @@ class Tracker(object):
                 self.containers.pop()
                 ending_container = True
         
-        just_ended = not len(self.containers) and ending_container
-        just_started = len(self.containers) == 1 and not starting_container
-        self.in_container = len(self.containers) or just_started or just_ended
+        self.just_ended_container = not len(self.containers) and ending_container
+        self.just_started_container = len(self.containers) == 1 and starting_container
+        self.in_container = len(self.containers) or self.just_ended_container or self.just_started_container
     
     def determine_indentation(self):
         """Reset indentation for current token and in self.result to be consistent and normalized"""
@@ -360,7 +362,7 @@ class Tracker(object):
         if self.current.tokenum == DEDENT:
             self.current.tokenum, self.current.value = self.convert_dedent()
         
-        if not self.in_container and self.after_space and self.current.tokenum not in (NEWLINE, DEDENT, INDENT):
+        if self.after_space and not self.is_space and (not self.in_container or self.just_started_container):
             # Record current indentation level
             if not self.indent_amounts or self.current.scol > self.indent_amounts[-1]:
                 self.indent_amounts.append(self.current.scol)
