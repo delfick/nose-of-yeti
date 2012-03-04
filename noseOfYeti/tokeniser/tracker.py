@@ -10,7 +10,10 @@ regexes = {'whitespace': re.compile('\s+')}
 class Tracker(object):
     """Keep track of what each next token should mean"""
     def __init__(self, result, tokens):
-        self.result = result or []
+        if result is None:
+            self.result = []
+        else:
+            self.result = result
         
         self.single = None
         self.tokens = tokens
