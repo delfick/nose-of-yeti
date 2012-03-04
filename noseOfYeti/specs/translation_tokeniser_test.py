@@ -384,3 +384,29 @@ class Test_Tokenisor_translation(object):
         
         (self.toka, test) |should| result_in(desired % {'dflt': "object"})
         (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
+    
+    def test_it_allows_default_arguments_for_its(self):
+        test = '''
+        it "is a test with default arguments", thing=2, other=[3]
+        
+        describe "group":
+            it "has self and default args", blah=None, you=(3, 4,
+                5, 5):
+                # Test space is respected
+                
+                1 |should| be(2)
+        '''
+        
+        desired = '''
+        def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):raise nose.SkipTest 
+
+        class TestGroup (%(dflt)s ):
+            def test_has_self_and_default_args (self ,blah =None ,you =(3 ,4 ,
+            5 ,5 )):
+            # Test space is respected
+                
+                1 |should |be (2 )
+        '''
+        
+        (self.toka, test) |should| result_in(desired % {'dflt': "object"})
+        (self.tokb, test) |should| result_in(desired % {'dflt': "other"})

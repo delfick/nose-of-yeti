@@ -63,14 +63,11 @@ class Tokens(object):
               ]
         
         if args:
-            lst.append((NAME, args[0]))
+            lst.extend(args[0])
             
             for arg in args[1:]:
-                lst.extend(
-                    [ (OP, ',')
-                    , (NAME, arg)
-                    ]
-                )
+                lst.append((OP, ','))
+                lst.extend(arg)
         
         lst.extend(
             [ (OP, ')')

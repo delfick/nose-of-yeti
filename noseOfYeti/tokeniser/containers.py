@@ -1,4 +1,6 @@
+from tokenize import NAME, OP
 import re
+
 regexes = {
       'joins': re.compile('[- /]')
     , 'punctuation': re.compile('[+\-*/=\$%^&\'",.:;?{()}#<>\[\]]')
@@ -50,8 +52,10 @@ class Single(object):
         self.english = None
         self.skipped = False
         
+        self.starting_arg = False
+        
         if not self.group.root:
-            self.args.append('self')
+            self.args.append([(NAME, 'self')])
     
     @property
     def name(self):
@@ -76,8 +80,16 @@ class Single(object):
         else:
             return "%s.%s" % (self.group.kls_name, self.python_name)
     
-    def add_arg(self, arg):
-        self.args.append(arg)
+    def add_to_arg(self, tokenum, value):
+        if tokenum == OP and value ==',':
+            self.starting_arg = True
+            return
+        
+        if self.starting_arg:
+            self.args.append([(tokenum, value)])
+            self.starting_arg = False
+        else:
+            self.args[-1].append((tokenum, value))
 
 class Group(object):
     """Container for group blocks (i.e. describe or context)"""

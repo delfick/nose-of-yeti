@@ -120,16 +120,17 @@ class Tracker(object):
             if tokenum == STRING:
                 self.single.name = value
             
-            elif tokenum == NAME:
-                self.single.add_arg(value)
-            
-            elif tokenum == NEWLINE:
+            elif tokenum == NEWLINE and not self.in_container:
                 # Premature end of single
                 self.add_tokens_for_single(ignore=True)
             
             elif tokenum == OP and value == ":":
                 # Proper end of single
                 self.add_tokens_for_single()
+            
+            elif value and self.single.name:
+                # Only want to add args after the name for the single has been specified
+                self.single.add_to_arg(tokenum, value)
         
         elif self.after_space or scol == 0 and tokenum == NAME:
             if value in ('describe', 'context'):
