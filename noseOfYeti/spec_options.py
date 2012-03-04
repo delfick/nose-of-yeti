@@ -11,6 +11,8 @@ def default_from_env(str, dflt=None, as_list=False):
                 return [arg_to_use]
             else:
                 return []
+        else:
+            return dflt
     return get
 
 spec_options = {
