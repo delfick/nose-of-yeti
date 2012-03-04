@@ -9,7 +9,7 @@ class Test_Tokeniser_Complex(object):
         
         ###   SMALL EXAMPLE
         
-        self.smallExample = [
+        self.small_example = [
         '''
         describe "This":
             before_each:
@@ -50,7 +50,7 @@ class Test_Tokeniser_Complex(object):
         
         ###   BIG EXAMPLE
         
-        self.bigExample = [
+        self.big_example = [
         '''
         describe "This":
             before_each:
@@ -143,21 +143,21 @@ class Test_Tokeniser_Complex(object):
     ###   TESTS
     
     def test_it_should_work_with_space(self):
-        test, desired = self.smallExample
+        test, desired = self.small_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
     
     def test_it_should_work_with_tabs(self):
-        test, desired = [d.replace('    ', '\t') for d in self.smallExample]
+        test, desired = [d.replace('    ', '\t') for d in self.small_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
         
     def test_it_should_keep_good_indentation_in_body_with_spaces(self):
-        test, desired = self.bigExample
+        test, desired = self.big_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
         
     def test_it_should_keep_good_indentation_in_body_with_tabs(self):
-        test, desired = [d.replace('    ', '\t') for d in self.bigExample]
+        test, desired = [d.replace('    ', '\t') for d in self.big_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})

@@ -1,12 +1,12 @@
 from tokenize import OP, NEWLINE
-from tokens import tokensIn
+from tokens import tokens_in
 
-def determineImports(with_default_imports=True, without_should_dsl=False, extra_imports=None):
+def determine_imports(with_default_imports=True, without_should_dsl=False, extra_imports=None):
     default = []
 
     if extra_imports:
         if type(extra_imports) in (str, unicode):
-            default.extend(tokensIn(extra_imports))
+            default.extend(tokens_in(extra_imports))
         else:
             for d in extra_imports:
                 if d[0] == NEWLINE:
@@ -25,7 +25,7 @@ def determineImports(with_default_imports=True, without_should_dsl=False, extra_
             should_dsl = ""
         
         default.extend(
-            tokensIn('import nose; from nose.tools import *; %s from noseOfYeti.noy_helper import *;' % should_dsl)
+            tokens_in('import nose; from nose.tools import *; %s from noseOfYeti.noy_helper import *;' % should_dsl)
         )
 
     return default

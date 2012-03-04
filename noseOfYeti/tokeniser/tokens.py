@@ -5,7 +5,7 @@ from tokenize import generate_tokens
 ###   TOKENS IN GENERATOR
 ########################
     
-def tokensIn(s, strip_it=True):
+def tokens_in(s, strip_it=True):
     closure = {'processed': False}
     def get():
         if closure['processed']:
@@ -23,23 +23,17 @@ def tokensIn(s, strip_it=True):
 ########################
 
 class Tokens(object):
-    def __init__(self, defaultKls):
-        self.defaultKls = tokensIn(defaultKls)
-        self.constructReplacements()
-
-    def getEquivalence(self, name):
-        return { 'before_each' : 'setUp'
-               , 'after_each'  : 'tearDown'
-               }.get(name, name)
-
-    ########################
-    ###   Initializers
-    ########################
-
-    def constructReplacements(self):
+    def __init__(self, default_kls):
+        self.default_kls = tokens_in(default_kls)
+        
+        self.equivalence = { 
+              'after_each' : 'tearDown'
+            , 'before_each' : 'setUp'
+            }
+             
         self.before_each = [
               (NAME, 'def')
-            , (NAME, self.getEquivalence('before_each'))
+            , (NAME, self.equivalence['before_each'])
             , (OP, '(')
             , (NAME, 'self')
             , (OP, ')')
@@ -47,24 +41,22 @@ class Tokens(object):
 
         self.after_each = [
               (NAME, 'def')
-            , (NAME, self.getEquivalence('after_each'))
+            , (NAME, self.equivalence['after_each'])
             , (OP, '(')
             , (NAME, 'self')
             , (OP, ')')
             ]
 
-        self.testSkip = [
+        self.test_skip = [
               (NAME, 'raise')
             , (NAME, 'nose.SkipTest')
             ]
-
-        self.endIt = [ (OP, ')')]
 
     ########################
     ###   MAKERS
     ########################
 
-    def makeSingle(self, name, args):
+    def make_single(self, name, args):
         lst = [ (NAME, 'def')
               , (NAME, name)
               , (OP, '(')
@@ -87,15 +79,15 @@ class Tokens(object):
         )
         return lst
 
-    def makeDescribe(self, kls, name):
+    def make_describe(self, kls, name):
         lst = [ (NAME, 'class')
                  , (NAME, name)
                  , (OP, '(')
                  ]
         if kls:
-            lst.extend(tokensIn(kls))
+            lst.extend(tokens_in(kls))
         else:
-            lst.extend(self.defaultKls)
+            lst.extend(self.default_kls)
         
         lst.extend(
             [ (OP, ')')
@@ -105,16 +97,17 @@ class Tokens(object):
         
         return lst
 
-    def makeSuper(self, indent, kls, method):
+    def make_super(self, indent, kls, method):
         if kls:
-            kls = tokensIn(kls)
+            kls = tokens_in(kls)
         else:
-            kls = self.defaultKls
-
+            kls = self.default_kls
+            
+        method_name = 'noy_sup_%s' % self.equivalence[method]
         result = [ (OP, ':')
                  , (NEWLINE, '\n')
                  , (INDENT, indent)
-                 , (NAME, 'noy_sup_%s' % self.getEquivalence(method))
+                 , (NAME, method_name)
                  , (OP, '(')
                  , (NAME, 'super')
                  , (OP, '(')
@@ -133,7 +126,7 @@ class Tokens(object):
 
         return result
 
-    def makeDescribeAttr(self, describe):
+    def make_describe_attr(self, describe):
         return [ (NEWLINE, '\n')
                , (NAME, describe)
                , (OP, '.')
@@ -142,7 +135,7 @@ class Tokens(object):
                , (NAME, 'True')
                ]
    
-    def makeNameModifier(self, ismethod, cleaned, english):
+    def make_name_modifier(self, ismethod, cleaned, english):
         result = [ (NEWLINE, '\n') ]
         
         parts = cleaned.split('.')

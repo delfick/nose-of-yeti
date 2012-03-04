@@ -27,7 +27,7 @@ class TokeniserCodec(object):
             data = self.dealwith(reader.readline)
             return unicode(data), len(data)
 
-        def searchFunction(s):
+        def search_function(s):
             """Determine if a file is of spec encoding and return special CodecInfo if it is"""
             if s != 'spec': return None
             utf8 = encodings.search_function('utf8') # Assume utf8 encoding
@@ -42,7 +42,7 @@ class TokeniserCodec(object):
                 )
             
         # Do the register
-        codecs.register(searchFunction)
+        codecs.register(search_function)
     
     def dealwith(self, readline):
         """
@@ -72,6 +72,6 @@ class TokeniserCodec(object):
         
         return data
         
-    def outputForDebugging(stream, data):
+    def output_for_debugging(stream, data):
         """It will write the translated version of the file"""
         with open('%s.spec.out' % stream.name, 'w') as f: f.write(data)

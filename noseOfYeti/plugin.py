@@ -1,4 +1,4 @@
-from tokeniser import Tokeniser, TokeniserCodec, determineImports
+from tokeniser import Tokeniser, TokeniserCodec, determine_imports
 from test_chooser import TestChooser
 from nose.plugins import Plugin
 from inspect import getmembers
@@ -83,7 +83,7 @@ class Plugin(Plugin):
         if options.enabled:
             self.enabled = True
             self.done = {}
-            imports = determineImports(
+            imports = determine_imports(
                   extra_imports = ';'.join([d for d in options.extra_import if d])
                 , without_should_dsl = options.without_should_dsl
                 , with_default_imports = not options.no_default_imports

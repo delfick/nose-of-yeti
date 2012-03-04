@@ -1,6 +1,5 @@
 from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN
 from contextlib import contextmanager
-from tokens import Tokens, tokensIn
 import re
 
 from containers import TokenDetails, Single, Group
@@ -10,22 +9,23 @@ regexes = {'whitespace': re.compile('\s+')}
 
 class Tracker(object):
     """Keep track of what each next token should mean"""
-    def __init__(self, result, defaultKls='object'):
+    def __init__(self, result, tokens):
         self.result = result or []
         
         self.single = None
+        self.tokens = tokens
         self.groups = Group(root=True)
-        self.tokens = Tokens(defaultKls)
         self.current = TokenDetails()
-        self.allGroups = [self.groups]
+        self.all_groups = [self.groups]
+        self.in_container = False
         
         self.containers = []
-        self.ignoreNext = []
-        self.indentAmounts = []
-        self.adjustIndentAt = []
+        self.ignore_next = []
+        self.indent_amounts = []
+        self.adjust_indent_at = []
         
-        self.indentType = ' '
-        self.afterSpace = True
+        self.indent_type = ' '
+        self.after_space = True
     
     @contextmanager
     def add_phase(self):
@@ -34,7 +34,7 @@ class Tracker(object):
         yield self
         
         # Make sure we output eveything
-        self.finishHanging()
+        self.finish_hanging()
 
         # Remove trailing indents and dedents
         while len(self.result) > 1 and self.result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
@@ -46,20 +46,20 @@ class Tracker(object):
         # Make self.current reflect these values
         self.current.set(tokenum, value, scol)
         
-        # Determine indentType based on this token
+        # Determine indent_type based on this token
         if self.current.tokenum == INDENT and self.current.value:
-            self.indentType = self.current.value[0]
+            self.indent_type = self.current.value[0]
         
         # Only proceed if we shouldn't ignore this token
         if not self.ignore_token():
             # Determining if this token is whitespace
-            self.determineIfWhitespace()
+            self.determine_if_whitespace()
             
             # Determine if inside a container
-            self.determineInsideContainer()
+            self.determine_inside_container()
             
             # Change indentation as necessary
-            self.determineIndentation()
+            self.determine_indentation()
             
             # Progress the tracker
             self.progress()
@@ -69,8 +69,8 @@ class Tracker(object):
                 self.single.skipped = False
                 self.result.append((NEWLINE, '\n'))
             
-            # Set afterSpace so next line knows if it is after space
-            self.afterSpace = self.isSpace
+            # Set after_space so next line knows if it is after space
+            self.after_space = self.is_space
 
     ########################
     ###   PROGRESS
@@ -85,7 +85,7 @@ class Tracker(object):
         tokenum, value, scol = self.current.values()
         
         # Default to not appending anything
-        justAppend = False
+        just_append = False
         
         # Prevent from group having automatic pass given to it
         # If it already has a pass
@@ -93,10 +93,10 @@ class Tracker(object):
             self.groups.empty = False
         
         # Set variables to be used later on to determine if this will likely make group not empty
-        createdGroup = False
-        foundContent = False
-        if not self.groups.starting_group and not self.isSpace:
-            foundContent = True
+        created_group = False
+        found_content = False
+        if not self.groups.starting_group and not self.is_space:
+            found_content = True
         
         if self.groups.starting_group:
             # Inside a group signature, add to it
@@ -131,9 +131,9 @@ class Tracker(object):
                 # Proper end of single
                 self.add_tokens_for_single()
         
-        elif self.afterSpace or scol == 0 and tokenum == NAME:
+        elif self.after_space or scol == 0 and tokenum == NAME:
             if value in ('describe', 'context'):
-                createdGroup = True
+                created_group = True
                 
                 # add pass to previous group if nothing added between then and now
                 if self.groups.empty and not self.groups.root:
@@ -141,7 +141,7 @@ class Tracker(object):
                 
                 # Start new group
                 self.groups = self.groups.start_group(scol, value)
-                self.allGroups.append(self.groups)
+                self.all_groups.append(self.groups)
                 
             elif value in ('it', 'ignore'):
                 self.single = self.groups.start_single(value, scol)
@@ -150,29 +150,29 @@ class Tracker(object):
                 self.add_tokens_for_test_helpers(value)
             
             else:
-                justAppend = True
+                just_append = True
         else:
             # Don't care about it, append!
-            justAppend = True
+            just_append = True
         
         # Found something that isn't whitespace or a new group
         # Hence current group isn't empty !
-        if foundContent and not createdGroup:
+        if found_content and not created_group:
             self.groups.empty = False
         
         # Just append if token should be
-        if justAppend:
+        if just_append:
             self.result.append([tokenum, value])
 
     ########################
     ###   UTILITY
     ########################
         
-    def addTokens(self, tokens):
+    def add_tokens(self, tokens):
         """Add tokens to result"""
         self.result.extend([d for d in tokens])
     
-    def resetIndentation(self, amount):
+    def reset_indentation(self, amount):
         """Replace previous indentation with desired amount"""
         while self.result and self.result[-1][0] == INDENT:
             self.result.pop()
@@ -180,37 +180,37 @@ class Tracker(object):
     
     def ignore_token(self):
         """Determine if we should ignore current token"""
-        if self.ignoreNext:
-            nextIgnore = self.ignoreNext
-            if type(nextIgnore) in (list, tuple):
-                nextIgnore = self.ignoreNext.pop(0)
+        if self.ignore_next:
+            next_ignore = self.ignore_next
+            if type(next_ignore) in (list, tuple):
+                next_ignore = self.ignore_next.pop(0)
             
-            if nextIgnore == (self.current.tokenum, self.current.value):
+            if next_ignore == (self.current.tokenum, self.current.value):
                 return True
             else:
-                self.nextIgnore = None
+                self.next_ignore = None
                 return False
     
-    def makeMethodNames(self):
+    def make_method_names(self):
         """Create tokens for setting __testname__ on functions"""
         lst = []
-        for group in self.allGroups:
+        for group in self.all_groups:
             for single in group.singles:
                 name, english = single.name, single.english
                 if english[1:-1] != name.replace('_', ' '):
-                    lst.extend(self.tokens.makeNameModifier(not group.root, single.identifier, english))
+                    lst.extend(self.tokens.make_name_modifier(not group.root, single.identifier, english))
         return lst
     
-    def makeDescribeAttrs(self):
+    def make_describe_attrs(self):
         """Create tokens for setting is_noy_spec on describes"""
         lst = []
-        if self.allGroups:
+        if self.all_groups:
             lst.append((NEWLINE, '\n'))
             lst.append((INDENT, ''))
 
-            for group in self.allGroups:
+            for group in self.all_groups:
                 if group.name:
-                    lst.extend(self.tokens.makeDescribeAttr(group.kls_name))
+                    lst.extend(self.tokens.make_describe_attr(group.kls_name))
         
         return lst
 
@@ -228,10 +228,10 @@ class Tracker(object):
             self.result.pop()
         
         # Add pass and indentation
-        self.addTokens(
+        self.add_tokens(
             [ (NAME, 'pass')
             , (NEWLINE, '\n')
-            , (INDENT, self.indentType * self.current.scol)
+            , (INDENT, self.indent_type * self.current.scol)
             ]
         )
         
@@ -244,14 +244,14 @@ class Tracker(object):
         # Add super call if we're inside a class
         if not self.groups.root:
             # We need to adjust the indent before the super call later on
-            self.adjustIndentAt.append(len(self.result) + 2)
+            self.adjust_indent_at.append(len(self.result) + 2)
             
             # Add tokens for super call
-            self.result.extend(self.tokens.makeSuper(self.indentType * self.current.scol, self.groups.kls_name, value))
+            self.result.extend(self.tokens.make_super(self.indent_type * self.current.scol, self.groups.kls_name, value))
             
             # Make sure colon and newline are ignored
             # Already added as part of making super
-            self.ignoreNext = [ 
+            self.ignore_next = [ 
                   (OP, ':')
                 , (NEWLINE, '\n')
                 ]
@@ -263,8 +263,8 @@ class Tracker(object):
         level = self.groups.level
         
         # Reset indentation to beginning and add signature
-        self.resetIndentation('')
-        self.result.extend(self.tokens.makeDescribe(kls, name))
+        self.reset_indentation('')
+        self.result.extend(self.tokens.make_describe(kls, name))
         
         # Add pass if necessary
         if with_pass:
@@ -278,17 +278,17 @@ class Tracker(object):
         name = self.single.python_name
         
         # Reset indentation to proper amount and add signature
-        self.resetIndentation(self.indentType * self.single.indent)
-        self.result.extend(self.tokens.makeSingle(name, args))
+        self.reset_indentation(self.indent_type * self.single.indent)
+        self.result.extend(self.tokens.make_single(name, args))
         
         # Add skip if necessary
         if self.single.typ == 'ignore' or ignore:
             self.single.skipped = True
-            self.result.extend(self.tokens.testSkip)
+            self.result.extend(self.tokens.test_skip)
         
         self.groups.finish_signature()
     
-    def finishHanging(self):
+    def finish_hanging(self):
         """Add tokens for hanging singature if any"""
         if self.groups.starting_signature:
             if self.groups.starting_group:
@@ -301,9 +301,9 @@ class Tracker(object):
     ###   DETERMINE INFORMATION
     ########################
         
-    def determineIfWhitespace(self):
+    def determine_if_whitespace(self):
         """
-            Set isSpace if current token is whitespace
+            Set is_space if current token is whitespace
             Is space if value is:
              * Newline
              * Empty String
@@ -312,22 +312,22 @@ class Tracker(object):
         value = self.current.value
         
         if value == '\n':
-            self.isSpace = True
+            self.is_space = True
         else:
-            self.isSpace = False
+            self.is_space = False
             if (value == '' or regexes['whitespace'].match(value)):
-                self.isSpace = True
+                self.is_space = True
     
-    def determineInsideContainer(self):
+    def determine_inside_container(self):
         """
-            Set self.inContainer if we're inside a container
+            Set self.in_container if we're inside a container
              * Inside container
              * Current token starts a new container
              * Current token ends all containers
         """
         tokenum, value = self.current.tokenum, self.current.value
-        endingContainer = False
-        startingContainer = False
+        ending_container = False
+        starting_container = False
         
         if tokenum == OP:
             # Record when we're inside a container of some sort (tuple, list, dictionary)
@@ -335,18 +335,18 @@ class Tracker(object):
             if value in ['(', '[', '{']:
                 # add to the stack because we started a list
                 self.containers.append(value)
-                startingContainer = True
+                starting_container = True
 
             elif value in [')', ']', '}']:
                 # not necessary to check for correctness
                 self.containers.pop()
-                endingContainer = True
+                ending_container = True
         
-        just_ended = not len(self.containers) and endingContainer
-        just_started = len(self.containers) == 1 and not startingContainer
-        self.inContainer = len(self.containers) or just_started or just_ended
+        just_ended = not len(self.containers) and ending_container
+        just_started = len(self.containers) == 1 and not starting_container
+        self.in_container = len(self.containers) or just_started or just_ended
         
-    def determineIndentation(self):
+    def determine_indentation(self):
         """Reset indentation for current token and in self.result to be consistent and normalized"""      
         # Ensuring NEWLINE tokens are actually specified as such
         if self.current.tokenum != NEWLINE and self.current.value == '\n':
@@ -354,44 +354,44 @@ class Tracker(object):
         
         # I want to change dedents into indents, because they seem to screw nesting up
         if self.current.tokenum == DEDENT:
-            self.current.tokenum, self.current.value = self.convertDedent()
+            self.current.tokenum, self.current.value = self.convert_dedent()
         
-        if not self.inContainer and self.afterSpace and self.current.tokenum not in (NEWLINE, DEDENT, INDENT):
+        if not self.in_container and self.after_space and self.current.tokenum not in (NEWLINE, DEDENT, INDENT):
             # Record current indentation level
-            if not self.indentAmounts or self.current.scol > self.indentAmounts[-1]:
-                self.indentAmounts.append(self.current.scol)
+            if not self.indent_amounts or self.current.scol > self.indent_amounts[-1]:
+                self.indent_amounts.append(self.current.scol)
             
             # Adjust indent as necessary
-            while self.adjustIndentAt:
-                self.result[self.adjustIndentAt.pop()] = (INDENT, self.indentType * (self.current.scol - self.groups.level))
+            while self.adjust_indent_at:
+                self.result[self.adjust_indent_at.pop()] = (INDENT, self.indent_type * (self.current.scol - self.groups.level))
         
         # Roll back groups as necessary
-        if not self.isSpace and not self.inContainer:
+        if not self.is_space and not self.in_container:
             while not self.groups.root and self.groups.level >= self.current.scol:
-                self.finishHanging()
+                self.finish_hanging()
                 self.groups = self.groups.parent
         
         # Reset indentation to deal with nesting
         if self.current.tokenum == INDENT and not self.groups.root:
            self.current.value = self.current.value[self.groups.level:]
     
-    def convertDedent(self):
+    def convert_dedent(self):
         """Convert a dedent into an indent"""
         # Dedent means go back to last indentation
-        if self.indentAmounts:
-            self.indentAmounts.pop()
+        if self.indent_amounts:
+            self.indent_amounts.pop()
 
         # Change the token
         tokenum = INDENT
 
         # Get last indent amount
-        lastIndent = 0
-        if self.indentAmounts:
-            lastIndent = self.indentAmounts[-1]
+        last_indent = 0
+        if self.indent_amounts:
+            last_indent = self.indent_amounts[-1]
 
         # Make sure we don't have multiple indents in a row
         while self.result[-1][0] == INDENT:
             self.result.pop()
             
-        value = self.indentType * lastIndent
+        value = self.indent_type * last_indent
         return tokenum, value

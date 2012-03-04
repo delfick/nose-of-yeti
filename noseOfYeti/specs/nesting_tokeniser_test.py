@@ -9,7 +9,7 @@ class Test_Tokeniser_Nesting(object):
         
         ###   SMALL EXAMPLE (WITHOUT PASS)
         
-        self.smallExample = [
+        self.small_example = [
         '''
         describe "This":
             describe "That":
@@ -29,7 +29,7 @@ class Test_Tokeniser_Nesting(object):
         
         ###   SMALL EXAMPLE (WITH PATH FOR BW COMPAT)
         
-        self.smallExampleWithPass = [
+        self.small_example_with_pass = [
         '''
         context "This":pass
             describe "That":pass
@@ -48,7 +48,7 @@ class Test_Tokeniser_Nesting(object):
         
         ###   BIG EXAMPLE
         
-        self.bigExample = [
+        self.big_example = [
         '''
         describe "This":
             it 'should':
@@ -107,32 +107,32 @@ class Test_Tokeniser_Nesting(object):
     ###   TESTS
     
     def test_it_should_work_with_space(self):
-        test, desired = self.smallExample
+        test, desired = self.small_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
     
     def test_it_should_work_with_tabs(self):
-        test, desired = [d.replace('    ', '\t') for d in self.smallExample]
+        test, desired = [d.replace('    ', '\t') for d in self.small_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
         
     def test_it_should_work_with_space_and_inline_pass(self):
-        test, desired = self.smallExampleWithPass
+        test, desired = self.small_example_with_pass
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
     
     def test_it_should_work_with_tabs_and_inline_pass(self):
-        test, desired = [d.replace('    ', '\t') for d in self.smallExampleWithPass]
+        test, desired = [d.replace('    ', '\t') for d in self.small_example_with_pass]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
         
     def test_it_should_keep_good_indentation_in_body_with_spaces(self):
-        test, desired = self.bigExample
+        test, desired = self.big_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
         
     def test_it_should_keep_good_indentation_in_body_with_tabs(self):
-        test, desired = [d.replace('    ', '\t') for d in self.bigExample]
+        test, desired = [d.replace('    ', '\t') for d in self.big_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
     

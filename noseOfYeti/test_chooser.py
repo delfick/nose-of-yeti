@@ -15,16 +15,16 @@ class TestChooser(object):
         else:
             return True
     
-    def consider(self, method, ignoreKls=None):
+    def consider(self, method, ignore_kls=None):
         """
             Determines whether a method should be considered a Test
             Returns False if it believes it isn't a test
             Will return True otherwise
             
-            ignoreKls should be a list of classes to ignore
+            ignore_kls should be a list of classes to ignore
         """
-        if not ignoreKls:
-            ignoreKls = []
+        if not ignore_kls:
+            ignore_kls = []
         
         if method.__name__.startswith("ignore__"):
             # Method wants to be ignored
@@ -39,7 +39,7 @@ class TestChooser(object):
             # im_class seems to be None in pypy
             kls = [v for k, v in getmembers(method) if k == 'im_self'][0].__class__
                
-        if kls.__name__ in ignoreKls:
+        if kls.__name__ in ignore_kls:
             # Kls should be ignored
             return False
         

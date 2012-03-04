@@ -1,5 +1,6 @@
 from tokenize import generate_tokens
 from tracker import Tracker
+from tokens import Tokens
 
 class Tokeniser(object):
     """Endpoint for tokenising a file"""
@@ -14,11 +15,12 @@ class Tokeniser(object):
 
     def translate(self, readline, result=None):
         # Tracker to keep track of information as the file is processed
-        self.tracker = Tracker(result, self.default_kls)
+        self.tokens = Tokens(self.default_kls)
+        self.tracker = Tracker(result, self.tokens)
         
         # Add import stuff at the top of the file
         if self.import_tokens:
-            self.tracker.addTokens(self.import_tokens)
+            self.tracker.add_tokens(self.import_tokens)
 
         # Looking at all the tokens
         with self.tracker.add_phase() as tracker:
@@ -28,10 +30,10 @@ class Tokeniser(object):
         # Add attributes to our Describes so that the plugin can handle some nesting issues
         # Where we have tests in upper level describes being run in lower level describes
         if self.with_describe_attrs:
-            self.tracker.addTokens(self.tracker.makeDescribeAttrs())
+            self.tracker.add_tokens(self.tracker.make_describe_attrs())
         
         # Add lines to bottom of file to add __testname__ attributes
-        self.tracker.addTokens(self.tracker.makeMethodNames())
+        self.tracker.add_tokens(self.tracker.make_method_names())
         
         # Return translated list of tokens
         return self.tracker.result
