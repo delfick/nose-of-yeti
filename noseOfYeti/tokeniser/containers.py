@@ -74,7 +74,7 @@ class Single(object):
         if self.group.root:
             return self.python_name
         else:
-            return "%s.%s" % (self.group.klsName, self.python_name)
+            return "%s.%s" % (self.group.kls_name, self.python_name)
     
     def add_arg(self, arg):
         self.args.append(arg)
@@ -105,7 +105,7 @@ class Group(object):
         if self.root:
             return "<Root Group>"
         else:
-            return "<Group %s:%s(%s)>" % (self.klsName, self.superKls, self.parent)
+            return "<Group %s:%s(%s)>" % (self.kls_name, self.super_kls, self.parent)
     
     @property
     def name(self):
@@ -124,26 +124,26 @@ class Group(object):
         return self.starting_group or self.starting_single
     
     @property
-    def klsName(self):
+    def kls_name(self):
         """Determine python name for group"""
         # Determine kls for group
         if not self.parent or not self.parent.name:
             return 'Test{0}'.format(self.name)
         else:
-            use = self.parent.klsName
+            use = self.parent.kls_name
             if use.startswith('Test'):
                 use = use[4:]
             
             return 'Test{0}_{1}'.format(use, self.name)
     
     @property
-    def superKls(self):
+    def super_kls(self):
         """
             Determine what kls this group inherits from
             If default kls should be used, then None is returned
         """
         if not self.kls and self.parent and self.parent.name:
-            return self.parent.klsName
+            return self.parent.kls_name
         return self.kls
     
     def start_group(self, scol, typ):

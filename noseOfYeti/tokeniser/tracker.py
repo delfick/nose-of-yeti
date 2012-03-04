@@ -210,7 +210,7 @@ class Tracker(object):
 
             for group in self.allGroups:
                 if group.name:
-                    lst.extend(self.tokens.makeDescribeAttr(group.klsName))
+                    lst.extend(self.tokens.makeDescribeAttr(group.kls_name))
         
         return lst
 
@@ -247,7 +247,7 @@ class Tracker(object):
             self.adjustIndentAt.append(len(self.result) + 2)
             
             # Add tokens for super call
-            self.result.extend(self.tokens.makeSuper(self.indentType * self.current.scol, self.groups.klsName, value))
+            self.result.extend(self.tokens.makeSuper(self.indentType * self.current.scol, self.groups.kls_name, value))
             
             # Make sure colon and newline are ignored
             # Already added as part of making super
@@ -258,8 +258,8 @@ class Tracker(object):
     
     def add_tokens_for_group(self, with_pass=False):
         """Add the tokens for the group signature"""
-        kls = self.groups.superKls
-        name = self.groups.klsName
+        kls = self.groups.super_kls
+        name = self.groups.kls_name
         level = self.groups.level
         
         # Reset indentation to beginning and add signature
