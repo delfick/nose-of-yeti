@@ -1,14 +1,14 @@
 from tokenize import OP, NEWLINE
 from tokens import tokensIn
 
-def determineImports(withDefaultImports=True, withoutShouldDsl=False, extraImports=None):
+def determineImports(with_default_imports=True, without_should_dsl=False, extra_imports=None):
     default = []
 
-    if extraImports:
-        if type(extraImports) in (str, unicode):
-            default.extend(tokensIn(extraImports))
+    if extra_imports:
+        if type(extra_imports) in (str, unicode):
+            default.extend(tokensIn(extra_imports))
         else:
-            for d in extraImports:
+            for d in extra_imports:
                 if d[0] == NEWLINE:
                     # I want to make sure the extra imports don't 
                     # Take up extra lines in the code than the "# coding: spec"
@@ -16,12 +16,12 @@ def determineImports(withDefaultImports=True, withoutShouldDsl=False, extraImpor
                 else:
                     default.append(d)
 
-    if withDefaultImports:
+    if with_default_imports:
         if default and tuple(default[-1]) != (OP, ';'):
             default.append((OP, ';'))
 
         should_dsl = "from should_dsl import *;"
-        if withoutShouldDsl:
+        if without_should_dsl:
             should_dsl = ""
         
         default.extend(

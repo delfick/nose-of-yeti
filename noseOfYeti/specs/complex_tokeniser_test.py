@@ -5,7 +5,7 @@ from matchers import *
 class Test_Tokeniser_Complex(object):
     def setUp(self):
         self.toka = Tokeniser()
-        self.tokb = Tokeniser(defaultKls = 'other')
+        self.tokb = Tokeniser(default_kls = 'other')
         
         ###   SMALL EXAMPLE
         

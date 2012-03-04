@@ -4,8 +4,8 @@ from matchers import *
  
 class Test_Tokeniser_Nesting(object):
     def setUp(self):
-        self.toka = Tokeniser(withDescribeAttrs=False)
-        self.tokb = Tokeniser(withDescribeAttrs=False, defaultKls = 'other')
+        self.toka = Tokeniser(with_describe_attrs=False)
+        self.tokb = Tokeniser(with_describe_attrs=False, default_kls = 'other')
         
         ###   SMALL EXAMPLE (WITHOUT PASS)
         

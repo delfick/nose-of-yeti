@@ -24,7 +24,7 @@ class Plugin(Plugin):
               '--noy-no-default-imports'
             , default = env.get('NOSE_NOY_NO_DEFAULT_IMPORTS') or False
             , action  = 'store_true'
-            , dest    = 'noDefaultImports'
+            , dest    = 'no_default_imports'
             , help    = 'Turn off default imports for spec files'
             )
             
@@ -32,7 +32,7 @@ class Plugin(Plugin):
               '--noy-no-describe-attrs'
             , default = env.get('NOSE_NOY_NO_DESCRIBE_ATTRS') or False
             , action  = 'store_true'
-            , dest    = 'noDescribeAttrs'
+            , dest    = 'no_describe_attrs'
             , help    = 'Turn off giving describes a is_noy_spec attribute'
             )
             
@@ -40,7 +40,7 @@ class Plugin(Plugin):
               '--noy-default-kls'
             , default = env.get('NOSE_NOY_DEFAULT_KLS') or 'object'
             , action  = 'store'
-            , dest    = 'defaultKls'
+            , dest    = 'default_kls'
             , help    = 'Set default class for describes'
             )
             
@@ -48,7 +48,7 @@ class Plugin(Plugin):
               '--noy-extra-import'
             , default = [env.get('NOSE_NOY_EXTRA_IMPORTS')] or []
             , action  = 'append'
-            , dest    = 'extraImport'
+            , dest    = 'extra_import'
             , help    = '''Set extra default imports 
                         (i.e. 'from something import *'
                               'import thing')
@@ -59,7 +59,7 @@ class Plugin(Plugin):
               '--noy-ignore-kls'
             , default = [env.get('NOSE_NOY_IGNORE_KLS')] or []
             , action  = 'append'
-            , dest    = 'ignoreKls'
+            , dest    = 'ignore_kls'
             , help    = '''Set class name to ignore in wantMethod'''
             )
             
@@ -67,7 +67,7 @@ class Plugin(Plugin):
               '--without-should-dsl'
             , default = env.get('NOSE_NOY_WITHOUT_SHOULD_DSL') or False
             , action  = 'store_true'
-            , dest    = 'withoutShouldDsl'
+            , dest    = 'without_should_dsl'
             , help    = '''Make it not try to import should-dsl'''
             )
     
@@ -75,24 +75,24 @@ class Plugin(Plugin):
         self.test_chooser.new_module()
         
     def wantMethod(self, method):
-        return self.test_chooser.consider(method, self.ignoreKls)
+        return self.test_chooser.consider(method, self.ignore_kls)
         
     def configure(self, options, conf):
         super(Plugin, self).configure(options, conf)
-        self.ignoreKls = options.ignoreKls
+        self.ignore_kls = options.ignore_kls
         if options.enabled:
             self.enabled = True
             self.done = {}
             imports = determineImports(
-                  extraImports = ';'.join([d for d in options.extraImport if d])
-                , withoutShouldDsl = options.withoutShouldDsl
-                , withDefaultImports = not options.noDefaultImports
+                  extra_imports = ';'.join([d for d in options.extra_import if d])
+                , without_should_dsl = options.without_should_dsl
+                , with_default_imports = not options.no_default_imports
                 )
             
             tok = Tokeniser(
-                  defaultKls = options.defaultKls
-                , importTokens = imports
-                , withDescribeAttrs = not options.noDescribeAttrs
+                  default_kls = options.default_kls
+                , import_tokens = imports
+                , with_describe_attrs = not options.no_describe_attrs
                 )
             
             TokeniserCodec(tok).register()
