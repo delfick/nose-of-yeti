@@ -477,3 +477,45 @@ class Test_Tokenisor_translation(object):
         '''
         (self.toka, test) |should| result_in(desired % {'dflt': "object"})
         (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
+    
+    def test_it_keeps_comments_placed_after_setup_and_teardown_methods(self):
+        test = '''
+            describe "Kls":
+                before_each: # Comment one
+                
+                    pass
+                
+                after_each: # Comment two
+                
+                    pass
+            
+            describe "Kls2":
+                before_each: # Comment three
+                    two = 1 + 1
+                
+                after_each: # Comment four
+                    #comment
+                    pass
+        '''
+        
+        desired = '''
+        class TestKls (%(dflt)s ):
+            def setUp (self ):# Comment one
+                noy_sup_setUp (super (TestKls ,self ))
+                pass 
+            
+            def tearDown (self ):# Comment two
+                noy_sup_tearDown (super (TestKls ,self ))
+                pass 
+
+        class TestKls2 (%(dflt)s ):
+            def setUp (self ):# Comment three
+                noy_sup_setUp (super (TestKls2 ,self ));two =1 +1 
+
+            def tearDown (self ):# Comment four
+                noy_sup_tearDown (super (TestKls2 ,self ))#comment
+                pass 
+        '''
+        (self.toka, test) |should| result_in(desired % {'dflt': "object"})
+        (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
+        
