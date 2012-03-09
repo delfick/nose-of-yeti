@@ -20,6 +20,12 @@ Usage
 
 Look at the files in the examples directory to see what using nose-of-yeti looks like.
 
+Docs
+====
+
+Docs can now be found using the wonderful readthedocs.org
+http://readthedocs.org/docs/noseofyeti/en/latest/
+
 PyDev - Debugger
 ================
 
@@ -36,7 +42,7 @@ Pinocchio - Spec Extension
 
 There exists a patch to improve spec when using nose-of-yeti together with the pinocchio spec extension.
 
-This patch will enable hierarchichal output of specifications, like this::
+This patch will enable hierarchical output of specifications, like this::
 
     Transaction:
       - persists its state across requests (SKIPPED)
