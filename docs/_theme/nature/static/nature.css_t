@@ -140,9 +140,9 @@ div.sphinxsidebar {
     font-size: 1.1em;
     line-height: 1.5em;
     margin: 0;
-    position:absolute;
-    left: 0;
-    top: 100px;
+    position:fixed;
+    left: 1;
+    top: 152px;
     width: 240px;
     float: none;
     background-color: #eee;

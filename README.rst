@@ -15,52 +15,8 @@ It was originally developed by Stephen Moore after borrowing the idea from a pro
 
 https://github.com/fmeyer/yeti
 
-Usage
-=====
-
-Look at the files in the examples directory to see what using nose-of-yeti looks like.
-
 Docs
 ====
 
 Docs can now be found using the wonderful readthedocs.org
 http://readthedocs.org/docs/noseofyeti/en/latest/
-
-PyDev - Debugger
-================
-
-If you're using PyDev debugger, you are able to set breakpoints in spec files if you can patch::
-
-    eclipse/plugins/org.python.pydev.debug_.../pysrc/pydevd_frame.py, in trace_dispatch():
-
-        < if func_name in ('None', curr_func_name):
-
-        > if func_name in ('None', '', curr_func_name):
-
-Pinocchio - Spec Extension
-==========================
-
-There exists a patch to improve spec when using nose-of-yeti together with the pinocchio spec extension.
-
-This patch will enable hierarchical output of specifications, like this::
-
-    Transaction:
-      - persists its state across requests (SKIPPED)
-         add command:
-          - throws an error if is running is false
-             when the command is invalid:
-              - rejects the command with a validation error
-             when the command is valid:
-              - adds the command to the stack
-
-    etc.
-
-Please download the patch from <https://github.com/jerico-dev/pinocchio/commit/b7f76560d5664a99ed5de7315d21c4727fe5b905.patch>.
-
-Using with Pylint
-=================
-
-It is possible to use pylint with a noseOfYeti spec. All you have to do is add 'noseOfYeti.pylint_plugin' to pylint's 'load-plugins' option.
-This plugin will register the spec codec so that it can use it to determine what is in a spec file.
-
-The codec will also make an effort to return lines from the original file (with normalized indentation) so that you don't get too many errors about bad spacing. (codec doesn't have any control over spaces between things)

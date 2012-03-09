@@ -1,0 +1,67 @@
+.. _usage:
+
+Usage
+=====
+
+All that's needed to setup nose-of-yeti is to register the spec codec before importing the specs. Python mechanics handle the rest. Included with nose-of-yeti is plugins for nosetests and pylint for doing just this.
+
+Nosetests
+=========
+
+After running setup.py (``easy_install .`` or ``pip install .`` or even ``pip install noseOfYeti``) you can run nosetests with ``--with-noy``, which will enable the spec codec.
+
+see :ref:`options` for other options available.
+
+Pylint
+======
+
+It is possible to use pylint with a noseOfYeti spec. All you have to do is add ``noseOfYeti.pylint_plugin'`` to pylint's ``load-plugins`` option.
+
+This plugin will register the spec codec so that it can use it to determine what is in a spec file.
+
+The codec will also make an effort to return lines from the original file (with normalized indentation) so that you don't get too many errors about bad spacing. (codec doesn't have any control over spaces between things)
+
+see :ref:`options` for options that are available.
+
+.. _options:
+
+Options
+=======
+
+Nosetests and pylint offer the same settings as shown below
+
+.. note:: Nosetests require the settings to be prefixed by --noy whereas pylint doesn't
+
+.. spec_options::
+    asdf
+
+PyDev - Debugger
+================
+
+If you're using PyDev debugger, you are able to set breakpoints in spec files if you can patch::
+
+    eclipse/plugins/org.python.pydev.debug_.../pysrc/pydevd_frame.py, in trace_dispatch():
+
+        < if func_name in ('None', curr_func_name):
+
+        > if func_name in ('None', '', curr_func_name):
+
+Pinocchio - Spec Extension
+==========================
+
+There exists a patch to improve spec when using nose-of-yeti together with the pinocchio spec extension.
+
+This patch will enable hierarchical output of specifications, like this::
+
+    Transaction:
+      - persists its state across requests (SKIPPED)
+         add command:
+          - throws an error if is running is false
+             when the command is invalid:
+              - rejects the command with a validation error
+             when the command is valid:
+              - adds the command to the stack
+
+    etc.
+
+Please download the patch from <https://github.com/jerico-dev/pinocchio/commit/b7f76560d5664a99ed5de7315d21c4727fe5b905.patch>.
