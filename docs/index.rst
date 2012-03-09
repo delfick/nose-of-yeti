@@ -8,7 +8,8 @@ Welcome to NoseOfYeti's documentation!
 
 Contents:
 
-.. toctree::
+.. toctree:
+   :hidden::
    :maxdepth: 2
 
 Indices and tables

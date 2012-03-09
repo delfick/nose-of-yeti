@@ -3,3 +3,4 @@
 build/**
 noseOfYeti.egg*/**
 dist/**
+docs/_build
