@@ -16,10 +16,21 @@ class Plugin(Plugin):
         spec_options.add_to_argparse(parser, env)
         
         parser.add_option('--with-noy'
-            ,  default = lambda env :False
+            , default = False
             , action  = 'store_true'
             , dest    = 'enabled'
             , help    = 'Enable nose of yeti'
+            )
+        
+        default_ignore_kls = []
+        if 'NOSE_NOY_IGNORE_KLS' in env:
+            default_ignore_kls.append(env['NOSE_NOY_IGNORE_KLS'].split(','))
+        
+        parser.add_option('--noy-ignore-kls'
+            , default = default_ignore_kls
+            , action  = 'append'
+            , dest    = 'ignore_kls'
+            , help    = 'Set class name to ignore in wantMethod'
             )
     
     def wantModule(self, mod):

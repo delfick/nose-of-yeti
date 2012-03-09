@@ -51,14 +51,6 @@ spec_options = {
         , type    = 'csv'
         )
 
-    , 'ignore-kls' : dict(
-          default = default_from_env('NOSE_NOY_IGNORE_KLS', as_list=True)
-        , action  = 'append'
-        , dest    = 'ignore_kls'
-        , help    = '''Set class name to ignore in wantMethod'''
-        , type    = 'csv'
-        )
-
     , 'without-should-dsl' : dict(
           default = default_from_env('NOSE_NOY_WITHOUT_SHOULD_DSL', dflt=False)
         , action  = 'store_true'
