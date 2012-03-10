@@ -1,4 +1,17 @@
 {% extends "basic/layout.html" %}
+{%- block extrahead %}
+  <script type="text/javascript">
+    $(function($) {
+      $(".has_info").click(function() {
+          $(".hidden_info", $(this)).toggle();
+      });
+      
+      $(".has_info").click(function() {
+          return false;
+      });
+    })
+  </script>
+{% endblock %}
 {%- block header %}
     <div id="header">
         <div class="inner">

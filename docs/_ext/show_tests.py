@@ -175,8 +175,5 @@ class ShowTestsDirective(Directive):
         return directive_instance.run()
         
 def setup(app):   
-    """Setup the show_tests directive and ensure test.js is included in the final output""" 
+    """Setup the show_tests directive""" 
     app.add_directive('show_tests', ShowTestsDirective)
-    
-    staticdir = os.path.join(app.srcdir, '_static')
-    app.add_javascript(os.path.join(staticdir, 'tests.js'))
