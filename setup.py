@@ -24,7 +24,7 @@ to provide an RSpec style BDD dsl for python tests
                           , 'nose'
                           ]
                           
-     , packages = ['noseOfYeti', 'noseOfYeti.tokeniser']
+     , packages = ['noseOfYeti', 'noseOfYeti.tokeniser', 'noseOfYeti.specs']
      , entry_points = {
         'nose.plugins': [
             'noseOfYeti = noseOfYeti.plugin:Plugin'
