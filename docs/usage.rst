@@ -23,6 +23,13 @@ The codec will also make an effort to return lines from the original file (with 
 
 see :ref:`options` for options that are available.
 
+Sphinx
+======
+
+You can add ``noseOfYeti.sphinx_plugin`` to sphinx' ``extensions`` option to register the spec encoding so that sphinx may successfully import your tests (i.e. for automatic documentation creation)
+
+see :ref:`options` for options that are available.
+
 .. _options:
 
 Options
@@ -30,7 +37,7 @@ Options
 
 Nosetests and pylint offer the same settings as shown below
 
-.. note:: Nosetests require the settings to be prefixed by --noy whereas pylint doesn't
+Note that Nosetests require the settings to be prefixed by --noy; and sphinx prefixes options with noy\_ and replaces dashes with underscores.
 
 .. spec_options::
     asdf
