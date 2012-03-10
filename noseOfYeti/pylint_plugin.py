@@ -17,7 +17,6 @@ class SpecRegister(BaseChecker):
     priority = -1
 
     def open(self):
-        self.ignore_kls = self.config.ignore_kls
         imports = determine_imports(
               extra_imports = ';'.join([d for d in self.config.extra_import if d])
             , without_should_dsl = self.config.without_should_dsl

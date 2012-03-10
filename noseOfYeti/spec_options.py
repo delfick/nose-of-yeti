@@ -76,4 +76,11 @@ def for_pylint():
         opts['default'] = opts['default'](env)
         options.append((option, opts))
     return options
-        
+
+def for_sphinx():    
+    env = os.environ
+    options = {}
+    for option, attributes in spec_options.items():
+        options[option] = attributes['default'](env)
+    
+    return options
