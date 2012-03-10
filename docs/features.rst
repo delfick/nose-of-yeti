@@ -196,9 +196,7 @@ before_each and after_each
 
 NoseOfYeti will turn ``before_each`` and ``after_each`` into ``setUp`` and ``tearDown`` respectively.
 
-.. note:: This will only be effective on classes that inherit from unittest.TestCase. Use :ref:`default-kls option <options>` to set this as a default.
-
-It will also make sure the ``setUp``/``tearDown`` method of the super class gets called as the first thing in a ``before_each``/``after_each``::
+It will also make sure the ``setUp``/``tearDown`` method of the super class (if it has one) gets called as the first thing in a ``before_each``/``after_each``::
     
     describe "Meh":
         before_each:
@@ -209,12 +207,14 @@ It will also make sure the ``setUp``/``tearDown`` method of the super class gets
 
 becomes::
     
-    class Test_Meh(unittest.TestCase):
+    class Test_Meh(object):
         def setUp(self):
-            noy_sup_setUp(super(TestThing, self)); doSomeSetup()
+            noy_sup_setUp(super(Test_Meh, self)); doSomeSetup()
         
         def tearDown(self):
-            noy_sup_tearDown(super(TestThing, self)); doSomeTearDown()
+            noy_sup_tearDown(super(Test_Meh, self)); doSomeTearDown()
+
+An example of a class that does have it's own ``setUp`` and ``tearDown`` functions is ``unittest.TestCase``. Use :ref:`default-kls option <options>` to set this as a default.
 
 .. note:: 
     To ensure that line numbers between the spec and translated output are the same, the first line of a ``setUp``/``tearDown`` will be placed on the same line as the inserted super call. This means if you don't want pylint to complain about multiple statements on the same line or you want to define a function inside ``setUp``/``tearDown``, then just don't do it on the first line after ``before_each``/``after_each``::
@@ -232,10 +232,10 @@ becomes::
         
         class Test_Meh(unittest.TestCase):
             def setUp(self):
-                noy_sup_setUp(super(TestThing, self)) # Comments are put on the same line, but no semicolon is inserted
+                noy_sup_setUp(super(Test_Meh, self)) # Comments are put on the same line, but no semicolon is inserted
             
             def tearDown(self):
-                noy_sup_tearDown(super(TestThing, self))
+                noy_sup_tearDown(super(Test_Meh, self))
                 # Blank line after the after_each
                 self.thing = 4
 
@@ -251,7 +251,7 @@ Also, remember if you use the :ref:`no-default-imports option <options>` then yo
         
         class Test_Meh(unittest.TestCase):
             def setUp(self): # pylint: disable-msg: C0103
-                noy_sup_setUp(super(TestThing, self))
+                noy_sup_setUp(super(Test_Meh, self))
     
 Default imports
 ---------------
