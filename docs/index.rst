@@ -1,7 +1,8 @@
-.. toctree:
-   :hidden::
-   
+.. toctree::
+   :hidden:
+
    examples
    usage
+   features
 
 .. include:: ../README.rst
