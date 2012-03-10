@@ -1,1 +1,1 @@
-pinocchio==0.2
+git://github.com/mkwiatkowski/pinocchio.git#egg=pinocchio
