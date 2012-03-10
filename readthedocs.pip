@@ -1,1 +1,1 @@
-git://github.com/mkwiatkowski/pinocchio.git#egg=pinocchio
+git+git://github.com/mkwiatkowski/pinocchio.git#egg=pinocchio
