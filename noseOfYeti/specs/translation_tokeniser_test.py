@@ -7,7 +7,7 @@ class Test_Tokenisor_translation(object):
         self.toka = Tokeniser(with_describe_attrs=False)
         self.tokb = Tokeniser(with_describe_attrs=False, default_kls = 'other')
     
-    def test_it_should_translate_a_describe(self):
+    def test_translates_a_describe(self):
         (self.toka, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object ):pass')
         (self.tokb, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (other ):pass')
         
@@ -15,7 +15,7 @@ class Test_Tokenisor_translation(object):
         (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (object ):pass')
         (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (other ):pass')
     
-    def test_it_should_translate_an_it(self):
+    def test_translates_an_it(self):
         (self.toka, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing ():')
         (self.tokb, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing ():')
         
@@ -23,7 +23,7 @@ class Test_Tokenisor_translation(object):
         (self.toka, '\nit "should do this thing":') |should| result_in('\ndef test_should_do_this_thing ():')
         (self.tokb, '\nit "should do this thing":') |should| result_in('\ndef test_should_do_this_thing ():')
     
-    def test_it_should_add_arguments_to_its_if_declared_on_same_line(self):
+    def test_adds_arguments_to_its_if_declared_on_same_line(self):
         (self.toka, 'it "should do this thing", blah, meh:') |should| result_in(
             'def test_should_do_this_thing (blah ,meh ):'
             )
@@ -39,7 +39,7 @@ class Test_Tokenisor_translation(object):
             '\ndef test_should_do_this_thing (blah ,meh ):'
             )
     
-    def test_it_should_add_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
+    def test_adds_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
         (self.toka, 'it "should do this thing", blah, meh') |should| result_in(
             'def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest '
             )
@@ -55,7 +55,7 @@ class Test_Tokenisor_translation(object):
             '\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest '
             )
     
-    def test_it_should__not_add_arguments_to_its_if_not_declared_on_same_line(self):
+    def test_no_added_arguments_to_its_if_not_declared_on_same_line(self):
         (self.toka, 'it "should do this thing"\n, blah, meh') |should| result_in(
             "def test_should_do_this_thing ():raise nose.SkipTest \n,blah ,meh "
             )
@@ -71,7 +71,7 @@ class Test_Tokenisor_translation(object):
             "\ndef test_should_do_this_thing ():raise nose.SkipTest \n,blah ,meh "
             )
     
-    def test_it_should_turn_an_it_without_colon_into_skippable(self):
+    def test_turns_an_it_without_colon_into_skippable(self):
         (self.toka, 'it "should be skipped"\n') |should| result_in(
             'def test_should_be_skipped ():raise nose.SkipTest '
         )
@@ -89,7 +89,7 @@ class Test_Tokenisor_translation(object):
             '\ndef test_should_not_be_skipped ():'
         )
     
-    def test_it_should_turn_before_each_into_setup(self):
+    def test_turns_before_each_into_setup(self):
         (self.toka, 'before_each:') |should| result_in('def setUp (self ):')
         
         # Same tests, but with newlines in front
@@ -207,7 +207,7 @@ class Test_Tokenisor_translation(object):
         
         (self.toka, test) | should | result_in(desired)
 
-    def test_it_should_give_setups_super_call_when_in_describes(self):
+    def test_gives_setups_super_call_when_in_describes(self):
         test = '''
         describe "Thing":
             before_each:
@@ -224,13 +224,13 @@ class Test_Tokenisor_translation(object):
         # and with tabs
         (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
         
-    def test_it_should_turn_after_each_into_teardown(self):
+    def test_turns_after_each_into_teardown(self):
         (self.toka, 'after_each:') |should| result_in('def tearDown (self ):')
         
         # Same tests, but with newlines in front
         (self.toka, '\nafter_each:') |should| result_in('\ndef tearDown (self ):')
     
-    def test_it_should_give_teardowns_super_call_when_in_describes(self):
+    def test_gives_teardowns_super_call_when_in_describes(self):
         test = '''
         describe "Thing":
             after_each:
@@ -247,7 +247,7 @@ class Test_Tokenisor_translation(object):
         # and with tabs
         (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
     
-    def test_it_should_have_ignorable_its(self):
+    def test_has_ignorable_its(self):
         (self.toka, '\nignore "should be ignored"') |should| result_in(
             '\ndef ignore__should_be_ignored ():raise nose.SkipTest '
             )
@@ -255,7 +255,7 @@ class Test_Tokenisor_translation(object):
             '\ndef ignore__should_be_ignored ():raise nose.SkipTest '
             )
     
-    def test_it_should_not_transform_inside_expression(self):
+    def test_no_transform_inside_expression(self):
         (self.toka, 'variable = before_each') |should| result_in('variable =before_each ')
         (self.toka, 'variable = after_each')  |should| result_in('variable =after_each ')
         (self.toka, 'variable = describe')    |should| result_in('variable =describe ')
@@ -269,7 +269,7 @@ class Test_Tokenisor_translation(object):
         (self.toka, '\nvariable = ignore')      |should| result_in('\nvariable =ignore ')
         (self.toka, '\nvariable = it')          |should| result_in('\nvariable =it ')
     
-    def test_it_should_allow_definition_of_different_base_class_for_next_describe(self):
+    def test_allows_definition_of_different_base_class_for_next_describe(self):
         test = '''
         describe unittest.TestCase "This thing":pass
         describe "Another thing":pass
@@ -287,7 +287,7 @@ class Test_Tokenisor_translation(object):
         (self.toka, '\n%s' % test) |should| result_in(desired % ('\n', 'object'))
         (self.tokb, '\n%s' % test) |should| result_in(desired % ('\n', 'other'))
     
-    def test_it_should_set__testname__on_non_alphanumeric_test_names(self):
+    def test_sets__testname__on_non_alphanumeric_test_names(self):
         test = '''
         it "(root level) should work {well}"
             3 |should| be(4)

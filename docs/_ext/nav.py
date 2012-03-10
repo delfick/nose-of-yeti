@@ -12,6 +12,7 @@ def moreContext(app, pagename, templatename, context, doctree):
         , ('Examples', p('/examples.html') , pagename=='examples')
         , ('Usage',    p('/usage.html')    , pagename=='usage')
         , ('Features', p('/features.html') , pagename=='features')
+        , ('Dev',      p('/dev/index.html'), pagename.startswith('dev'))
         ]
 
 def setup(app):    

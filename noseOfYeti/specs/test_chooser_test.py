@@ -24,6 +24,8 @@ class Test_TestChooser(object):
         self.test_chooser.already_visited('c', 'd') |should| be(True)
 
 class Test_TestChooser_Consider(object):
+    __childof__ = Test_TestChooser
+    __testname__ = ".consider() method"
     
     def setup(self):
         self.test_chooser = TestChooser()
@@ -45,26 +47,26 @@ class Test_TestChooser_Consider(object):
         self.TestIgnoredKls = TestIgnoredKls
         self.TestKlsWithInherited = TestKlsWithInherited
     
-    def it_ignores_if_method_starts_with_ignore(self):
+    def test_it_ignores_if_method_starts_with_ignore(self):
         self.test_chooser.consider(self.TestKlsForTest().ignore_test) |should| be(False)
     
-    def it_ignores_if_method_has__test__set_to_false(self):
+    def test_it_ignores_if_method_has__test__set_to_false(self):
         self.test_chooser.consider(self.TestKlsForTest().test_with__test__set) |should| be(False)
     
-    def it_ignores_if_method_has_kls_in_ignoreKls(self):
+    def test_it_ignores_if_method_has_kls_in_ignoreKls(self):
         self.test_chooser.consider(self.TestIgnoredKls().test_things) |should| be(True)
         self.test_chooser.consider(self.TestIgnoredKls().test_things, ignoreKls=['TestIgnoredKls']) |should| be(False)
     
-    def it_returns_None_if_kls_does_not_have_is_noy_test_set(self):
+    def test_it_returns_None_if_kls_does_not_have_is_noy_test_set(self):
         self.test_chooser.consider(self.TestKlsForTest().test_actual) |should| be(None)
     
-    def it_ignores_inherited_tests_if_is_noy_test_is_set_on_kls(self):
+    def test_it_ignores_inherited_tests_if_is_noy_test_is_set_on_kls(self):
         self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(None)
         self.TestKlsWithInherited.is_noy_spec = True
         self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(False)
         self.test_chooser.consider(self.TestKlsWithInherited().test_on_subclass) |should| be(True)
     
-    def it_ignores_functions_already_visited(self):
+    def test_it_ignores_functions_already_visited(self):
         self.TestKlsWithInherited.is_noy_spec = True
         self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(True)
         self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(False)

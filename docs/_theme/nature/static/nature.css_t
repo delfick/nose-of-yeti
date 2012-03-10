@@ -10,6 +10,26 @@
  */
  
 @import url("basic.css");
+
+/* -- tests       ----------------------------------------------------------- */
+
+.nose_test {
+    position: relative;
+    left: 35px;
+}
+
+.nose_kls .nose_kls, .nose_support {
+    position: relative;
+    left: 35px;
+}
+
+.nose_kls p.kls_title, p.kls_support {
+    font-weight: bold;
+}
+
+.hidden_info {
+    display:none;
+}
  
 /* -- page layout ----------------------------------------------------------- */
  

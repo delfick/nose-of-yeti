@@ -142,22 +142,22 @@ class Test_Tokeniser_Complex(object):
     
     ###   TESTS
     
-    def test_it_should_work_with_space(self):
+    def test_works_with_space(self):
         test, desired = self.small_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
     
-    def test_it_should_work_with_tabs(self):
+    def test_works_with_tabs(self):
         test, desired = [d.replace('    ', '\t') for d in self.small_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
         
-    def test_it_should_keep_good_indentation_in_body_with_spaces(self):
+    def test_keeps_good_indentation_in_body_with_spaces(self):
         test, desired = self.big_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
         
-    def test_it_should_keep_good_indentation_in_body_with_tabs(self):
+    def test_keeps_good_indentation_in_body_with_tabs(self):
         test, desired = [d.replace('    ', '\t') for d in self.big_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
