@@ -46,7 +46,7 @@ class TestChooser(object):
         if not hasattr(kls, 'is_noy_spec'):
             # Kls not a noy_spec, we don't care if it runs or not
             return None
-            
+        
         method_in_kls = method.__name__ in kls.__dict__
         method_is_test = method.__name__.startswith('test_')
         if method_in_kls and method_is_test:

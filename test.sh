@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from noseOfYeti.plugin import Plugin as noyPlugin
+from noseOfYeti.plugins.nosetests import Plugin as noyPlugin
 import nose
 import sys
 

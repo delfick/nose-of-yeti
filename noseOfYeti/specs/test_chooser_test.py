@@ -1,4 +1,4 @@
-from noseOfYeti.test_chooser import TestChooser
+from noseOfYeti.plugins.support.test_chooser import TestChooser
 from should_dsl import *
 
 class Test_TestChooser(object):
@@ -30,7 +30,7 @@ class Test_TestChooser_Consider(object):
     def setup(self):
         self.test_chooser = TestChooser()
         class TestKlsForTest(object):
-            def ignore_test(self): pass
+            def ignore__test(self): pass
             
             def test_with__test__set(self): pass
             test_with__test__set.__test__ = False
@@ -48,14 +48,15 @@ class Test_TestChooser_Consider(object):
         self.TestKlsWithInherited = TestKlsWithInherited
     
     def test_it_ignores_if_method_starts_with_ignore(self):
-        self.test_chooser.consider(self.TestKlsForTest().ignore_test) |should| be(False)
+        self.test_chooser.consider(self.TestKlsForTest().ignore__test) |should| be(False)
     
     def test_it_ignores_if_method_has__test__set_to_false(self):
         self.test_chooser.consider(self.TestKlsForTest().test_with__test__set) |should| be(False)
     
     def test_it_ignores_if_method_has_kls_in_ignoreKls(self):
+        self.TestIgnoredKls.is_noy_spec = True
         self.test_chooser.consider(self.TestIgnoredKls().test_things) |should| be(True)
-        self.test_chooser.consider(self.TestIgnoredKls().test_things, ignoreKls=['TestIgnoredKls']) |should| be(False)
+        self.test_chooser.consider(self.TestIgnoredKls().test_things, ignore_kls=['TestIgnoredKls']) |should| be(False)
     
     def test_it_returns_None_if_kls_does_not_have_is_noy_test_set(self):
         self.test_chooser.consider(self.TestKlsForTest().test_actual) |should| be(None)
@@ -68,5 +69,5 @@ class Test_TestChooser_Consider(object):
     
     def test_it_ignores_functions_already_visited(self):
         self.TestKlsWithInherited.is_noy_spec = True
-        self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(True)
-        self.test_chooser.consider(self.TestKlsWithInherited().test_actual) |should| be(False)
+        self.test_chooser.consider(self.TestKlsWithInherited().test_on_subclass) |should| be(True)
+        self.test_chooser.consider(self.TestKlsWithInherited().test_on_subclass) |should| be(False)

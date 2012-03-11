@@ -1,7 +1,7 @@
 from sphinx.util.compat import Directive
 
 from noseOfYeti.tokeniser import Tokeniser, TokeniserCodec, determine_imports
-import noseOfYeti.spec_options
+import support import spec_options
 
 def enable(app):
     config = app.builder.config.values

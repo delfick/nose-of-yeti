@@ -1,6 +1,6 @@
 from noseOfYeti.tokeniser import Tokeniser, TokeniserCodec, determine_imports
-from noseOfYeti.test_chooser import TestChooser
-from noseOfYeti import spec_options
+from support.test_chooser import TestChooser
+from support import spec_options
 
 from nose.plugins import Plugin
 

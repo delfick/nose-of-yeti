@@ -29,7 +29,7 @@ class Test_Tokeniser(object):
         tok = Tokeniser(import_tokens=imports)
         tok.import_tokens |should_not| contain([NEWLINE, '\n'])
         (tok, '') |should| result_in(
-            'import another .class ;import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .noy_helper import *'
+            'import another .class ;import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .tokeniser .support import *'
         )
     
     def test_tokeniser_has_no_default_imports_by_default(self):
@@ -45,5 +45,5 @@ class Test_Tokeniser(object):
         imports = determine_imports()
         tok = Tokeniser(import_tokens=imports)
         (tok, '') |should| result_in(
-            'import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .noy_helper import *'
+            'import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .tokeniser .support import *'
         )
