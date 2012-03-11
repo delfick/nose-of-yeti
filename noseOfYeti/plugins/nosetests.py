@@ -1,8 +1,8 @@
-from tokeniser import Tokeniser, TokeniserCodec, determine_imports
-from test_chooser import TestChooser
-from nose.plugins import Plugin
+from noseOfYeti.tokeniser import Tokeniser, TokeniserCodec, determine_imports
+from noseOfYeti.test_chooser import TestChooser
+from noseOfYeti import spec_options
 
-import spec_options
+from nose.plugins import Plugin
 
 class Plugin(Plugin):
     name = "noseOfYeti"

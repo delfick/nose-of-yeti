@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup( name = 'noseOfYeti'
-     , version = "1.2"
+     , version = "1.3"
      , classifiers=[ 'Intended Audience :: Developers'
                    , 'Programming Language :: Python'
                    , 'Topic :: Software Development :: Documentation'
@@ -27,7 +27,7 @@ to provide an RSpec style BDD dsl for python tests
      , packages = ['noseOfYeti', 'noseOfYeti.tokeniser', 'noseOfYeti.specs']
      , entry_points = {
         'nose.plugins': [
-            'noseOfYeti = noseOfYeti.plugin:Plugin'
+            'noseOfYeti = noseOfYeti.plugins.nosetests:Plugin'
             ]
        }
 )

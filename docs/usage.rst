@@ -15,7 +15,7 @@ see :ref:`options` for other options available.
 Pylint
 ======
 
-It is possible to use pylint with a noseOfYeti spec. All you have to do is add ``noseOfYeti.pylint_plugin'`` to pylint's ``load-plugins`` option.
+It is possible to use pylint with a noseOfYeti spec. All you have to do is add ``noseOfYeti.plugins.pylint'`` to pylint's ``load-plugins`` option.
 
 This plugin will register the spec codec so that it can use it to determine what is in a spec file.
 
@@ -26,7 +26,7 @@ see :ref:`options` for options that are available.
 Sphinx
 ======
 
-You can add ``noseOfYeti.sphinx_plugin`` to sphinx' ``extensions`` option to register the spec encoding so that sphinx may successfully import your tests (i.e. for automatic documentation creation)
+You can add ``noseOfYeti.plugins.sphinx`` to sphinx' ``extensions`` option to register the spec encoding so that sphinx may successfully import your tests (i.e. for automatic documentation creation)
 
 see :ref:`options` for options that are available.
 

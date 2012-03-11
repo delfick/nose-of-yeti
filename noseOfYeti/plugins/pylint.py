@@ -4,8 +4,8 @@ To be used as a pylint plugin to register the spec encoding
 from pylint.interfaces import IASTNGChecker
 from pylint.checkers import BaseChecker
 
-from tokeniser import Tokeniser, TokeniserCodec, determine_imports
-import spec_options
+from noseOfYeti.tokeniser import Tokeniser, TokeniserCodec, determine_imports
+import noseOfYeti.spec_options
 
 class SpecRegister(BaseChecker):
     
