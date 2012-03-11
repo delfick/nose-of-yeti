@@ -114,7 +114,9 @@ class ShowTestsDirective(Directive):
             @param item: The function itself
         """
         container = nodes.container(classes=["has_info", "nose_support"])
+        
         para = nodes.paragraph(classes=["kls_support"])
+        para.extend(self.nodes_for_arrow())
         para += nodes.Text(name)
         
         container.append(para)
@@ -129,7 +131,9 @@ class ShowTestsDirective(Directive):
             @param item: The function itself
         """
         container = nodes.container(classes=["has_info", "nose_test"])
+        
         para = nodes.paragraph()
+        para.extend(self.nodes_for_arrow())
         
         name = testName(item)
         para += nodes.Text(name)
@@ -138,6 +142,11 @@ class ShowTestsDirective(Directive):
         container.append(self.include_source(item))
         
         return [container]
+    
+    def nodes_for_arrow(self):
+        """Create inline for an arrow"""
+        arrow = nodes.inline(classes=["arrow", "arrow-closed"])
+        return [arrow]
     
     def include_source(self, item):
         """Return nodes representing the original source code of the item"""
