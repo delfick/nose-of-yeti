@@ -5,7 +5,7 @@ from pylint.interfaces import IASTNGChecker
 from pylint.checkers import BaseChecker
 
 from noseOfYeti.tokeniser import Tokeniser, TokeniserCodec, determine_imports
-import support import spec_options
+from support import spec_options
 
 class SpecRegister(BaseChecker):
     
