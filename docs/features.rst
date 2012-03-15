@@ -239,7 +239,7 @@ An example of a class that does have it's own ``setUp`` and ``tearDown`` functio
                 # Blank line after the after_each
                 self.thing = 4
 
-Also, remember if you use the :ref:`no-default-imports option <options>` then you'll have to manually import ``noy_sup_setUp`` and ``noy_sup_tearDown`` by doing ``from noseOfYeti.tokeniser.support import noy_sup_SetUp, noy_sup_tearDown``
+Also, remember if you use the :ref:`no-default-imports option <options>` then you'll have to manually import ``noy_sup_setUp`` and ``noy_sup_tearDown`` by doing ``from noseOfYeti.tokeniser.support import noy_sup_setUp, noy_sup_tearDown``
 
 .. note::
     Anything on the same line as a ``before_each``/``after_each`` will remain on that line
