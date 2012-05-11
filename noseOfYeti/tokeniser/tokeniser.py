@@ -4,9 +4,10 @@ from tokens import Tokens
 
 class Tokeniser(object):
     """Endpoint for tokenising a file"""
-    def __init__(self, default_kls='object', with_describe_attrs=True, import_tokens=None):
+    def __init__(self, default_kls='object', with_describe_attrs=True, import_tokens=None, wrapped_setup=False):
         self.default_kls = default_kls
         self.import_tokens = import_tokens
+        self.wrapped_setup = wrapped_setup
         self.with_describe_attrs = with_describe_attrs
     
     ########################
@@ -16,7 +17,7 @@ class Tokeniser(object):
     def translate(self, readline, result=None, no_imports=None):
         # Tracker to keep track of information as the file is processed
         self.tokens = Tokens(self.default_kls)
-        self.tracker = Tracker(result, self.tokens)
+        self.tracker = Tracker(result, self.tokens, self.wrapped_setup)
         
         # Add import stuff at the top of the file
         if self.import_tokens and no_imports is not True:

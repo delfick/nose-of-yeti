@@ -54,6 +54,7 @@ class Plugin(Plugin):
             tok = Tokeniser(
                   default_kls = options.default_kls
                 , import_tokens = imports
+                , wrapped_setup = options.wrapped_setup
                 , with_describe_attrs = not options.no_describe_attrs
                 )
             

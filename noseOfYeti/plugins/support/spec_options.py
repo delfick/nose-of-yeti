@@ -58,6 +58,14 @@ spec_options = {
         , help    = '''Make it not try to import should-dsl'''
         , type    = 'yn'
         )
+    
+    , 'wrapped-setup' : dict(
+          default = default_from_env('NOSE_NOY_WRAPPED_SETUP', dflt=False)
+        , action = 'store_true'
+        , dest = 'wrapped_setup'
+        , help = '''Wrap setups with lines at bottom of file instead of using noy_sup_* helpers'''
+        , type = 'yn'
+        )
     }
 
 def add_to_argparse(parser, env):

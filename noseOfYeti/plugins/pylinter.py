@@ -26,6 +26,7 @@ class SpecRegister(BaseChecker):
         tok = Tokeniser(
               default_kls = self.config.default_kls
             , import_tokens = imports
+            , wrapped_setup = options.wrapped_setup
             , with_describe_attrs = not self.config.no_describe_attrs
             )
         

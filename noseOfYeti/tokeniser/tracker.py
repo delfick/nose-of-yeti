@@ -14,7 +14,7 @@ class WildCard(object):
     
 class Tracker(object):
     """Keep track of what each next token should mean"""
-    def __init__(self, result, tokens):
+    def __init__(self, result, tokens, wrapped_setup):
         if result is None:
             self.result = []
         else:
@@ -26,6 +26,7 @@ class Tracker(object):
         self.current = TokenDetails()
         self.all_groups = [self.groups]
         self.in_container = False
+        self.wrapped_setup = wrapped_setup
         
         self.containers = []
         self.ignore_next = []
