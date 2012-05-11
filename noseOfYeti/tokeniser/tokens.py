@@ -160,3 +160,28 @@ class Tokens(object):
         )
         
         return result
+    
+    def wrap_setup(self, class_name, typ):
+        """Described.typ = noy_wrap_typ(Described, Described.typ)"""
+        equivalence = self.equivalence[typ]
+        return [
+              (NEWLINE, '\n')
+            , (NAME, class_name)
+            , (OP, '.')
+            , (NAME, equivalence)
+            , (OP, '=')
+            , (NAME, "noy_wrap_%s" % equivalence)
+            , (OP, "(")
+            , (NAME, class_name)
+            , (OP, ',')
+            , (NAME, class_name)
+            , (OP, '.')
+            , (NAME, equivalence)
+            , (OP, ")")
+            ]
+    
+    def wrap_after_each(self, class_name):
+        return self.wrap_setup(class_name, "after_each")
+    
+    def wrap_before_each(self, class_name):
+        return self.wrap_setup(class_name, "before_each")

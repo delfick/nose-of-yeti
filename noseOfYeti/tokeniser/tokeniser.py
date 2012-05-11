@@ -33,6 +33,10 @@ class Tokeniser(object):
         if self.with_describe_attrs:
             self.tracker.add_tokens(self.tracker.make_describe_attrs())
         
+        # If setups should be wrapped, then do this at the bottom
+        if self.wrapped_setup:
+            self.tracker.add_tokens(self.tracker.wrapped_setups())
+        
         # Add lines to bottom of file to add __testname__ attributes
         self.tracker.add_tokens(self.tracker.make_method_names())
         

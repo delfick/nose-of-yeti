@@ -175,6 +175,7 @@ class Tracker(object):
                 self.single = self.groups.start_single(value, scol)
             
             elif value in ('before_each', 'after_each'):
+                setattr(self.groups, "has_%s" % value, True)
                 self.add_tokens_for_test_helpers(value)
             
             else:
@@ -258,6 +259,26 @@ class Tracker(object):
                         self.insert_till = next_ignore
                     return False
     
+    def wrapped_setups(self):
+        """Create tokens for Described.setup = noy_wrap_setup(Described, Described.setup) for setup/teardown"""
+        lst = []
+        for group in self.all_groups:
+            if not group.root:
+                if group.has_after_each:
+                    lst.extend(self.tokens.wrap_after_each(group.kls_name))
+                
+                if group.has_before_each:
+                    lst.extend(self.tokens.wrap_before_each(group.kls_name))
+        
+        if lst:
+            indentation_reset = [
+                  (NEWLINE, '\n')
+                , (INDENT, '')
+                ]
+            lst = indentation_reset + lst
+        
+        return lst
+    
     def make_method_names(self):
         """Create tokens for setting __testname__ on functions"""
         lst = []
@@ -337,7 +358,7 @@ class Tracker(object):
         self.result.extend(tokens)
         
         # Add super call if we're inside a class
-        if not self.groups.root:
+        if not self.groups.root and not self.wrapped_setup:
             # We need to adjust the indent before the super call later on
             self.adjust_indent_at.append(len(self.result) + 2)
             

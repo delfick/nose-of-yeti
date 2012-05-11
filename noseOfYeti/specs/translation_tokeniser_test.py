@@ -247,6 +247,71 @@ class Test_Tokenisor_translation(object):
         # and with tabs
         (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
     
+    def test_it_has_the_ability_to_wrap_setup_and_tearDown_instead_of_inserting_sup_call(self):
+        self.toka.wrapped_setup = True
+        self.tokb.wrapped_setup = True
+        
+        test = '''
+        describe "Thing":
+            after_each:
+                self.x = 5
+            
+            describe "Other":
+                before_each:
+                    self.y = 8
+        '''
+        
+        desired = '''
+        class TestThing (object ):
+            def tearDown (self ):
+                self .x =5 
+        
+        class TestThing_Other (TestThing ):
+            def setUp (self ):
+                self .y =8 
+        
+        TestThing .tearDown =noy_wrap_tearDown (TestThing ,TestThing .tearDown )
+        TestThing_Other .setUp =noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
+        '''
+        
+        (self.toka, test) |should| result_in(desired)
+        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+    
+    def test_it_is_possible_to_have_indented_block_after_setup_with_wrapped_setup_option(self):
+        self.toka.wrapped_setup = True
+        self.tokb.wrapped_setup = True
+        
+        test = '''
+        describe "Thing":
+            after_each:
+                def blah(self):
+                    pass
+            
+            describe "Other":
+                before_each:
+                    class Stuff(object):
+                        pass
+        '''
+        
+        desired = '''
+        class TestThing (object ):
+            def tearDown (self ):
+                def blah (self ):
+                    pass 
+
+        class TestThing_Other (TestThing ):
+            def setUp (self ):
+                class Stuff (object ):
+                    pass 
+
+        TestThing .tearDown =noy_wrap_tearDown (TestThing ,TestThing .tearDown )
+        TestThing_Other .setUp =noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
+        '''
+        
+        (self.toka, test) |should| result_in(desired)
+        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+        
+    
     def test_has_ignorable_its(self):
         (self.toka, '\nignore "should be ignored"') |should| result_in(
             '\ndef ignore__should_be_ignored ():raise nose.SkipTest '

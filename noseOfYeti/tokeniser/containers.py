@@ -102,6 +102,8 @@ class Group(object):
         self.level = level
         self.parent = parent
         self.singles = []
+        self.has_after_each = False
+        self.has_before_each = False
         
         # Default whether this group is starting anything
         self.starting_single = False
