@@ -17,6 +17,15 @@ It was originally developed by Stephen Moore after borrowing the idea from a pro
 
 https://github.com/fmeyer/yeti
 
+Changelog
+=========
+
+``1.4.3``
+    Added wrapped-setup option to allow decorating before_each and after_each functions instead of inserting a super call into them.
+    
+``pre 1.4.3``
+    No Changelog was maintained.
+
 Docs
 ====
 
