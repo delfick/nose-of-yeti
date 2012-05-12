@@ -252,7 +252,51 @@ Also, remember if you use the :ref:`no-default-imports option <options>` then yo
         class Test_Meh(unittest.TestCase):
             def setUp(self): # pylint: disable-msg: C0103
                 noy_sup_setUp(super(Test_Meh, self))
+                
+Wrapped Setup
+-------------
+
+.. versionadded:: 1.4.3
+    there is now a :ref:`wrapped-setup option <options>` that will achieve calling super functions for setUp and tearDown using a decorator that is applied at the end of the file.
+
+So with this option set to True (default is False)::
     
+    describe "Meh":
+        before_each:
+            class HelpfulClass(object):
+                def things(a):
+                    return a + 1
+            
+            self.helper = HelpfulClass()
+        
+        after_each:
+            for i in range(10):
+                doSomeTearDown(i)
+
+becomes::
+
+    class Test_Meh(object):
+        def setUp(self):
+            class HelpfulClass(object):
+                def things(a):
+                    return a + 1
+            
+            self.helper = HelpfulClass()
+        
+        def tearDown(self):
+            for i in range(10):
+                doSomeTearDown(i)
+    
+    Test_Meh.setUp = noy_wrap_setUp(Test_Meh, Test_Meh.setUp)
+    Test_Meh.tearDown = noy_wrap_tearDown(Test_Meh, Test_Meh.tearDown)
+
+This adds some overhead to setUp and tearDown calls (which is why it defaults to off) but it does allow the first line after a before_each or after_each to contain the first line of an indented block (if, for, def, class, etc).
+
+.. note::
+    If you have :ref:`no-default-imports option <options>` set to True then you'll need to manually import ``from noseOfYeti.tokeniser.support import noy_wrap_setUp, noy_wrap_tearDown``.
+
+The wrapper will ensure a ``noy_sup_*`` helper is called before the setUp/tearDown
+
 Default imports
 ---------------
 
