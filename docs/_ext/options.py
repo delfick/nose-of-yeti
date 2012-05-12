@@ -2,7 +2,7 @@ from sphinx.util.compat import Directive
 from docutils import nodes
 import os
 
-from noseOfYeti.spec_options import spec_options
+from noseOfYeti.plugins.support.spec_options import spec_options
 
 class SpecOptionsDirective(Directive):
     has_content = True
