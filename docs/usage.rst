@@ -72,3 +72,4 @@ This patch will enable hierarchical output of specifications, like this::
     etc.
 
 Please download the patch from <https://github.com/jerico-dev/pinocchio/commit/b7f76560d5664a99ed5de7315d21c4727fe5b905.patch>.
+

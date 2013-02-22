@@ -7,7 +7,7 @@ setup( name = 'noseOfYeti'
                    , 'Topic :: Software Development :: Documentation'
                    , 'Topic :: Software Development :: Testing'
                    ]
-                   
+
      , keywords='bdd rspec spec'
      , author = 'Stephen Moore'
      , author_email = 'delfick755@gmail.com'
@@ -23,7 +23,7 @@ to provide an RSpec style BDD dsl for python tests
                           , 'should-dsl'
                           , 'nose'
                           ]
-                          
+
      , packages = [
           'noseOfYeti'
         , 'noseOfYeti.specs'
@@ -31,7 +31,7 @@ to provide an RSpec style BDD dsl for python tests
         , 'noseOfYeti.tokeniser'
         , 'noseOfYeti.plugins.support'
         ]
-    
+
      , entry_points = {
         'nose.plugins': [
             'noseOfYeti = noseOfYeti.plugins.nosetests:Plugin'

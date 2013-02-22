@@ -58,7 +58,7 @@ spec_options = {
         , help    = '''Make it not try to import should-dsl'''
         , type    = 'yn'
         )
-    
+
     , 'wrapped-setup' : dict(
           default = default_from_env('NOSE_NOY_WRAPPED_SETUP', dflt=False)
         , action = 'store_true'
@@ -74,7 +74,7 @@ def add_to_argparse(parser, env):
         opts = dict((k, v) for k, v in attributes.items() if k in parser_options)
         opts['default'] = opts['default'](env)
         parser.add_option('--noy-%s' % option, **opts)
-    
+
 def for_pylint():
     env = os.environ
     parser_options = ['default', 'help', 'type']
@@ -85,10 +85,10 @@ def for_pylint():
         options.append((option, opts))
     return options
 
-def for_sphinx():    
+def for_sphinx():
     env = os.environ
     options = {}
     for option, attributes in spec_options.items():
         options[option] = attributes['default'](env)
-    
+
     return options

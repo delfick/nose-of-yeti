@@ -7,3 +7,4 @@ if __name__ == '__main__':
     args = sys.argv
     args.extend(['--with-noy'])
     nose.main(addplugins=[noyPlugin()], argv=args)
+

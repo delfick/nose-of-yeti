@@ -26,7 +26,7 @@ This means that any changes in the translation process won't happen untill eithe
 
 ``1.4.3``
     Added wrapped-setup option to allow decorating before_each and after_each functions instead of inserting a super call into them.
-    
+
 ``pre 1.4.3``
     No Changelog was maintained.
 
@@ -35,3 +35,4 @@ Docs
 
 Docs can now be found using the wonderful readthedocs.org
 http://readthedocs.org/docs/noseofyeti/en/latest/
+

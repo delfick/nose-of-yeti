@@ -5,7 +5,7 @@
 ###   BEFORE
 ########################
 # coding: spec
-    
+
 it 'can exist without a describe'
 
 it 'can have args', blah
@@ -14,40 +14,40 @@ describe 'numbers':
     before_each:
         self.number1 = 1
         self.number2 = 2
-    
+
     it 'should have number1 as 1':
         self.number1 |should| equal_to(1)
-    
+
     ignore 'some test that I want to be named so it isnt ran':
         pass
-    
+
     it 'should be skipped'
-    
+
     describe 'testing number 3':
         before_each:
             self.number3 = 3
-        
+
         it 'should have number1 from the lower level describe':
             self.number1 |should| equal_to(1)
-        
+
         it 'should also have number3':
             self.number3 |should| equal_to(3)
-        
+
         it "shouldn't fail when non alphanumeric characters are in the name":
             5 |should| be(5)
-        
+
         it "can have arguments", arg1, arg2=4
-        
+
         it "maintains newlines to keep line numbers same in exceptions"
-        
-        
+
+
             pass
-        
+
         describe "let's change a number":
             before_each:
-                
+
                 self.number1 = 4
-            
+
             it 'should have changed number1 but kept others':
                 self.number1 |should| equal_to(4)
                 self.number2 |should| equal_to(2)
@@ -87,15 +87,15 @@ class Test_numbers_testing_number_3(Test_numbers):
 
     def test_should_also_have_number3(self):
         self.number3 |should| equal_to(3)
-    
+
     def test_shouldnt_fail_when_non_alphanumeric_characters_are_in_the_name(self):
         5 |should| be(5)
-    
+
     def test_can_have_arguments(self, arg1, arg2=4): raise nose.SkipTest
-        
+
     def test_maintains_newlines_to_keep_line_numbers_same_in_exceptions(self):
-    
-    
+
+
         pass
 
 class Test_numbers_testing_number_3_lets_change_a_number(Test_numbers_testing_number_3):
@@ -111,3 +111,4 @@ Test_numbers.is_noy_spec = True
 Test_numbers_testing_number_3.is_noy_spec = True
 Test_numbers_testing_number_3_lets_change_a_number.is_noy_spec = True
 Test_numbers_testing_number_3.test_shouldnt_fail_when_non_alphanumeric_characters_are_in_the_name.__func__.__testname__ = "shouldn't fail when non alphanumeric characters are in the name"
+

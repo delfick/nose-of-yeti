@@ -214,3 +214,4 @@ man_pages = [
     ('index', 'noseofyeti', u'NoseOfYeti Documentation',
      [u'Stephen Moore'], 1)
 ]
+

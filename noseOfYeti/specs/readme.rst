@@ -8,7 +8,7 @@ The majority of my tests are black box tests that ensure given a particular frag
     class Test_Tokenisor_translation(object):
         def setUp(self):
             self.toka = Tokeniser(with_describe_attrs=False)
-        
+
         def test_it_should_translate_a_describe(self):
             (self.toka, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object ):pass')
 

@@ -5,21 +5,21 @@ class One(object):
     def setUp(self):
         print self
         self.blah = [1]
-    
+
     def tearDown(self):
         self.meh = [4]
 
 class Two(One):
     def setUp(self):
         self.blah.append(2)
-    
+
     def tearDown(self):
         self.meh.append(5)
 
 class Three(Two):
     def setUp(self):
         self.blah.append(3)
-    
+
     def tearDown(self):
         self.meh.append(6)
 
@@ -37,9 +37,10 @@ class TestWrapWorks(object):
         hasattr(three, "blah") |should| be(False)
         three.setUp()
         three.blah |should| equal_to([1, 2, 3])
-    
+
     def test_it_ensures_tearDown_from_super_classes_get_called(self):
         three = Three()
         hasattr(three, "meh") |should| be(False)
         three.tearDown()
         three.meh |should| equal_to([4, 5, 6])
+

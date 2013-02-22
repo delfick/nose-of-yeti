@@ -6,9 +6,9 @@ class Test_Tokeniser_Nesting(object):
     def setUp(self):
         self.toka = Tokeniser(with_describe_attrs=False)
         self.tokb = Tokeniser(with_describe_attrs=False, default_kls = 'other')
-        
+
         ###   SMALL EXAMPLE (WITHOUT PASS)
-        
+
         self.small_example = [
         '''
         describe "This":
@@ -26,9 +26,9 @@ class Test_Tokeniser_Nesting(object):
         class TestAnother (%(o)s ):pass 
         '''
         ]
-        
+
         ###   SMALL EXAMPLE (WITH PATH FOR BW COMPAT)
-        
+
         self.small_example_with_pass = [
         '''
         context "This":pass
@@ -45,9 +45,9 @@ class Test_Tokeniser_Nesting(object):
         class TestAnother (%(o)s ):pass 
         '''
         ]
-        
+
         ###   BIG EXAMPLE
-        
+
         self.big_example = [
         '''
         describe "This":
@@ -103,40 +103,41 @@ class Test_Tokeniser_Nesting(object):
                     pass 
         '''
         ]
-        
+
     ###   TESTS
-    
+
     def test_works_with_space(self):
         test, desired = self.small_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-    
+
     def test_works_with_tabs(self):
         test, desired = [d.replace('    ', '\t') for d in self.small_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-    
+
     def test_works_with_space_and_inline_pass(self):
         test, desired = self.small_example_with_pass
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-    
+
     def test_works_with_tabs_and_inline_pass(self):
         test, desired = [d.replace('    ', '\t') for d in self.small_example_with_pass]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-    
+
     def test_keeps_good_indentation_in_body_with_spaces(self):
         test, desired = self.big_example
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-    
+
     def test_keeps_good_indentation_in_body_with_tabs(self):
         test, desired = [d.replace('    ', '\t') for d in self.big_example]
         (self.toka, test) |should| result_in(desired % {'o' : 'object'})
         (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-    
+
     def test_names_nested_describes_with_part_of_parents_name(self):
         test = 'describe "a":\n\tdescribe "b":'
         desired = 'class TestA (object ):pass \nclass TestA_B (TestA ):'
         (self.toka, test) |should| result_in(desired)
+
