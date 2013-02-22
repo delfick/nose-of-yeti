@@ -1,6 +1,6 @@
 from noseOfYeti.tokeniser.imports import determine_imports
-from tokenize import NEWLINE, NAME, OP
-from should_dsl import *
+from should_dsl import should
+from tokenize import NAME, OP
 
 class Test_DetermineImports(object):
     def test_extra_imports_are_added(self):

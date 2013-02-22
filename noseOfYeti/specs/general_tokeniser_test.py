@@ -1,6 +1,9 @@
 from noseOfYeti.tokeniser import Tokeniser, determine_imports
-from should_dsl import *
-from matchers import *
+
+from should_dsl import should, should_not
+from tokenize import NEWLINE
+
+from matchers import ResultIn
 
 class Test_Tokeniser(object):
 

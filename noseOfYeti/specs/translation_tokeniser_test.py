@@ -1,6 +1,6 @@
 from noseOfYeti.tokeniser import Tokeniser
-from should_dsl import *
-from matchers import *
+from matchers import ResultIn
+from should_dsl import should
 
 class Test_Tokenisor_translation(object):
     def setUp(self):

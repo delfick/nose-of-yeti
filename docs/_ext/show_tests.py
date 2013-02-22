@@ -1,7 +1,7 @@
 from docutils.nodes import fully_normalize_name as normalize_name
-from pinocchio.spec import testName, camelcase2spec
 from sphinx.directives.code import LiteralInclude
 from sphinx.util.compat import Directive
+from pinocchio.spec import testName
 from docutils import nodes
 import inspect
 import os

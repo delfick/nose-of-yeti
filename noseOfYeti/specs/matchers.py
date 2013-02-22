@@ -1,6 +1,6 @@
+from tokenize import untokenize
+from should_dsl import matcher
 from textwrap import dedent
-from should_dsl import *
-from tokenize import *
 import cStringIO
 
 @matcher

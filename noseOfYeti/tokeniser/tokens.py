@@ -1,4 +1,4 @@
-from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN
+from tokenize import NAME, OP, INDENT, NEWLINE, STRING
 from tokenize import generate_tokens
 
 ########################

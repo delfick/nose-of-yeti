@@ -1,6 +1,5 @@
 from tokenize import untokenize
 from encodings import utf_8
-from string import capwords
 import cStringIO
 import encodings
 import codecs

@@ -1,5 +1,3 @@
-from sphinx.util.compat import Directive
-
 from noseOfYeti.tokeniser import Tokeniser, TokeniserCodec, determine_imports
 from support import spec_options
 

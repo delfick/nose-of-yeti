@@ -1,6 +1,5 @@
 from sphinx.util.compat import Directive
 from docutils import nodes
-import os
 
 from noseOfYeti.plugins.support.spec_options import spec_options
 
@@ -8,7 +7,6 @@ class SpecOptionsDirective(Directive):
     has_content = True
 
     def run(self):
-        env = self.state.document.settings.env
         # Create bullet list
         bullet = nodes.bullet_list()
 

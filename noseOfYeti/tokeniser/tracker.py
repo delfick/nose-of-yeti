@@ -2,7 +2,7 @@ from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMM
 from contextlib import contextmanager
 import re
 
-from containers import TokenDetails, Single, Group
+from containers import TokenDetails, Group
 
 # Regex for matching whitespace
 regexes = {'whitespace': re.compile('\s+')}
@@ -377,7 +377,6 @@ class Tracker(object):
         """Add the tokens for the group signature"""
         kls = self.groups.super_kls
         name = self.groups.kls_name
-        level = self.groups.level
 
         # Reset indentation to beginning and add signature
         self.reset_indentation('')

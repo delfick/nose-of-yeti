@@ -1,5 +1,5 @@
 from noseOfYeti.plugins.support.test_chooser import TestChooser
-from should_dsl import *
+from should_dsl import should
 
 class Test_TestChooser(object):
 

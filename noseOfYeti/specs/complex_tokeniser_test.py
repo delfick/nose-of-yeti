@@ -1,6 +1,7 @@
 from noseOfYeti.tokeniser import Tokeniser
-from should_dsl import *
-from matchers import *
+from should_dsl import should
+
+from matchers import ResultIn
 
 class Test_Tokeniser_Complex(object):
     def setUp(self):
