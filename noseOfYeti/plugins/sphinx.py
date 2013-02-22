@@ -14,7 +14,7 @@ def enable(app):
     tok = Tokeniser(
           default_kls = config.get('noy_default_kls')[0]
         , import_tokens = imports
-        , wrapped_setup = options.wrapped_setup
+        , wrapped_setup = config.get('noy_wrapped_setup')[0]
         , with_describe_attrs = not config.get('noy_no_describe_attrs')[0]
         )
     
