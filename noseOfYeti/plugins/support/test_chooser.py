@@ -1,3 +1,5 @@
+from inspect import getmembers
+
 class TestChooser(object):
     def __init__(self):
         self.new_module()
