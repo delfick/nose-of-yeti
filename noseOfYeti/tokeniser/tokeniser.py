@@ -26,7 +26,7 @@ class Tokeniser(object):
         # Looking at all the tokens
         with self.tracker.add_phase() as tracker:
             for tokenum, value, (_, scol), _, _ in generate_tokens(readline):
-                self.tracker.next_token(tokenum, value, scol)
+                tracker.next_token(tokenum, value, scol)
 
         # Add attributes to our Describes so that the plugin can handle some nesting issues
         # Where we have tests in upper level describes being run in lower level describes
