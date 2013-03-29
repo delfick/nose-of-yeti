@@ -24,6 +24,9 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.4.4`` and ``1.4.5``
+    Minor fixes
+
 ``1.4.3``
     Added wrapped-setup option to allow decorating before_each and after_each functions instead of inserting a super call into them.
 
