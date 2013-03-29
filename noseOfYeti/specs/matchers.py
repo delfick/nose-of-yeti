@@ -24,6 +24,12 @@ class ResultIn(object):
 
         self._expected = dedent(self._expected).strip()
         self._radicand = dedent(self._radicand).strip()
+
+        normalised_expected = []
+        for line in self._expected.split('\n'):
+            normalised_expected.append(line.rstrip())
+        self._expected = '\n'.join(normalised_expected)
+
         return self._expected == self._radicand
 
     def message_for_failed_should(self):

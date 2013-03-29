@@ -22,11 +22,11 @@ class Test_Tokeniser_Nesting(object):
         describe "Another":pass '''
         ,
         '''
-        class TestThis (%(o)s ):pass 
-        class TestThis_That (TestThis ):pass 
-        class TestThis_That_Meh (TestThis_That ):pass 
-        class TestThis_Blah (TestThis ):pass 
-        class TestAnother (%(o)s ):pass 
+        class TestThis (%(o)s ):pass
+        class TestThis_That (TestThis ):pass
+        class TestThis_That_Meh (TestThis_That ):pass
+        class TestThis_Blah (TestThis ):pass
+        class TestAnother (%(o)s ):pass
         '''
         ]
 
@@ -41,11 +41,11 @@ class Test_Tokeniser_Nesting(object):
         describe "Another":pass '''
         ,
         '''
-        class TestThis (%(o)s ):pass 
-        class TestThis_That (TestThis ):pass 
-        class TestThis_That_Meh (TestThis_That ):pass 
-        class TestThis_Blah (TestThis ):pass 
-        class TestAnother (%(o)s ):pass 
+        class TestThis (%(o)s ):pass
+        class TestThis_That (TestThis ):pass
+        class TestThis_That_Meh (TestThis_That ):pass
+        class TestThis_Blah (TestThis ):pass
+        class TestAnother (%(o)s ):pass
         '''
         ]
 
@@ -83,17 +83,17 @@ class Test_Tokeniser_Nesting(object):
         class TestThis (%(o)s ):
             def test_should (self ):
                 if x :
-                    pass 
+                    pass
                 else :
-                    x +=9 
-        class TestThis_That (TestThis ):pass 
+                    x +=9
+        class TestThis_That (TestThis ):pass
         class TestThis_That_Meh (TestThis_That ):
             def test_should (self ):
                 if y :
-                    pass 
+                    pass
                 else :
-                    pass 
-        class TestThis_Blah (TestThis ):pass 
+                    pass
+        class TestThis_Blah (TestThis ):pass
         class TestAnother (%(o)s ):
             def test_should (self ):
                 if z :
@@ -103,7 +103,7 @@ class Test_Tokeniser_Nesting(object):
                     else :
                         print "no"
                 else :
-                    pass 
+                    pass
         '''
         ]
 
@@ -141,6 +141,6 @@ class Test_Tokeniser_Nesting(object):
 
     def test_names_nested_describes_with_part_of_parents_name(self):
         test = 'describe "a":\n\tdescribe "b":'
-        desired = 'class TestA (object ):pass \nclass TestA_B (TestA ):'
+        desired = 'class TestA (object ):pass\nclass TestA_B (TestA ):'
         (self.toka, test) |should| result_in(desired)
 

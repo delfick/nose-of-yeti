@@ -15,9 +15,9 @@ class Test_Tokeniser(object):
         tok = Tokeniser(import_tokens = imports)
         (tok, 'describe "Something testable"') |should| result_in(
         '''
-        class TestSomethingTestable (object ):pass 
+        class TestSomethingTestable (object ):pass
 
-        TestSomethingTestable .is_noy_spec =True 
+        TestSomethingTestable .is_noy_spec =True
         '''
         )
 
