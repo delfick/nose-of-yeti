@@ -1,7 +1,9 @@
 from noseOfYeti.tokeniser import Tokeniser
 from should_dsl import should
 
-from matchers import ResultIn
+# Silencing code checker about should_dsl matchers
+equal_to = None
+result_in = None
 
 class Test_Tokeniser_Nesting(object):
     def setUp(self):

@@ -1,6 +1,10 @@
 from noseOfYeti.plugins.support.test_chooser import TestChooser
 from should_dsl import should
 
+# Silencing code checker about should_dsl matchers
+be = None
+equal_to = None
+
 class Test_TestChooser(object):
 
     def setup(self):

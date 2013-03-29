@@ -3,7 +3,10 @@ from noseOfYeti.tokeniser import Tokeniser, determine_imports
 from should_dsl import should, should_not
 from tokenize import NEWLINE
 
-from matchers import ResultIn
+# Silencing code checker about should_dsl matchers
+contain = None
+equal_to = None
+result_in = None
 
 class Test_Tokeniser(object):
 
