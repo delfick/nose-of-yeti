@@ -22,6 +22,7 @@ to provide an RSpec style BDD dsl for python tests
      , install_requires = [ 'setuptools'
                           , 'should-dsl'
                           , 'nose'
+                          , 'fudge'
                           ]
 
      , packages = [
