@@ -47,27 +47,27 @@ class Test_ConfigSetup(object):
 
 	def test_it_gets_values_from_config_file(self):
 		'''It gets values from a config file'''
-		ini_contents = """
-			[noy]
-			a = 1
-			b = 2
+		contents = """
+			{ "a" : 1
+			, "b" : 2
+			}
 		"""
-		with a_temp_file(ini_contents) as filename:
+		with a_temp_file(contents) as filename:
 			config = Config()
 			config.setup({"config-file":filename})
-			config._util.values |should| equal_to({"config_file":filename, "a":"1", "b":"2"})
+			config._util.values |should| equal_to({"config_file":filename, u"a":1, u"b":2})
 
 	def test_it_overwrites_config_file_with_options(self):
 		'''It gets values from a config file'''
-		ini_contents = """
-			[noy]
-			a = 1
-			b = 2
+		contents = """
+			{ "a" : 1
+			, "b" : 2
+			}
 		"""
-		with a_temp_file(ini_contents) as filename:
+		with a_temp_file(contents) as filename:
 			config = Config()
 			config.setup({"config-file":filename, "a":4})
-			config._util.values |should| equal_to({"config_file":filename, "a":4, "b":"2"})
+			config._util.values |should| equal_to({"config_file":filename, "a":4, u"b":2})
 
 	@fudge.patch("noseOfYeti.tokeniser.config.ConfigUtil")
 	def test_setup_uses_util(self, FakeConfigUtil):

@@ -69,7 +69,7 @@ spec_options = {
         )
 
     , 'config-file' : dict(
-          default = default_from_env('NOSE_NOY_CONFIG_FILE', dflt='noy.ini')
+          default = default_from_env('NOSE_NOY_CONFIG_FILE', dflt='noy.json')
         , dest = 'config_file'
         , help = '''Location of a config file for nose of yeti'''
         )

@@ -1,4 +1,4 @@
-import ConfigParser
+import json
 import os
 
 class MissingConfigFile(Exception): pass
@@ -33,7 +33,10 @@ class ConfigUtil(object):
 
 	def normalise_key(self, key):
 		"""Make sure key is a valid python attribute"""
-		return key.replace("-", "_")
+		key = key.replace('-', '_')
+		if key.startswith("noy_"):
+			key = key[4:]
+		return key
 
 	def find_value(self, key):
 		"""Find a value and return it"""
@@ -81,7 +84,7 @@ class ConfigUtil(object):
 
 			If however, the value isn't a default and it doesn't exist, an error is raised
 		"""
-		filename = self.values.get('config_file', Default('noy.ini'))
+		filename = self.values.get('config_file', Default('noy.json'))
 
 		ignore_missing = False
 		if isinstance(filename, Default):
@@ -108,9 +111,7 @@ class ConfigUtil(object):
 				else:
 					yield name, val
 
-		parser = ConfigParser.ConfigParser()
-		parser.read(filename)
-		items = parser.items('noy')
+		items = json.load(open(filename)).items()
 		self.use_options(items, extractor)
 
 	def use_config_file(self):

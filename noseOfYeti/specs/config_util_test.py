@@ -112,14 +112,14 @@ class Test_ConfigUtil_FindingConfigFile(object):
 		finder |should| throw(MissingConfigFile, "Config file doesn't exist at fake:fullpath")
 
 	@fudge.patch('os.path.exists', 'os.path.abspath')
-	def test_it_defaults_to_noyini(self, fake_exists, fake_abspath):
-		fake_abspath.expects_call().with_args('noy.ini').returns(self.fullpath)
+	def test_it_defaults_to_noyjson(self, fake_exists, fake_abspath):
+		fake_abspath.expects_call().with_args('noy.json').returns(self.fullpath)
 		fake_exists.expects_call().with_args(self.fullpath).returns(True)
 		self.config_util.find_config_file() |should| equal_to(self.fullpath)
 
 	@fudge.patch('os.path.exists', 'os.path.abspath')
 	def test_it_doesnt_care_if_default_doesnt_exist(self, fake_exists, fake_abspath):
-		fake_abspath.expects_call().with_args('noy.ini').returns(self.fullpath)
+		fake_abspath.expects_call().with_args('noy.json').returns(self.fullpath)
 		fake_exists.expects_call().with_args(self.fullpath).returns(False)
 		self.config_util.find_config_file() |should| equal_to(None)
 
@@ -132,29 +132,29 @@ class Test_ConfigUtil_FindingConfigFile(object):
 
 class Test_ConfigUtil_ApplyingConfigFile(object):
 	'''Make sure it knows what values from the config file to apply'''
-	def test_it_sets_options_from_an_ini_file(self):
-		ini_contents = """
-			[noy]
-			a = stuff
-			b = things
+	def test_it_sets_options_from_an_json_file(self):
+		contents = """
+			{ "a" : "stuff"
+			, "b" : "things"
+			}
 		"""
-		with a_temp_file(ini_contents) as filename:
+		with a_temp_file(contents) as filename:
 			config_util = ConfigUtil()
 			config_util.values |should| equal_to({})
 			config_util.apply_config_file(filename)
 			config_util.values |should| equal_to({"a":"stuff", "b":"things"})
 
 	def test_it_doesnt_override_existing_non_default_values(self):
-		ini_contents = """
-			[noy]
-			a = stuff
-			b = things
-			c = and
-			d = shells
-			e-f = blah
-			g-h = other
+		contents = """
+			{ "a" : "stuff"
+			, "b" : "things"
+			, "c" : "and"
+			, "d" : "shells"
+			, "e-f" : "blah"
+			, "g-h" : "other"
+			}
 		"""
-		with a_temp_file(ini_contents) as filename:
+		with a_temp_file(contents) as filename:
 			config_util = ConfigUtil()
 			c_val = Default(21)
 			config_util.use_options({'b':21, 'c':c_val, 'd':None, "g-h":"meh"})
@@ -162,21 +162,6 @@ class Test_ConfigUtil_ApplyingConfigFile(object):
 
 			config_util.apply_config_file(filename)
 			config_util.values |should| equal_to({"a":"stuff", "b":21, "c":"and", 'd':None, "e_f":"blah", "g_h":"meh"})
-
-	def test_it_ignores_non_noy_sections(self):
-		ini_contents = """
-			[noy]
-			a = stuff
-			b = things
-
-			[other]
-			c = 1
-		"""
-		with a_temp_file(ini_contents) as filename:
-			config_util = ConfigUtil()
-			config_util.values |should| equal_to({})
-			config_util.apply_config_file(filename)
-			config_util.values |should| equal_to({"a":"stuff", "b":"things"})
 
 class Test_ConfigUtil_UsingConfigFile(object):
 	'''Make sure it knows how to find and apply a config file'''
