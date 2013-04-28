@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup( name = 'noseOfYeti'
-     , version = "1.4.5"
+     , version = "1.4.6"
      , classifiers=[ 'Intended Audience :: Developers'
                    , 'Programming Language :: Python'
                    , 'Topic :: Software Development :: Documentation'
