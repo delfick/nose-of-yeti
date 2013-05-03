@@ -21,6 +21,10 @@ class Default(object):
 	def __unicode__(self):
 		return unicode(self.val)
 
+	def append(self, val):
+		"""Make sure argparse doesn't fail"""
+		self.val.append(val)
+
 ########################
 ###   CONFIGUTIL
 ########################
