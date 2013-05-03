@@ -17,11 +17,11 @@ def default_from_env(str, dflt=None, as_list=False):
     return get
 
 spec_options = {
-      'no-default-imports' : dict(
-          default = default_from_env('NOSE_NOY_NO_DEFAULT_IMPORTS', dflt=False)
+      'with-default-imports' : dict(
+          default = default_from_env('NOSE_NOY_WITH_DEFAULT_IMPORTS', dflt=False)
         , action  = 'store_true'
-        , dest    = 'no_default_imports'
-        , help    = 'Turn off default imports for spec files'
+        , dest    = 'with_default_imports'
+        , help    = 'Turn on default imports for spec files'
         , type    = 'yn'
         )
 
@@ -52,11 +52,11 @@ spec_options = {
         , type    = 'csv'
         )
 
-    , 'without-should-dsl' : dict(
-          default = default_from_env('NOSE_NOY_WITHOUT_SHOULD_DSL', dflt=False)
+    , 'with-should-dsl' : dict(
+          default = default_from_env('NOSE_NOY_WITH_SHOULD_DSL', dflt=False)
         , action  = 'store_true'
-        , dest    = 'without_should_dsl'
-        , help    = '''Make it not try to import should-dsl'''
+        , dest    = 'with_should_dsl'
+        , help    = '''Make it try to import should-dsl'''
         , type    = 'yn'
         )
 

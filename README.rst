@@ -24,6 +24,10 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.4.7``
+    No injected imports by default
+
+    And changed --noy-without-should-dsl and --noy-without-default-imports to --noy-with-should-dsl and --noy-with-default-imports
 ``1.4.6``
     Can now set common settings in a config json file.
 

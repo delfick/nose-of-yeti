@@ -239,7 +239,7 @@ An example of a class that does have it's own ``setUp`` and ``tearDown`` functio
                 # Blank line after the after_each
                 self.thing = 4
 
-Also, remember if you use the :ref:`no-default-imports option <options>` then you'll have to manually import ``noy_sup_setUp`` and ``noy_sup_tearDown`` by doing ``from noseOfYeti.tokeniser.support import noy_sup_setUp, noy_sup_tearDown``
+Also, remember, unless you use the :ref:`with-default-imports option <options>` then you'll have to manually import ``noy_sup_setUp`` and ``noy_sup_tearDown`` by doing ``from noseOfYeti.tokeniser.support import noy_sup_setUp, noy_sup_tearDown``
 
 .. note::
     Anything on the same line as a ``before_each``/``after_each`` will remain on that line
@@ -293,18 +293,18 @@ becomes::
 This adds some overhead to setUp and tearDown calls (which is why it defaults to off) but it does allow the first line after a before_each or after_each to contain the first line of an indented block (if, for, def, class, etc).
 
 .. note::
-    If you have :ref:`no-default-imports option <options>` set to True then you'll need to manually import ``from noseOfYeti.tokeniser.support import noy_wrap_setUp, noy_wrap_tearDown``.
+    If you don't have :ref:`with-default-imports option <options>` set to True then you'll need to manually import ``from noseOfYeti.tokeniser.support import noy_wrap_setUp, noy_wrap_tearDown``.
 
 The wrapper will ensure a ``noy_sup_*`` helper is called before the setUp/tearDown
 
 Default imports
 ---------------
 
-Unless you have :ref:`no-default-imports option <options>` set to True then by default, the following will be imported at the top of the spec file::
+If you have :ref:`with-default-imports option <options>` set to True then the following will be imported at the top of the spec file::
 
     import nose; from nose.tools import *; from noseOfYeti.tokeniser.support import *
 
-If you also don't have :ref:`without-should-dsl option <options>` set, then it will do ``from should_dsl import *`` for you.
+If you also have :ref:`with-should-dsl option <options>` set, then it will do ``from should_dsl import *`` for you.
 
 Line numbers
 ------------
@@ -328,8 +328,7 @@ For example:
 
 .. code-block:: json
 
-    { "without-should-dsl" : true
-    , "no-default-imports" : true
+    { "with-should-dsl" : true
     , "default-kls" : "unittest.TestCase"
     }
 

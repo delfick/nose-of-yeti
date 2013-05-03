@@ -6,6 +6,9 @@
 ########################
 # coding: spec
 
+from noseOfYeti.tokeniser.support import noy_sup_setUp
+from should_dsl import *
+
 it 'can exist without a describe'
 
 it 'can have args', blah
@@ -58,7 +61,9 @@ describe 'numbers':
 ### Note that I did clean it up very slightly
 ########################
 
-import nose; from nose.tools import *; from should_dsl import *; from noseOfYeti.noy_helper import *
+
+from noseOfYeti.tokeniser.support import noy_sup_setUp
+from should_dsl import *
 
 def test_can_exist_without_a_describe(): raise nose.SkipTest
 

@@ -31,7 +31,7 @@ class Test_Tokeniser(object):
         tok.import_tokens |should_not| contain([NEWLINE, '\n'])
 
     def test_no_newline_in_extended_default_imports(self):
-        imports = determine_imports(extra_imports='import another.class')
+        imports = determine_imports(extra_imports='import another.class', with_default_imports=True, with_should_dsl=True)
         tok = Tokeniser(import_tokens=imports)
         tok.import_tokens |should_not| contain([NEWLINE, '\n'])
         (tok, '') |should| result_in(
@@ -43,14 +43,12 @@ class Test_Tokeniser(object):
         tok.import_tokens |should| equal_to(None)
 
     def test_is_possible_to_specify_extra_imports_without_default_imports(self):
-        imports = determine_imports(with_default_imports=False, extra_imports="import thing")
+        imports = determine_imports(with_default_imports=False, with_should_dsl=False, extra_imports="import thing")
         tok = Tokeniser(import_tokens = imports)
         (tok, '') |should| result_in('import thing ')
 
-    def test_determine_imports_imports_nose_and_nose_helpers_and_should_dsl_by_default(self):
+    def test_determine_imports_imports_nothing_by_default(self):
         imports = determine_imports()
         tok = Tokeniser(import_tokens=imports)
-        (tok, '') |should| result_in(
-            'import nose ;from nose .tools import *;from should_dsl import *;from noseOfYeti .tokeniser .support import *'
-        )
+        (tok, '') |should| result_in('')
 

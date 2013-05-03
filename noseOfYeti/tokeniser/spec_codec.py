@@ -134,8 +134,8 @@ def register_from_options(options=None, template=None, extractor=None):
 
     imports = determine_imports(
           extra_imports = ';'.join([d for d in config.extra_import if d])
-        , without_should_dsl = config.without_should_dsl
-        , with_default_imports = not config.no_default_imports
+        , with_should_dsl = config.with_should_dsl
+        , with_default_imports = config.with_default_imports
         )
 
     tok = Tokeniser(
