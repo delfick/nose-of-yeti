@@ -24,7 +24,7 @@ def test_config_util_normalising_keys():
 	config_util.normalise_key("blah_stuff-things") |should| equal_to("blah_stuff_things")
 	config_util.normalise_key("blah-stuff-things") |should| equal_to("blah_stuff_things")
 
-class test_ConfigUtil_FindingValue(object):
+class Test_ConfigUtil_FindingValue(object):
 	'''Make sure we can find a value'''
 	def test_it_raises_attributeError_when_key_doesnt_exist(self):
 		config_util = ConfigUtil()
