@@ -1,6 +1,8 @@
 from noseOfYeti.tokeniser import Tokeniser
-from matchers import ResultIn
 from should_dsl import should
+
+# Silencing code checker about should_dsl matchers
+result_in = None
 
 class Test_Tokenisor_translation(object):
     def setUp(self):
@@ -57,18 +59,18 @@ class Test_Tokenisor_translation(object):
 
     def test_no_added_arguments_to_its_if_not_declared_on_same_line(self):
         (self.toka, 'it "should do this thing"\n, blah, meh') |should| result_in(
-            "def test_should_do_this_thing ():raise nose.SkipTest \n,blah ,meh "
+            "def test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
             )
         (self.tokb, 'it "should do this thing"\n, blah, meh') |should| result_in(
-            "def test_should_do_this_thing ():raise nose.SkipTest \n,blah ,meh "
+            "def test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
             )
 
         # Same tests, but with newlines in front
         (self.toka, '\nit "should do this thing"\n, blah, meh') |should| result_in(
-            "\ndef test_should_do_this_thing ():raise nose.SkipTest \n,blah ,meh "
+            "\ndef test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
             )
         (self.tokb, '\nit "should do this thing"\n, blah, meh') |should| result_in(
-            "\ndef test_should_do_this_thing ():raise nose.SkipTest \n,blah ,meh "
+            "\ndef test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
             )
 
     def test_turns_an_it_without_colon_into_skippable(self):
@@ -122,25 +124,25 @@ class Test_Tokenisor_translation(object):
         desired = """
         class TestA (object ):
             def test_asdf (self ):
-                l =[True 
-                ,False 
-                ,1 
-                ,2 
+                l =[True
+                ,False
+                ,1
+                ,2
                 ]
 
-                t =(1 
-                ,2 
-                ,3 
-                ,4 
+                t =(1
+                ,2
+                ,3
+                ,4
                 ,5 ,
                 )
 
                 d ={'asdf':True }
 
-                t2 =(True 
-                ,False 
+                t2 =(True
+                ,False
                 )
-            def test_asdf2 (self ):raise nose.SkipTest 
+            def test_asdf2 (self ):raise nose.SkipTest
         """
 
         (self.toka, test) |should| result_in(desired)
@@ -159,11 +161,11 @@ class Test_Tokenisor_translation(object):
 
         desired = """
         class TestThing (object ):
-            def test_should_be_skipped (self ):raise nose.SkipTest 
+            def test_should_be_skipped (self ):raise nose.SkipTest
             def test_shouldnt_be_skipped (self ):
                 print 'hi'
 
-            def test_another_that_should_be_skipped (self ):raise nose.SkipTest 
+            def test_another_that_should_be_skipped (self ):raise nose.SkipTest
 
             def test_another_that_shouldnt_be_skipped (self ):
                 print 'hi'
@@ -180,9 +182,9 @@ class Test_Tokenisor_translation(object):
 
         desired = '''
         class TestThing (object ):
-            def test_should_be_skipped (self ):raise nose.SkipTest 
+            def test_should_be_skipped (self ):raise nose.SkipTest
         class TestThing_That (TestThing ):
-            pass 
+            pass
         '''
         (self.toka, test) |should| result_in(desired)
 
@@ -197,9 +199,9 @@ class Test_Tokenisor_translation(object):
         '''
 
         desired = '''
-        class TestThis (object ):pass 
+        class TestThis (object ):pass
         class TestThis_That (TestThis ):
-            pass 
+            pass
 
         class SomeMockObject (object ):
             def indented_method ()
@@ -217,7 +219,7 @@ class Test_Tokenisor_translation(object):
         desired = '''
         class TestThing (object ):
             def setUp (self ):
-                noy_sup_setUp (super (TestThing ,self ));self .x =5 
+                noy_sup_setUp (super (TestThing ,self ));self .x =5
         '''
 
         (self.toka, test) |should| result_in(desired)
@@ -240,7 +242,7 @@ class Test_Tokenisor_translation(object):
         desired = '''
         class TestThing (object ):
             def tearDown (self ):
-                noy_sup_tearDown (super (TestThing ,self ));self .x =5 
+                noy_sup_tearDown (super (TestThing ,self ));self .x =5
         '''
 
         (self.toka, test) |should| result_in(desired)
@@ -264,11 +266,11 @@ class Test_Tokenisor_translation(object):
         desired = '''
         class TestThing (object ):
             def tearDown (self ):
-                self .x =5 
+                self .x =5
 
         class TestThing_Other (TestThing ):
             def setUp (self ):
-                self .y =8 
+                self .y =8
 
         TestThing .tearDown =noy_wrap_tearDown (TestThing ,TestThing .tearDown )
         TestThing_Other .setUp =noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
@@ -297,12 +299,12 @@ class Test_Tokenisor_translation(object):
         class TestThing (object ):
             def tearDown (self ):
                 def blah (self ):
-                    pass 
+                    pass
 
         class TestThing_Other (TestThing ):
             def setUp (self ):
                 class Stuff (object ):
-                    pass 
+                    pass
 
         TestThing .tearDown =noy_wrap_tearDown (TestThing ,TestThing .tearDown )
         TestThing_Other .setUp =noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
@@ -341,8 +343,8 @@ class Test_Tokenisor_translation(object):
         '''
 
         desired = '''%s
-        class TestThisThing (unittest .TestCase ):pass 
-        class TestAnotherThing (%s ):pass 
+        class TestThisThing (unittest .TestCase ):pass
+        class TestAnotherThing (%s ):pass
         '''
 
         (self.toka, test) |should| result_in(desired % ('', 'object'))
@@ -366,15 +368,15 @@ class Test_Tokenisor_translation(object):
         '''
 
         desired = '''
-        def test_root_level_should_work_well ():raise nose.SkipTest 
+        def test_root_level_should_work_well ():raise nose.SkipTest
             3 |should |be (4 )
         class TestSomeTests (%s ):
-            def test_doesnt_get_phased_by_special_characters (self ):raise nose.SkipTest 
+            def test_doesnt_get_phased_by_special_characters (self ):raise nose.SkipTest
 
         class TestSomeTests_NestedDescribe (TestSomeTests ):
             def test_asdf_asdf (self ):
                 1 |should |be (2 )
-        def test_root_level_should_also_work ():raise nose.SkipTest 
+        def test_root_level_should_also_work ():raise nose.SkipTest
         test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
         test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
         TestSomeTests .test_doesnt_get_phased_by_special_characters .__func__ .__testname__ ="doesn't get phased by $special characters"
@@ -417,28 +419,28 @@ class Test_Tokenisor_translation(object):
         '''
 
         desired = '''
-        def test_is_a_function_with_a_pass ():pass 
+        def test_is_a_function_with_a_pass ():pass
 
         def test_is_a_function_with_a_pass_on_another_line ():
-            pass 
+            pass
 
         def test_is_a_function_with_a_pass_on_another_line_further_below ():
         #comment or something
 
 
-            pass 
+            pass
 
         class TestBlockWithAPass (%(dflt)s ):
-            pass 
+            pass
 
         class TestBlockWithCommentAndPass (%(dflt)s ):
         # comment or something
-            pass 
+            pass
 
-        class TestNestingAndPasses (%(dflt)s ):pass 
+        class TestNestingAndPasses (%(dflt)s ):pass
         # comment
         class TestNestingAndPasses_Nested (TestNestingAndPasses ):
-            pass 
+            pass
 
         class TestNestingAndPasses_Nested_MoreNesting (TestNestingAndPasses_Nested ):
         # comment
@@ -463,7 +465,7 @@ class Test_Tokenisor_translation(object):
         '''
 
         desired = '''
-        def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):raise nose.SkipTest 
+        def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):raise nose.SkipTest
 
         class TestGroup (%(dflt)s ):
             def test_has_self_and_default_args (self ,blah =None ,you =(3 ,4 ,
@@ -529,12 +531,12 @@ class Test_Tokenisor_translation(object):
         desired = '''
         class TestBlockWithNecessarySemicolon (%(dflt)s ):
             def setUp (self ):
-                noy_sup_setUp (super (TestBlockWithNecessarySemicolon ,self ));two =1 +1 
+                noy_sup_setUp (super (TestBlockWithNecessarySemicolon ,self ));two =1 +1
 
         class TestBlockWithUnecessarySemiclon (%(dflt)s ):
             def setUp (self ):
                 noy_sup_setUp (super (TestBlockWithUnecessarySemiclon ,self ))#comment
-                pass 
+                pass
 
             def tearDown (self ):
                 noy_sup_tearDown (super (TestBlockWithUnecessarySemiclon ,self ))
@@ -567,19 +569,19 @@ class Test_Tokenisor_translation(object):
         class TestKls (%(dflt)s ):
             def setUp (self ):# Comment one
                 noy_sup_setUp (super (TestKls ,self ))
-                pass 
+                pass
 
             def tearDown (self ):# Comment two
                 noy_sup_tearDown (super (TestKls ,self ))
-                pass 
+                pass
 
         class TestKls2 (%(dflt)s ):
             def setUp (self ):# Comment three
-                noy_sup_setUp (super (TestKls2 ,self ));two =1 +1 
+                noy_sup_setUp (super (TestKls2 ,self ));two =1 +1
 
             def tearDown (self ):# Comment four
                 noy_sup_tearDown (super (TestKls2 ,self ))#comment
-                pass 
+                pass
         '''
         (self.toka, test) |should| result_in(desired % {'dflt': "object"})
         (self.tokb, test) |should| result_in(desired % {'dflt': "other"})

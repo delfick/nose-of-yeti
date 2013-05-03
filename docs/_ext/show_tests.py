@@ -17,7 +17,7 @@ class ShowTestsDirective(Directive):
         files = [f for f in os.listdir(specdir) if f.endswith('_test.py')]
         tokens = []
         for f in files:
-            name = f[:-3]
+            name = str(f[:-3])
             module = getattr(__import__('noseOfYeti.specs', globals(), locals(), [name], -1), name)
 
             section = nodes.section()
@@ -154,6 +154,10 @@ class ShowTestsDirective(Directive):
         if hasattr(item, 'im_func'):
             func = item.im_func
 
+        try:
+            func.func_code
+        except:
+            from pdb import set_trace; set_trace()
         code = func.func_code
         filename = code.co_filename
 

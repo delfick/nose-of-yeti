@@ -1,3 +1,4 @@
+from noseOfYeti.tokeniser.config import Default
 import os
 
 def default_from_env(str, dflt=None, as_list=False):
@@ -66,29 +67,19 @@ spec_options = {
         , help = '''Wrap setups with lines at bottom of file instead of using noy_sup_* helpers'''
         , type = 'yn'
         )
+
+    , 'config-file' : dict(
+          default = default_from_env('NOSE_NOY_CONFIG_FILE', dflt='noy.json')
+        , dest = 'config_file'
+        , help = '''Location of a config file for nose of yeti'''
+        )
     }
 
-def add_to_argparse(parser, env):
-    parser_options = ['default', 'action', 'dest', 'help']
-    for option, attributes in spec_options.items():
-        opts = dict((k, v) for k, v in attributes.items() if k in parser_options)
-        opts['default'] = opts['default'](env)
-        parser.add_option('--noy-%s' % option, **opts)
+def extract_options_dict(template, options):
+    """Extract options from a dictionary against the template"""
+    for option, val in template.items():
+        if options and option in options:
+            yield option, options[option]
+        else:
+            yield option, Default(template[option]['default'](os.environ))
 
-def for_pylint():
-    env = os.environ
-    parser_options = ['default', 'help', 'type']
-    options = []
-    for option, attributes in spec_options.items():
-        opts = dict((k, v) for k, v in attributes.items() if k in parser_options)
-        opts['default'] = opts['default'](env)
-        options.append((option, opts))
-    return options
-
-def for_sphinx():
-    env = os.environ
-    options = {}
-    for option, attributes in spec_options.items():
-        options[option] = attributes['default'](env)
-
-    return options

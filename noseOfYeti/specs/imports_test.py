@@ -2,6 +2,9 @@ from noseOfYeti.tokeniser.imports import determine_imports
 from should_dsl import should
 from tokenize import NAME, OP
 
+# Silencing code checker about should_dsl matchers
+equal_to = None
+
 class Test_DetermineImports(object):
     def test_extra_imports_are_added(self):
         extra_imports = "import thing; import stuff"

@@ -1,26 +1,24 @@
-from noseOfYeti.tokeniser import Tokeniser, TokeniserCodec, determine_imports
-from support import spec_options
+from noseOfYeti.tokeniser.spec_codec import register_from_options
+from noseOfYeti.tokeniser.config import Default
+from support.spec_options import spec_options
+
+import os
 
 def enable(app):
-    config = app.builder.config.values
-    imports = determine_imports(
-          extra_imports = ';'.join([d for d in config.get('noy_extra_import')[0] if d])
-        , without_should_dsl = config.get('noy_without_should_dsl')[0]
-        , with_default_imports = not config.get('noy_no_default_imports')[0]
-        )
+    register_from_options(app.builder.config, spec_options, extractor=extract_options)
 
-    tok = Tokeniser(
-          default_kls = config.get('noy_default_kls')[0]
-        , import_tokens = imports
-        , wrapped_setup = config.get('noy_wrapped_setup')[0]
-        , with_describe_attrs = not config.get('noy_no_describe_attrs')[0]
-        )
+def normalise_options(template):
+    env = os.environ
+    for option, attributes in template.items():
+        name = 'noy_{}'.format(option.replace('-', '_'))
+        yield option, name, Default(attributes['default'](env))
 
-    TokeniserCodec(tok).register()
+def extract_options(template, config):
+    for option, name, _ in normalise_options(template):
+        yield option, getattr(config, name)
 
 def setup(app):
-    for option, default in spec_options.for_sphinx().items():
-        name = 'noy_%s' % option.replace('-', '_')
+    for option, name, default in normalise_options(spec_options):
         app.add_config_value(name, default, 'html')
 
     app.connect('builder-inited', enable)

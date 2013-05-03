@@ -1,7 +1,8 @@
 from noseOfYeti.tokeniser import Tokeniser
 from should_dsl import should
 
-from matchers import ResultIn
+# Silencing code checker about should_dsl matchers
+result_in = None
 
 class Test_Tokeniser_Complex(object):
     def setUp(self):
@@ -29,23 +30,23 @@ class Test_Tokeniser_Complex(object):
         '''
         class TestThis (%(o)s ):
             def setUp (self ):
-                noy_sup_setUp (super (TestThis ,self ));self .x =5 
+                noy_sup_setUp (super (TestThis ,self ));self .x =5
         class TestThis_That (TestThis ):
             def setUp (self ):
-                noy_sup_setUp (super (TestThis_That ,self ));self .y =6 
+                noy_sup_setUp (super (TestThis_That ,self ));self .y =6
         class TestThis_That_Meh (TestThis_That ):
             def tearDown (self ):
-                noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
-        class TestThis_Blah (TestThis ):pass 
+                noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None
+        class TestThis_Blah (TestThis ):pass
         class TestAnother (%(o)s ):
             def setUp (self ):
-                noy_sup_setUp (super (TestAnother ,self ));self .z =8 
+                noy_sup_setUp (super (TestAnother ,self ));self .z =8
 
-        TestThis .is_noy_spec =True 
-        TestThis_That .is_noy_spec =True 
-        TestThis_That_Meh .is_noy_spec =True 
-        TestThis_Blah .is_noy_spec =True 
-        TestAnother .is_noy_spec =True 
+        TestThis .is_noy_spec =True
+        TestThis_That .is_noy_spec =True
+        TestThis_That_Meh .is_noy_spec =True
+        TestThis_Blah .is_noy_spec =True
+        TestAnother .is_noy_spec =True
         '''
         ]
 
@@ -95,32 +96,32 @@ class Test_Tokeniser_Complex(object):
         '''
         class TestThis (%(o)s ):
             def setUp (self ):
-                noy_sup_setUp (super (TestThis ,self ));self .x =5 
+                noy_sup_setUp (super (TestThis ,self ));self .x =5
             def test_should (self ):
                 if x :
-                    pass 
+                    pass
                 else :
-                    x +=9 
+                    x +=9
         class TestThis_That (TestThis ):
             def setUp (self ):
-                noy_sup_setUp (super (TestThis_That ,self ));self .y =6 
+                noy_sup_setUp (super (TestThis_That ,self ));self .y =6
         class TestThis_That_Meh (TestThis_That ):
             def tearDown (self ):
-                noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None 
+                noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None
             def test_should_set_testname_for_non_alpha_names (self ):
-                pass 
+                pass
             def test_should (self ):
                 if y :
-                    pass 
+                    pass
                 else :
-                    pass 
+                    pass
             def test_should_have_args (self ,arg1 ,arg2 ):
                 blah |should |be_good ()
-        class TestThis_Blah (TestThis ):pass 
-        def ignore__root_level_pecial_method ():raise nose.SkipTest 
+        class TestThis_Blah (TestThis ):pass
+        def ignore__root_level_pecial_method ():raise nose.SkipTest
         class TestAnother (%(o)s ):
             def setUp (self ):
-                noy_sup_setUp (super (TestAnother ,self ));self .z =8 
+                noy_sup_setUp (super (TestAnother ,self ));self .z =8
             def test_should (self ):
                 if z :
                     if u :
@@ -129,13 +130,13 @@ class Test_Tokeniser_Complex(object):
                     else :
                         print "no"
                 else :
-                    pass 
+                    pass
 
-        TestThis .is_noy_spec =True 
-        TestThis_That .is_noy_spec =True 
-        TestThis_That_Meh .is_noy_spec =True 
-        TestThis_Blah .is_noy_spec =True 
-        TestAnother .is_noy_spec =True 
+        TestThis .is_noy_spec =True
+        TestThis_That .is_noy_spec =True
+        TestThis_That_Meh .is_noy_spec =True
+        TestThis_Blah .is_noy_spec =True
+        TestAnother .is_noy_spec =True
         ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"
         TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__func__ .__testname__ ="should set __testname__ for non alpha names ' $^"
         '''

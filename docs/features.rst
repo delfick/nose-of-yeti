@@ -317,3 +317,23 @@ With many thanks to work by ``jerico_dev`` (https://bitbucket.org/delfick/nose-o
 
  * Setting ``is_noy_spec`` on classes and ``__testname__`` on tests happen at the end of the file after all the other code.
 
+Central Configuration
+---------------------
+
+.. versionadded:: 1.4.6
+
+You can now have a configuration file that is read by all plugins, which is called ``noy.json`` by default.
+
+For example:
+
+.. code-block:: json
+
+    { "without-should-dsl" : true
+    , "no-default-imports" : true
+    , "default-kls" : "unittest.TestCase"
+    }
+
+This way you can have all your nose-of-yeti options in one place that is read from by the plugins.
+
+.. note:: Any nose-of-yeti configuration you specify in the configuration specific to a plugin will override the json configuration file
+

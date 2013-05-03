@@ -3,7 +3,10 @@ from noseOfYeti.tokeniser import Tokeniser, determine_imports
 from should_dsl import should, should_not
 from tokenize import NEWLINE
 
-from matchers import ResultIn
+# Silencing code checker about should_dsl matchers
+contain = None
+equal_to = None
+result_in = None
 
 class Test_Tokeniser(object):
 
@@ -12,9 +15,9 @@ class Test_Tokeniser(object):
         tok = Tokeniser(import_tokens = imports)
         (tok, 'describe "Something testable"') |should| result_in(
         '''
-        class TestSomethingTestable (object ):pass 
+        class TestSomethingTestable (object ):pass
 
-        TestSomethingTestable .is_noy_spec =True 
+        TestSomethingTestable .is_noy_spec =True
         '''
         )
 

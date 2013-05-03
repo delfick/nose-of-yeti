@@ -1,6 +1,10 @@
 from noseOfYeti.tokeniser.support import noy_wrap_setUp, noy_wrap_tearDown
 from should_dsl import should
 
+# Silencing code checker about should_dsl matchers
+be = None
+equal_to = None
+
 class One(object):
     def setUp(self):
         print self

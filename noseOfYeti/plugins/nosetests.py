@@ -1,8 +1,21 @@
-from noseOfYeti.tokeniser import Tokeniser, TokeniserCodec, determine_imports
+from noseOfYeti.tokeniser.spec_codec import register_from_options
+from noseOfYeti.tokeniser.config import Default
+from support.spec_options import spec_options
 from support.test_chooser import TestChooser
-from support import spec_options
 
 from nose.plugins import Plugin
+
+def add_to_argparse(parser, env, template):
+    parser_options = ['default', 'action', 'dest', 'help']
+    for option, attributes in template.items():
+        opts = dict((k, v) for k, v in attributes.items() if k in parser_options)
+        opts['default'] = Default(opts['default'](env))
+        parser.add_option('--noy-%s' % option, **opts)
+
+def extract_options(template, options):
+    for option, val in template.items():
+        name = option.replace('-', '_')
+        yield option, getattr(options, name)
 
 class Plugin(Plugin):
     name = "noseOfYeti"
@@ -13,7 +26,7 @@ class Plugin(Plugin):
 
     def options(self, parser, env={}):
         super(Plugin, self).options(parser, env)
-        spec_options.add_to_argparse(parser, env)
+        add_to_argparse(parser, env, spec_options)
 
         parser.add_option('--with-noy'
             , default = False
@@ -42,21 +55,9 @@ class Plugin(Plugin):
     def configure(self, options, conf):
         super(Plugin, self).configure(options, conf)
         self.ignore_kls = options.ignore_kls
+
         if options.enabled:
-            self.enabled = True
             self.done = {}
-            imports = determine_imports(
-                  extra_imports = ';'.join([d for d in options.extra_import if d])
-                , without_should_dsl = options.without_should_dsl
-                , with_default_imports = not options.no_default_imports
-                )
-
-            tok = Tokeniser(
-                  default_kls = options.default_kls
-                , import_tokens = imports
-                , wrapped_setup = options.wrapped_setup
-                , with_describe_attrs = not options.no_describe_attrs
-                )
-
-            TokeniserCodec(tok).register()
+            self.enabled = True
+            register_from_options(options, spec_options, extractor=extract_options)
 
