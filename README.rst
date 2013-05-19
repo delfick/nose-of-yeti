@@ -11,7 +11,7 @@ Using this we can make it so that when python imports a file with a particular e
 
 NoseOfYeti uses this technique to translate from the DSL it defines into python classes and functions that may be recognised by the Python Nose testing framework.
 
-http://somethingaboutorange.com/mrl/projects/nose/1.0.0/
+https://readthedocs.org/docs/nose/
 
 It was originally developed by Stephen Moore after borrowing the idea from a project by Fernando Meyer called Yeti
 
