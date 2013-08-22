@@ -151,10 +151,10 @@ NoseOfYeti is also able to cope with making tests accept other parameters. This 
         it "also works with self", fakeSys:
             path = fudge.Fake('path')
             fakeSys.expects("path").returns(path)
-            myFunction() |should| be(path)
+            self.assertEqual(myFunction(), path)
 
         it "handles default arguments", thing=3, other=4:
-            thing |should_not| be(other)
+            self.assertIs(thing, other)
 
 becomes::
 
@@ -168,10 +168,10 @@ becomes::
         def test_also_works_with_self(self, fakeSys):
             path = fudge.Fake('path')
             fakeSys.expects("path").returns(path)
-            myFunction() |should| be(path)
+            self.assertEqual(myFunction(), path)
 
         def test_handles_default_arguments(self, thing=3, other=4):
-            thing |should_not| be(other)
+            self.assertIs(thing, other)
 
 Note that it will also cope with multiline lists as default parameters::
 
@@ -304,8 +304,6 @@ If you have :ref:`with-default-imports option <options>` set to True then the fo
 
     import nose; from nose.tools import *; from noseOfYeti.tokeniser.support import *
 
-If you also have :ref:`with-should-dsl option <options>` set, then it will do ``from should_dsl import *`` for you.
-
 Line numbers
 ------------
 
@@ -328,8 +326,7 @@ For example:
 
 .. code-block:: json
 
-    { "with-should-dsl" : true
-    , "default-kls" : "unittest.TestCase"
+    { "default-kls" : "unittest.TestCase"
     }
 
 This way you can have all your nose-of-yeti options in one place that is read from by the plugins.
