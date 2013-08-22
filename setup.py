@@ -31,6 +31,7 @@ setup(
          ]
        , 'docs':
          [ 'nose'
+         , 'fudge'
          , 'sphinx'
          , 'pinocchio'
          , 'should_dsl'
