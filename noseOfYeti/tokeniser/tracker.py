@@ -398,7 +398,7 @@ class Tracker(object):
         self.result.extend(self.tokens.make_single(name, args))
 
         # Add skip if necessary
-        if self.single.typ == 'ignore' or ignore:
+        if ignore:
             self.single.skipped = True
             self.result.extend(self.tokens.test_skip)
 
