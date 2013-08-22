@@ -1,1 +1,2 @@
-git+git://github.com/mkwiatkowski/pinocchio.git#egg=pinocchio
+nose
+pinocchio

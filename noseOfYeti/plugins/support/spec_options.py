@@ -52,14 +52,6 @@ spec_options = {
         , type    = 'csv'
         )
 
-    , 'with-should-dsl' : dict(
-          default = default_from_env('NOSE_NOY_WITH_SHOULD_DSL', dflt=False)
-        , action  = 'store_true'
-        , dest    = 'with_should_dsl'
-        , help    = '''Make it try to import should-dsl'''
-        , type    = 'yn'
-        )
-
     , 'wrapped-setup' : dict(
           default = default_from_env('NOSE_NOY_WRAPPED_SETUP', dflt=False)
         , action = 'store_true'

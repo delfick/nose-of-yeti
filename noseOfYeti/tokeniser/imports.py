@@ -1,7 +1,7 @@
 from tokenize import OP, NEWLINE
 from tokens import tokens_in
 
-def determine_imports(with_default_imports=False, with_should_dsl=False, extra_imports=None):
+def determine_imports(with_default_imports=False, extra_imports=None):
     default = []
 
     if extra_imports:
@@ -20,13 +20,8 @@ def determine_imports(with_default_imports=False, with_should_dsl=False, extra_i
         if default and tuple(default[-1]) != (OP, ';'):
             default.append((OP, ';'))
 
-        should_dsl = ""
-        if with_should_dsl:
-            should_dsl = "from should_dsl import *;"
-
-        default.extend(
-            tokens_in('import nose; from nose.tools import *; %s from noseOfYeti.tokeniser.support import *' % should_dsl)
-        )
+        import_tokens = tokens_in('import nose; from nose.tools import *; from noseOfYeti.tokeniser.support import *')
+        default.extend(import_tokens)
 
     return default
 
