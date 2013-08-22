@@ -33,6 +33,7 @@ setup(
          [ 'nose'
          , 'sphinx'
          , 'pinocchio'
+         , 'should_dsl'
          ]
        }
 
