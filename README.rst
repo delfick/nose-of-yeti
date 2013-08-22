@@ -24,10 +24,16 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.4.8``
+    Fixed ignore tests so they don't inject a nose.SkipTest
+
+    Removed all reference to should_dsl (Except for the tests, I'll change those another day)
+
 ``1.4.7``
     No injected imports by default
 
     And changed --noy-without-should-dsl and --noy-without-default-imports to --noy-with-should-dsl and --noy-with-default-imports
+
 ``1.4.6``
     Can now set common settings in a config json file.
 
@@ -45,4 +51,17 @@ Docs
 
 Docs can now be found using the wonderful readthedocs.org
 http://readthedocs.org/docs/noseofyeti/en/latest/
+
+Tests
+=====
+
+Always use a virtualenv!::
+
+    # http://virtualenvwrapper.readthedocs.org/en/latest/
+    $ mkvirtualenv noseOfYeti
+
+    $ cd /root/of/noseOfYeti
+    $ pip install -e .
+    $ pip install "noseOfYeti[tests]"
+    $ ./test.sh
 
