@@ -24,6 +24,9 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.4.9``
+    Added __only_run_tests_in_children__ functionality
+
 ``1.4.8``
     Fixed ignore tests so they don't inject a nose.SkipTest
 

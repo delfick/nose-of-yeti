@@ -49,9 +49,18 @@ class TestChooser(object):
             # Kls not a noy_spec, we don't care if it runs or not
             return None
 
+        if kls.__dict__.get("__only_run_tests_in_children__"):
+            # Only run these tests in the children, not in this class itself
+            return False
+
         method_in_kls = method.__name__ in kls.__dict__
         method_is_test = method.__name__.startswith('test_')
-        if method_in_kls and method_is_test:
+        method_passed_down = any(
+            method.__name__ in superkls.__dict__ and getattr(superkls, "__only_run_tests_in_children__", False)
+            for superkls in kls.__bases__
+        )
+
+        if (method_passed_down or method_in_kls) and method_is_test:
             if not self.already_visited(kls.__name__, method.__name__):
                 return True
 

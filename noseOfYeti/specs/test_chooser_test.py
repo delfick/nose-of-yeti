@@ -47,9 +47,21 @@ class Test_TestChooser_Consider(object):
         class TestKlsWithInherited(TestKlsForTest):
             def test_on_subclass(self): pass
 
+        class TestKlsParent(object):
+            __only_run_tests_in_children__ = True
+            def test_one(self): pass
+            def test_two(self): pass
+
+        class TestKlsChild(TestKlsParent): pass
+        class TestKlsGrandChild(TestKlsChild): pass
+
         self.TestKlsForTest = TestKlsForTest
         self.TestIgnoredKls = TestIgnoredKls
         self.TestKlsWithInherited = TestKlsWithInherited
+
+        self.TestKlsChild = TestKlsChild
+        self.TestKlsParent = TestKlsParent
+        self.TestKlsGrandChild = TestKlsGrandChild
 
     def test_it_ignores_if_method_starts_with_ignore(self):
         self.test_chooser.consider(self.TestKlsForTest().ignore__test) |should| be(False)
@@ -75,4 +87,22 @@ class Test_TestChooser_Consider(object):
         self.TestKlsWithInherited.is_noy_spec = True
         self.test_chooser.consider(self.TestKlsWithInherited().test_on_subclass) |should| be(True)
         self.test_chooser.consider(self.TestKlsWithInherited().test_on_subclass) |should| be(False)
+
+    def test_it_ignores_parent_if_specified_to_only_run_tests_in_children(self):
+        self.TestKlsParent.is_noy_spec = True
+        self.test_chooser.consider(self.TestKlsParent().test_one) |should| be(False)
+        self.test_chooser.consider(self.TestKlsParent().test_two) |should| be(False)
+
+    def test_it_runs_parent_tests_in_child_if_specified_in_parent_to_only_run_tests_in_children(self):
+        self.TestKlsParent.is_noy_spec = True
+        self.TestKlsChild.is_noy_spec = True
+        self.test_chooser.consider(self.TestKlsChild().test_one) |should| be(True)
+        self.test_chooser.consider(self.TestKlsChild().test_two) |should| be(True)
+
+    def test_it_doesnt_run_grandparent_tests_if_specified_in_grandparent_to_only_run_tests_in_children(self):
+        self.TestKlsParent.is_noy_spec = True
+        self.TestKlsChild.is_noy_spec = True
+        self.TestKlsGrandChild.is_noy_spec = True
+        self.test_chooser.consider(self.TestKlsGrandChild().test_one) |should| be(False)
+        self.test_chooser.consider(self.TestKlsGrandChild().test_two) |should| be(False)
 

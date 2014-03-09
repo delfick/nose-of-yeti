@@ -333,3 +333,42 @@ This way you can have all your nose-of-yeti options in one place that is read fr
 
 .. note:: Any nose-of-yeti configuration you specify in the configuration specific to a plugin will override the json configuration file
 
+Basic support for shared tests
+------------------------------
+
+.. versionadded:: 1.4.9
+
+You can say in one describe that it should only run the tests specified on it on
+subclasses.
+
+So for example:
+
+.. code-block:: python
+
+    describe "ParentTest":
+        __only_run_tests_in_children__ = True
+
+        it "is a test":
+            assert self.variable_one
+
+        it "is a another test":
+            assert self.variable_two
+
+        describe "ChildTest":
+            variable_one = True
+            variable_two = True
+
+        describe "ChildTest2":
+            variable_one = True
+            variable_two = False
+
+Here we've specified the magic ``__only_run_tests_in_children__`` attribute on
+the parent describe which means the tests won't be run in the context of that
+class.
+
+However, those tests will be run in the context of ``ChildTest``
+and ``ChildTest2``.
+
+Normally, any tests on parents will be ignored when run in the context of the
+children.
+
