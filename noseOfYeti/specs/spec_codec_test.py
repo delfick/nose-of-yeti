@@ -11,6 +11,7 @@ from helpers import a_temp_file, a_temp_dir
 # Silencing code checker about should_dsl matchers
 be = None
 equal_to = None
+start_with = None
 
 init_codez = "from noseOfYeti.tokeniser.spec_codec import register_from_options; register_from_options()"
 
@@ -31,8 +32,8 @@ class Test_RegisteringCodec(object):
 			process.wait()
 			process.returncode |should| be(1)
 
-			expected_output = 'File "{}", line 1\nSyntaxError: encoding problem: with BOM'.format(filename)
-			process.stdout.read().strip() |should| equal_to(expected_output)
+			expected_output = 'File "{}", line 1\nSyntaxError: encoding problem'.format(filename)
+			process.stdout.read().strip() |should| start_with(expected_output)
 
 	def test_registering_codec_doesnt_lead_to_error(self):
 		with a_temp_dir() as tempdir:
