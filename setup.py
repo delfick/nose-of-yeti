@@ -38,6 +38,10 @@ setup(
          ]
        }
 
+     , install_requires =
+       [ 'six'
+       ]
+
      , packages =
        [ 'noseOfYeti'
        , 'noseOfYeti.specs'

@@ -2,7 +2,7 @@ from should_dsl import should
 import fudge
 
 from noseOfYeti.tokeniser.config import Default, ConfigUtil, MissingConfigFile
-from helpers import a_temp_file
+from .helpers import a_temp_file
 
 # Silencing code checker about should_dsl matchers
 be = None

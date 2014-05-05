@@ -36,7 +36,7 @@ class TestChooser(object):
             # Method doesn't want to be tested
             return False
 
-        kls = method.im_class
+        kls = method.__self__.__class__
         if not kls:
             # im_class seems to be None in pypy
             kls = [v for k, v in getmembers(method) if k == 'im_self'][0].__class__

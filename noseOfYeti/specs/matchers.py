@@ -1,7 +1,7 @@
 from tokenize import untokenize
 from should_dsl import matcher
 from textwrap import dedent
-import cStringIO
+from six import StringIO
 
 @matcher
 class ResultIn(object):
@@ -15,7 +15,7 @@ class ResultIn(object):
     def match(self, actual):
         tokeniser, self._actual = actual
         self._actual = dedent(self._actual).strip()
-        s = cStringIO.StringIO(self._actual)
+        s = StringIO(self._actual)
         try:
             tokens = tokeniser.translate(s.readline)
             self._expected = untokenize(tokens)

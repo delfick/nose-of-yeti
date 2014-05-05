@@ -2,7 +2,7 @@ from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMM
 from contextlib import contextmanager
 import re
 
-from containers import TokenDetails, Group
+from noseOfYeti.tokeniser.containers import TokenDetails, Group
 
 # Regex for matching whitespace
 regexes = {'whitespace': re.compile('\s+')}

@@ -2,7 +2,9 @@ from should_dsl import should
 import fudge
 
 from noseOfYeti.tokeniser.config import Default, Config
-from helpers import a_temp_file
+from .helpers import a_temp_file
+
+import six
 
 # Silencing code checker about should_dsl matchers
 be = None
@@ -12,10 +14,12 @@ class Test_Default(object):
 
     def test_stringify_returns_value(self):
         str(Default("blah")) |should| equal_to("blah")
-        unicode(Default("blah")) |should| equal_to("blah")
+        if six.PY2:
+            unicode(Default("blah")) |should| equal_to("blah")
 
         str(Default(1)) |should| equal_to("1")
-        unicode(Default(1)) |should| equal_to("1")
+        if six.PY2:
+            unicode(Default(1)) |should| equal_to("1")
 
         class Special(object):
             def __unicode__(self):
@@ -23,7 +27,8 @@ class Test_Default(object):
             def __str__(self):
                 return 'stuff'
         str(Default(Special())) |should| equal_to("stuff")
-        unicode(Default(Special())) |should| equal_to("things")
+        if six.PY2:
+            unicode(Default(Special())) |should| equal_to("things")
 
 class Test_ConfigSetup(object):
     '''Test that the Config class knows how to setup itself'''

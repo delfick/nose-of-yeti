@@ -1,8 +1,14 @@
 from noseOfYeti.tokeniser import Tokeniser
 from should_dsl import should
 
+import six
+
 # Silencing code checker about should_dsl matchers
 result_in = None
+
+func_accessor = ""
+if six.PY2:
+    func_accessor = "__func__ ."
 
 class Test_Tokenisor_translation(object):
     def setUp(self):
@@ -377,11 +383,11 @@ class Test_Tokenisor_translation(object):
             def test_asdf_asdf (self ):
                 1 |should |be (2 )
         def test_root_level_should_also_work ():raise nose.SkipTest
-        test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
+        test_root_level_should_work_well .__testname__ ="(root level) should work {{well}}"
         test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
-        TestSomeTests .test_doesnt_get_phased_by_special_characters .__func__ .__testname__ ="doesn't get phased by $special characters"
-        TestSomeTests_NestedDescribe .test_asdf_asdf .__func__ .__testname__ ="asdf $%% asdf"
-        '''
+        TestSomeTests .test_doesnt_get_phased_by_special_characters .{func_accessor}__testname__ ="doesn't get phased by $special characters"
+        TestSomeTests_NestedDescribe .test_asdf_asdf .{func_accessor}__testname__ ="asdf $%% asdf"
+        '''.format(func_accessor=func_accessor)
 
         (self.toka, test) |should| result_in(desired % "object")
         (self.tokb, test) |should| result_in(desired % "other")

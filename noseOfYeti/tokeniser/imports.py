@@ -1,11 +1,13 @@
+from noseOfYeti.tokeniser.tokens import tokens_in
+
 from tokenize import OP, NEWLINE
-from tokens import tokens_in
+import six
 
 def determine_imports(with_default_imports=False, extra_imports=None):
     default = []
 
     if extra_imports:
-        if type(extra_imports) in (str, unicode):
+        if isinstance(extra_imports, six.string_types):
             default.extend(tokens_in(extra_imports))
         else:
             for d in extra_imports:

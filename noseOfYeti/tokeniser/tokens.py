@@ -1,6 +1,8 @@
 from tokenize import NAME, OP, INDENT, NEWLINE, STRING
 from tokenize import generate_tokens
 
+import six
+
 ########################
 ###   TOKENS IN GENERATOR
 ########################
@@ -144,7 +146,7 @@ class Tokens(object):
                 ]
             )
 
-        if ismethod:
+        if ismethod and not six.PY3:
             result.extend(
                 [ (OP, '.')
                 , (NAME, "__func__")

@@ -1,7 +1,7 @@
 from noseOfYeti.tokeniser.spec_codec import register_from_options
 from noseOfYeti.tokeniser.config import Default
-from support.spec_options import spec_options
-from support.test_chooser import TestChooser
+from .support.spec_options import spec_options
+from .support.test_chooser import TestChooser
 
 from nose.plugins import Plugin
 

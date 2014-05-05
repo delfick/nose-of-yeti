@@ -1,6 +1,7 @@
+from noseOfYeti.tokeniser.tracker import Tracker
+from noseOfYeti.tokeniser.tokens import Tokens
+
 from tokenize import generate_tokens
-from tracker import Tracker
-from tokens import Tokens
 
 class Tokeniser(object):
     """Endpoint for tokenising a file"""
