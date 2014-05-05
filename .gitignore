@@ -5,3 +5,4 @@ noseOfYeti.egg*/**
 dist/**
 docs/_build
 .ropeproject
+.tox
