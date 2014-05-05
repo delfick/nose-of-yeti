@@ -1,7 +1,11 @@
 """
 To be used as a pylint plugin to register the spec encoding
 """
-from pylint.interfaces import IASTNGChecker
+try:
+    from pylint.interfaces import IASTNGChecker
+except ImportError:
+    IASTNGChecker = None
+
 from pylint.checkers import BaseChecker
 
 from noseOfYeti.tokeniser.spec_codec import register_from_options
@@ -39,7 +43,8 @@ def make_extractor(non_default):
 class SpecRegister(BaseChecker):
 
     name = 'NoyRegister'
-    __implements__ = IASTNGChecker
+    if IASTNGChecker:
+        __implements__ = IASTNGChecker
 
     msgs = {'W6969' : ('', '')}
     options = list(normalise_options(spec_options))
