@@ -24,6 +24,13 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.5.0``
+    Added python3 support (based off the work by cwacek)
+
+    Use tox to run tests in python2 and python3 now
+
+    Updated pylint plugin - Unfortunately seems to cause a lot of "Final newline missing" however....
+
 ``1.4.9``
     Added __only_run_tests_in_children__ functionality
 
@@ -67,4 +74,8 @@ Always use a virtualenv!::
     $ pip install -e .
     $ pip install "noseOfYeti[tests]"
     $ ./test.sh
+
+Or just run tox::
+
+    $ tox
 
