@@ -7,7 +7,6 @@ equal_to = None
 
 class One(object):
     def setUp(self):
-        print self
         self.blah = [1]
 
     def tearDown(self):
