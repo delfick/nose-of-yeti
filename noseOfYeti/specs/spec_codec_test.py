@@ -19,40 +19,40 @@ example_specd_tests = """
 # coding: spec
 
 describe "blah":
-	it "should totally work":
-		1 + 1 |should| equal_to(2)
+    it "should totally work":
+        1 + 1 |should| equal_to(2)
 
 print ' '.join([key for key in TestBlah.__dict__.keys() if hasattr(getattr(TestBlah, key), 'im_func')])
 """.strip()
 
 class Test_RegisteringCodec(object):
-	def test_not_registering_codec_leads_to_error(self):
-		with a_temp_file(example_specd_tests) as filename:
-			process = subprocess.Popen([sys.executable, filename], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-			process.wait()
-			process.returncode |should| be(1)
+    def test_not_registering_codec_leads_to_error(self):
+        with a_temp_file(example_specd_tests) as filename:
+            process = subprocess.Popen([sys.executable, filename], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            process.wait()
+            process.returncode |should| be(1)
 
-			expected_output = 'File "{}", line 1\nSyntaxError: encoding problem'.format(filename)
-			process.stdout.read().strip() |should| start_with(expected_output)
+            expected_output = 'File "{}", line 1\nSyntaxError: encoding problem'.format(filename)
+            process.stdout.read().strip() |should| start_with(expected_output)
 
-	def test_registering_codec_doesnt_lead_to_error(self):
-		with a_temp_dir() as tempdir:
-			with open(os.path.join(tempdir, "codez.py"), 'w') as fle:
-				fle.write(example_specd_tests)
+    def test_registering_codec_doesnt_lead_to_error(self):
+        with a_temp_dir() as tempdir:
+            with open(os.path.join(tempdir, "codez.py"), 'w') as fle:
+                fle.write(example_specd_tests)
 
-			with open(os.path.join(tempdir, "spec_setup.py"), 'w') as fle:
-				fle.write(init_codez)
+            with open(os.path.join(tempdir, "spec_setup.py"), 'w') as fle:
+                fle.write(init_codez)
 
-			filename = os.path.join(tempdir, "script.py")
-			with open(filename, 'w') as fle:
-				fle.write("import spec_setup; import codez")
+            filename = os.path.join(tempdir, "script.py")
+            with open(filename, 'w') as fle:
+                fle.write("import spec_setup; import codez")
 
-			process = subprocess.Popen([sys.executable, filename], cwd=tempdir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-			process.wait()
-			if process.returncode != 0:
-				print process.stdout.read()
-			process.returncode |should| be(0)
+            process = subprocess.Popen([sys.executable, filename], cwd=tempdir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            process.wait()
+            if process.returncode != 0:
+                print process.stdout.read()
+            process.returncode |should| be(0)
 
-			expected_output = 'test_should_totally_work'
-			process.stdout.read().strip() |should| equal_to(expected_output)
+            expected_output = 'test_should_totally_work'
+            process.stdout.read().strip() |should| equal_to(expected_output)
 
