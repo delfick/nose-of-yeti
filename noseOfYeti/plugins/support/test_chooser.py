@@ -36,10 +36,19 @@ class TestChooser(object):
             # Method doesn't want to be tested
             return False
 
-        kls = method.__self__.__class__
+        kls = None
+        if getattr(method, "__self__"):
+            kls = method.__self__.__class__
+
         if not kls:
             # im_class seems to be None in pypy
-            kls = [v for k, v in getmembers(method) if k == 'im_self'][0].__class__
+            for k, v in getmembers(method):
+                if k == 'im_self' and v:
+                    kls = v.__class__
+                    break
+                elif k == 'im_class' and v:
+                    kls = v
+                    break
 
         if kls.__name__ in ignore_kls:
             # Kls should be ignored
