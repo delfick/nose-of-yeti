@@ -3,7 +3,7 @@ from textwrap import dedent
 
 setup(
        name = 'noseOfYeti'
-     , version = "1.5.0"
+     , version = "1.5.1"
      , classifiers =
        [ 'Intended Audience :: Developers'
        , 'Programming Language :: Python'

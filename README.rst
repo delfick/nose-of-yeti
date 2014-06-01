@@ -24,6 +24,9 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.5.1``
+    Fixed a problem with repeating tests in sub-describes
+
 ``1.5.0``
     Added python3 support (based off the work by cwacek)
 
