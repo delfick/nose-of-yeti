@@ -133,6 +133,14 @@ class Group(object):
             self._name = acceptable(value, True)
 
     @property
+    def comment(self):
+        """Compose a comment from the group's english."""
+        quoteless_en = self.english.lstrip('\'"').rstrip('\'"')
+        if not self.parent or not self.parent.english:
+            return quoteless_en
+        return '%s %s' % (self.parent.comment, quoteless_en)
+
+    @property
     def starting_signature(self):
         """Determine if this group is starting itself or anything belonging to it"""
         return self.starting_group or self.starting_single
@@ -182,4 +190,3 @@ class Group(object):
             self.kls = name
         else:
             self.kls += name
-

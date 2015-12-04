@@ -1,4 +1,4 @@
-from tokenize import NAME, OP, INDENT, NEWLINE, STRING
+from tokenize import COMMENT, NAME, OP, INDENT, NEWLINE, STRING
 from tokenize import generate_tokens
 
 import six
@@ -77,6 +77,19 @@ class Tokens(object):
             ]
         )
         return lst
+
+    def make_comment(self, comment):
+        if not comment:
+            return
+        return [
+            (NEWLINE, '\n'),
+            (INDENT, '    '),
+            (COMMENT, '"""'),
+            (COMMENT, comment),
+            (COMMENT, '"""'),
+            (NEWLINE, '\n'),
+            (INDENT, '    '),
+        ]
 
     def make_describe(self, kls, name):
         lst = [ (NAME, 'class')
@@ -187,4 +200,3 @@ class Tokens(object):
 
     def wrap_before_each(self, class_name):
         return self.wrap_setup(class_name, "before_each")
-

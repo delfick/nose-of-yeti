@@ -12,19 +12,29 @@ class Test_Tokeniser(object):
 
     def test_gives_describes_noy_specific_attributes(self):
         imports = determine_imports(with_default_imports=False)
-        tok = Tokeniser(import_tokens = imports)
-        (tok, 'describe "Something testable"') |should| result_in(
-        '''
-        class TestSomethingTestable (object ):pass
+        tok = Tokeniser(import_tokens=imports)
+        tok_str = 'describe "Something so_very() testable"'
+        expected = (
+            '''
+            class TestSomethingSoVeryTestable (object ):
+                """Something so_very() testable"""
+                pass
 
-        TestSomethingTestable .is_noy_spec =True
-        '''
-        )
+            TestSomethingSoVeryTestable .is_noy_spec =True
+            ''')
+        (tok, tok_str) |should| result_in(expected)
 
     def test_is_possible_to_turn_off_attributes(self):
         imports = determine_imports(with_default_imports=False)
         tok = Tokeniser(import_tokens=imports, with_describe_attrs=False)
-        (tok, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object ):pass')
+        tok_str = 'describe "Something so_very() testable"'
+        expected = (
+            '''
+            class TestSomethingSoVeryTestable (object ):
+                """Something so_very() testable"""
+                pass
+            ''')
+        (tok, tok_str) |should| result_in(expected)
 
     def test_no_newline_in_default_imports(self):
         tok = Tokeniser(import_tokens=determine_imports())
@@ -51,4 +61,3 @@ class Test_Tokeniser(object):
         imports = determine_imports()
         tok = Tokeniser(import_tokens=imports)
         (tok, '') |should| result_in('')
-

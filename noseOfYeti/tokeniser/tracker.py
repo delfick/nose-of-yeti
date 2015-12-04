@@ -339,10 +339,6 @@ class Tracker(object):
         # Make sure pass not added to group again
         self.groups.empty = False
 
-        # Remove existing newline/indentation
-        while self.result[-1][0] in (INDENT, NEWLINE):
-            self.result.pop()
-
         # Add pass and indentation
         self.add_tokens(
             [ (NAME, 'pass')
@@ -377,10 +373,12 @@ class Tracker(object):
         """Add the tokens for the group signature"""
         kls = self.groups.super_kls
         name = self.groups.kls_name
+        comment = self.groups.comment
 
         # Reset indentation to beginning and add signature
         self.reset_indentation('')
         self.result.extend(self.tokens.make_describe(kls, name))
+        self.result.extend(self.tokens.make_comment(comment))
 
         # Add pass if necessary
         if with_pass:
@@ -511,4 +509,3 @@ class Tracker(object):
 
         value = self.indent_type * last_indent
         return tokenum, value
-
