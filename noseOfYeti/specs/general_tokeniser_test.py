@@ -18,6 +18,7 @@ class Test_Tokeniser(object):
         class TestSomethingTestable (object ):pass
 
         TestSomethingTestable .is_noy_spec =True
+        TestSomethingTestable .__doc__ =getattr (TestSomethingTestable ,"__doc__","Something testable")or "Something testable"
         '''
         )
 

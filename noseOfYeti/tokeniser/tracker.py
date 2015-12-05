@@ -299,6 +299,17 @@ class Tracker(object):
             for group in self.all_groups:
                 if group.name:
                     lst.extend(self.tokens.make_describe_attr(group.kls_name))
+                    english = []
+                    parent = group.parent
+                    while parent:
+                        if parent.english:
+                            english.append(parent.english[1:-1])
+                        parent = parent.parent
+                    english = list(reversed(english))
+                    english.append(group.english[1:-1])
+                    english = '"{0}"'.format(" - ".join(english))
+
+                    lst.extend(self.tokens.make_describe_doc(group.kls_name, english))
 
         return lst
 

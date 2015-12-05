@@ -133,6 +133,24 @@ class Tokens(object):
                , (NAME, 'True')
                ]
 
+    def make_describe_doc(self, describe, english):
+        return [ (NEWLINE, '\n')
+               , (NAME, describe)
+               , (OP, '.')
+               , (NAME, '__doc__')
+               , (OP, '=')
+               , (NAME, 'getattr')
+               , (OP, '(')
+               , (NAME, describe)
+               , (OP, ',')
+               , (STRING, '"__doc__"')
+               , (OP, ',')
+               , (STRING, english)
+               , (OP, ')')
+               , (NAME, "or")
+               , (STRING, english)
+               ]
+
     def make_name_modifier(self, ismethod, cleaned, english):
         result = [ (NEWLINE, '\n') ]
 

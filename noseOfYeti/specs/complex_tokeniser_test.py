@@ -49,10 +49,15 @@ class Test_Tokeniser_Complex(object):
                 noy_sup_setUp (super (TestAnother ,self ));self .z =8
 
         TestThis .is_noy_spec =True
+        TestThis .__doc__ =getattr (TestThis ,"__doc__","This")or "This"
         TestThis_That .is_noy_spec =True
+        TestThis_That .__doc__ =getattr (TestThis_That ,"__doc__","This - That")or "This - That"
         TestThis_That_Meh .is_noy_spec =True
+        TestThis_That_Meh .__doc__ =getattr (TestThis_That_Meh ,"__doc__","This - That - Meh")or "This - That - Meh"
         TestThis_Blah .is_noy_spec =True
+        TestThis_Blah .__doc__ =getattr (TestThis_Blah ,"__doc__","This - Blah")or "This - Blah"
         TestAnother .is_noy_spec =True
+        TestAnother .__doc__ =getattr (TestAnother ,"__doc__","Another")or "Another"
         '''
         ]
 
@@ -139,10 +144,15 @@ class Test_Tokeniser_Complex(object):
                     pass
 
         TestThis .is_noy_spec =True
+        TestThis .__doc__ =getattr (TestThis ,"__doc__","This")or "This"
         TestThis_That .is_noy_spec =True
+        TestThis_That .__doc__ =getattr (TestThis_That ,"__doc__","This - That")or "This - That"
         TestThis_That_Meh .is_noy_spec =True
+        TestThis_That_Meh .__doc__ =getattr (TestThis_That_Meh ,"__doc__","This - That - Meh")or "This - That - Meh"
         TestThis_Blah .is_noy_spec =True
+        TestThis_Blah .__doc__ =getattr (TestThis_Blah ,"__doc__","This - Blah")or "This - Blah"
         TestAnother .is_noy_spec =True
+        TestAnother .__doc__ =getattr (TestAnother ,"__doc__","Another")or "Another"
         ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"
         TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .{func_accessor}__testname__ ="should set __testname__ for non alpha names ' $^"
         '''.format(func_accessor=func_accessor)
