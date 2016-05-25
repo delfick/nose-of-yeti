@@ -1,6 +1,6 @@
 from noseOfYeti.tokeniser.spec_codec import register_from_options
 from noseOfYeti.tokeniser.config import Default
-from support.spec_options import spec_options
+from .support.spec_options import spec_options
 
 import os
 
