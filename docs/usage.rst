@@ -5,6 +5,16 @@ Usage
 
 All that's needed to setup nose-of-yeti is to register the spec codec before importing the specs. Python mechanics handle the rest. Included with nose-of-yeti is plugins for nosetests and pylint for doing just this.
 
+Nose2
+=====
+
+After installation, just add "noseOfYeti.plugins.nose2_plugin" to your list of nose2 plugins and something like::
+
+    [noseOfYeti]
+    always-on = true
+
+to your nose2 config
+
 Nosetests
 =========
 
@@ -35,7 +45,9 @@ see :ref:`options` for options that are available.
 Options
 =======
 
-Nosetests and pylint offer the same settings as shown below
+Nose2, Nosetests and pylint offer the same settings as shown below
+
+Nose2 settings appear in your nose2 config under the "noseOfYeti" header and don't appear as command line arguments.
 
 Note that Nosetests require the settings to be prefixed by --noy; and sphinx prefixes options with noy\_ and replaces dashes with underscores.
 
