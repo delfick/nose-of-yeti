@@ -185,6 +185,8 @@ class Tracker(object):
 
             elif value in ('before_each', 'after_each'):
                 setattr(self.groups, "has_%s" % value, True)
+                if with_async:
+                    setattr(self.groups, "async_%s" % value, True)
                 self.add_tokens_for_test_helpers(value, with_async=with_async)
 
             else:
@@ -274,10 +276,10 @@ class Tracker(object):
         for group in self.all_groups:
             if not group.root:
                 if group.has_after_each:
-                    lst.extend(self.tokens.wrap_after_each(group.kls_name))
+                    lst.extend(self.tokens.wrap_after_each(group.kls_name, group.async_after_each))
 
                 if group.has_before_each:
-                    lst.extend(self.tokens.wrap_before_each(group.kls_name))
+                    lst.extend(self.tokens.wrap_before_each(group.kls_name, group.async_before_each))
 
         if lst:
             indentation_reset = [

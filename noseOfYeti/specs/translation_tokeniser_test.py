@@ -324,6 +324,36 @@ class Test_Tokenisor_translation(object):
         # and with tabs
         (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
 
+    def test_it_has_the_ability_to_wrap_async_setup_and_tearDown_instead_of_inserting_sup_call(self):
+        self.toka.wrapped_setup = True
+        self.tokb.wrapped_setup = True
+
+        test = '''
+        describe "Thing":
+            async after_each:
+                self.x = 5
+
+            describe "Other":
+                async before_each:
+                    self.y = 8
+        '''
+
+        desired = '''
+        class TestThing (object ):
+            async def tearDown (self ):
+                self .x =5
+
+        class TestThing_Other (TestThing ):
+            async def setUp (self ):
+                self .y =8
+
+        TestThing .tearDown =async_noy_wrap_tearDown (TestThing ,TestThing .tearDown )
+        TestThing_Other .setUp =async_noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
+        '''
+
+        (self.toka, test) |should| result_in(desired)
+        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+
     def test_it_has_the_ability_to_wrap_setup_and_tearDown_instead_of_inserting_sup_call(self):
         self.toka.wrapped_setup = True
         self.tokb.wrapped_setup = True

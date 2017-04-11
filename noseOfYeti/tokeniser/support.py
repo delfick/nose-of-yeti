@@ -54,3 +54,18 @@ def noy_wrap_tearDown(kls, func):
         return func(self, *args, **kwargs)
     return wrapped
 
+def async_noy_wrap_setUp(kls, func):
+    @wraps(func)
+    async def wrapped(self, *args, **kwargs):
+        sup = super(kls, self)
+        await async_noy_sup_setUp(sup)
+        return await func(self, *args, **kwargs)
+    return wrapped
+
+def async_noy_wrap_tearDown(kls, func):
+    @wraps(func)
+    async def wrapped(self, *args, **kwargs):
+        sup = super(kls, self)
+        await async_noy_sup_tearDown(sup)
+        return await func(self, *args, **kwargs)
+    return wrapped
