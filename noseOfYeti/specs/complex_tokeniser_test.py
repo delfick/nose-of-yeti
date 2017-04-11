@@ -68,6 +68,8 @@ class Test_Tokeniser_Complex(object):
                     pass
                 else:
                     x += 9
+            async it 'supports async its':
+                pass
             describe "That":
                 before_each:
                     self.y = 6
@@ -97,6 +99,8 @@ class Test_Tokeniser_Complex(object):
                         print "no"
                 else:
                     pass
+        async it 'supports level 0 async its':
+            pass
         '''
         ,
         '''
@@ -108,6 +112,8 @@ class Test_Tokeniser_Complex(object):
                     pass
                 else :
                     x +=9
+            async def test_supports_async_its (self ):
+                pass
         class TestThis_That (TestThis ):
             def setUp (self ):
                 noy_sup_setUp (super (TestThis_That ,self ));self .y =6
@@ -137,6 +143,8 @@ class Test_Tokeniser_Complex(object):
                         print "no"
                 else :
                     pass
+        async def test_supports_level_0_async_its ():
+            pass
 
         TestThis .is_noy_spec =True
         TestThis_That .is_noy_spec =True

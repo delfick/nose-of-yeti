@@ -37,6 +37,7 @@ class Tracker(object):
         self.insert_till = None
         self.after_space = True
         self.inserted_line = False
+        self.after_an_async = False
         self.just_ended_container = False
         self.just_started_container = False
 
@@ -159,7 +160,14 @@ class Tracker(object):
                 # Only want to add args after the name for the single has been specified
                 self.single.add_to_arg(tokenum, value)
 
-        elif self.after_space or scol == 0 and tokenum == NAME:
+        elif self.after_space or self.after_an_async or scol == 0 and tokenum == NAME:
+            # set after_an_async if we found an async by itself
+            # So that we can just have that prepended and still be able to interpret our special blocks
+            if not self.after_an_async and value == "async":
+                self.after_an_async = True
+            else:
+                self.after_an_async = False
+
             if value in ('describe', 'context'):
                 created_group = True
 

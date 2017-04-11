@@ -31,6 +31,15 @@ class Test_Tokenisor_translation(object):
         (self.toka, '\nit "should do this thing":') |should| result_in('\ndef test_should_do_this_thing ():')
         (self.tokb, '\nit "should do this thing":') |should| result_in('\ndef test_should_do_this_thing ():')
 
+        ## and with async
+
+        (self.toka, 'async it "should do this thing":') |should| result_in('async def test_should_do_this_thing ():')
+        (self.tokb, 'async it "should do this thing":') |should| result_in('async def test_should_do_this_thing ():')
+
+        # Same tests, but with newlines in front
+        (self.toka, '\nasync it "should do this thing":') |should| result_in('\nasync def test_should_do_this_thing ():')
+        (self.tokb, '\nasync it "should do this thing":') |should| result_in('\nasync def test_should_do_this_thing ():')
+
     def test_adds_arguments_to_its_if_declared_on_same_line(self):
         (self.toka, 'it "should do this thing", blah, meh:') |should| result_in(
             'def test_should_do_this_thing (blah ,meh ):'
@@ -97,11 +106,37 @@ class Test_Tokenisor_translation(object):
             '\ndef test_should_not_be_skipped ():'
         )
 
+
+        ## And with async
+
+        (self.toka, 'async it "should be skipped"\n') |should| result_in(
+            'async def test_should_be_skipped ():raise nose.SkipTest '
+        )
+
+        (self.toka, 'async it "should not be skipped":\n') |should| result_in(
+            'async def test_should_not_be_skipped ():'
+        )
+
+        # Same tests, but with newlines in front
+        (self.toka, '\nasync it "should be skipped"\n') |should| result_in(
+            '\nasync def test_should_be_skipped ():raise nose.SkipTest '
+        )
+
+        (self.toka, '\nasync it "should not be skipped":\n') |should| result_in(
+            '\nasync def test_should_not_be_skipped ():'
+        )
+
     def test_turns_before_each_into_setup(self):
         (self.toka, 'before_each:') |should| result_in('def setUp (self ):')
 
         # Same tests, but with newlines in front
         (self.toka, '\nbefore_each:') |should| result_in('\ndef setUp (self ):')
+
+        # And with async
+        (self.toka, 'async before_each:') |should| result_in('async def setUp (self ):')
+
+        # Same tests, but with newlines in front
+        (self.toka, '\nasync before_each:') |should| result_in('\nasync def setUp (self ):')
 
     def test_indentation_should_work_regardless_of_crazy_groups(self):
         test = """
@@ -326,6 +361,9 @@ class Test_Tokenisor_translation(object):
             )
         (self.toka, '\nignore "should be ignored"') |should| result_in(
             '\ndef ignore__should_be_ignored ():raise nose.SkipTest '
+            )
+        (self.toka, '\nasync ignore "should be ignored"') |should| result_in(
+            '\nasync def ignore__should_be_ignored ():raise nose.SkipTest '
             )
 
     def test_no_transform_inside_expression(self):
