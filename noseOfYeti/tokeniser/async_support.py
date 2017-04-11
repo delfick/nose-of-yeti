@@ -9,20 +9,37 @@ NB: We pull this into it's own module to:
 """
 
 from functools import wraps
+import asyncio
 
 async def async_noy_sup_setUp(sup):
     if hasattr(sup, "setup"):
-        return await sup.setup()
+        res = sup.setup()
+        if res and asyncio.iscoroutine(res):
+            return await res
+        else:
+            return res
 
     if hasattr(sup, "setUp"):
-        return await sup.setUp()
+        res = sup.setUp()
+        if res and asyncio.iscoroutine(res):
+            return await res
+        else:
+            return res
 
 async def async_noy_sup_tearDown(sup):
     if hasattr(sup, "teardown"):
-        return await sup.teardown()
+        res = sup.teardown()
+        if res and asyncio.iscoroutine(res):
+            return await res
+        else:
+            return res
 
     if hasattr(sup, "tearDown"):
-        return await sup.tearDown()
+        res = sup.tearDown()
+        if res and asyncio.iscoroutine(res):
+            return await res
+        else:
+            return res
 
 def async_noy_wrap_setUp(kls, func):
     @wraps(func)
