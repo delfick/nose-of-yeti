@@ -24,6 +24,11 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.7``
+    NoseOfYeti now understands and respects the async keyword.
+
+    Only really useful if you use something like https://asynctest.readthedocs.io/en/latest/
+
 ``1.6``
     Nose2 support!
 
