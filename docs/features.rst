@@ -136,6 +136,12 @@ becomes::
 
 The ``__testname__`` attribute can then be used by nose to print out the names of tests when it runs them.
 
+.. versionadded:: 1.7
+    You can now prepend ``it`` and ``ignore`` with async and it will just make
+    sure the ``async`` is there before the ``def``.
+
+    Note for this to work, you should use something like https://asynctest.readthedocs.io/en/latest/
+
 Extra parameters
 ----------------
 
@@ -253,6 +259,46 @@ Also, remember, unless you use the :ref:`with-default-imports option <options>` 
             def setUp(self): # pylint: disable-msg: C0103
                 noy_sup_setUp(super(Test_Meh, self))
 
+.. _async_before_and_after_each:
+
+async before_each and after_each
+--------------------------------
+
+.. versionadded:: 1.7
+
+The async equivalent for ``before_each`` and ``after_each`` are the same as the
+non-async version except aware of async/await semantics.
+
+So, if you are using something like https://asynctest.readthedocs.io/en/latest/
+then all you have to do is make sure you've imported
+``noseOfYeti.tokeniser.async_support.async_noy_sup_setUp`` and/or
+``noseOfYeti.tokeniser.async_support.async_noy_sup_tearDown`` and just prepend
+your ``before_each``/``after_each`` with ``async``.
+
+For example:
+
+.. code-block:: python
+
+    from noseOfYeti.tokeniser.async_support import async_noy_sup_setUp, async_noy_sup_tearDown
+
+    describe "Meh":
+        async before_each:
+            doSomeSetup()
+
+        async after_each:
+            doSomeTearDown()
+
+becomes:
+
+.. code-block:: python
+
+    class Test_Meh(object):
+        async def setUp(self):
+            await async_noy_sup_setUp(super(Test_Meh, self)); doSomeSetup()
+
+        async def tearDown(self):
+            await async_noy_sup_tearDown(super(Test_Meh, self)); doSomeTearDown()
+
 Wrapped Setup
 -------------
 
@@ -294,6 +340,11 @@ This adds some overhead to setUp and tearDown calls (which is why it defaults to
 
 .. note::
     If you don't have :ref:`with-default-imports option <options>` set to True then you'll need to manually import ``from noseOfYeti.tokeniser.support import noy_wrap_setUp, noy_wrap_tearDown``.
+
+.. versionadded:: 1.7
+    This now supports async before_each and async after_each, however you will
+    need to import ``async_noy_wrap_setUp`` and ``async_noy_wrap_tearDown``
+    from ``noseOfYeti.tokeniser.async_support`` instead.
 
 The wrapper will ensure a ``noy_sup_*`` helper is called before the setUp/tearDown
 
