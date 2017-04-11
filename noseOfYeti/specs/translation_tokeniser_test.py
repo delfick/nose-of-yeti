@@ -250,6 +250,23 @@ class Test_Tokenisor_translation(object):
 
         (self.toka, test) | should | result_in(desired)
 
+    def test_gives_setups_super_call_when_in_describes_that_know_about_await_if_async(self):
+        test = '''
+        describe "Thing":
+            async before_each:
+                self.x = 5
+        '''
+
+        desired = '''
+        class TestThing (object ):
+            async def setUp (self ):
+                await async_noy_sup_setUp (super (TestThing ,self ));self .x =5
+        '''
+
+        (self.toka, test) |should| result_in(desired)
+        # and with tabs
+        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+
     def test_gives_setups_super_call_when_in_describes(self):
         test = '''
         describe "Thing":
@@ -272,6 +289,23 @@ class Test_Tokenisor_translation(object):
 
         # Same tests, but with newlines in front
         (self.toka, '\nafter_each:') |should| result_in('\ndef tearDown (self ):')
+
+    def test_gives_teardowns_super_call_that_awaits_when_in_describes_and_async(self):
+        test = '''
+        describe "Thing":
+            async after_each:
+                self.x = 5
+        '''
+
+        desired = '''
+        class TestThing (object ):
+            async def tearDown (self ):
+                await async_noy_sup_tearDown (super (TestThing ,self ));self .x =5
+        '''
+
+        (self.toka, test) |should| result_in(desired)
+        # and with tabs
+        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
 
     def test_gives_teardowns_super_call_when_in_describes(self):
         test = '''

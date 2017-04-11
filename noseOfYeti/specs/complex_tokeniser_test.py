@@ -29,6 +29,11 @@ class Test_Tokeniser_Complex(object):
                     after_each:
                         self.y = None
             describe "Blah":pass
+            describe "async":
+                async before_each:
+                    pass
+                async after_each:
+                    pass
         describe "Another":
             before_each:
                 self.z = 8 '''
@@ -44,6 +49,11 @@ class Test_Tokeniser_Complex(object):
             def tearDown (self ):
                 noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None
         class TestThis_Blah (TestThis ):pass
+        class TestThis_Async (TestThis ):
+            async def setUp (self ):
+                await async_noy_sup_setUp (super (TestThis_Async ,self ));pass
+            async def tearDown (self ):
+                await async_noy_sup_tearDown (super (TestThis_Async ,self ));pass
         class TestAnother (%(o)s ):
             def setUp (self ):
                 noy_sup_setUp (super (TestAnother ,self ));self .z =8
@@ -52,6 +62,7 @@ class Test_Tokeniser_Complex(object):
         TestThis_That .is_noy_spec =True
         TestThis_That_Meh .is_noy_spec =True
         TestThis_Blah .is_noy_spec =True
+        TestThis_Async .is_noy_spec =True
         TestAnother .is_noy_spec =True
         '''
         ]

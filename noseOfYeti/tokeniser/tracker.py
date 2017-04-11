@@ -163,6 +163,7 @@ class Tracker(object):
         elif self.after_space or self.after_an_async or scol == 0 and tokenum == NAME:
             # set after_an_async if we found an async by itself
             # So that we can just have that prepended and still be able to interpret our special blocks
+            with_async = self.after_an_async
             if not self.after_an_async and value == "async":
                 self.after_an_async = True
             else:
@@ -184,7 +185,7 @@ class Tracker(object):
 
             elif value in ('before_each', 'after_each'):
                 setattr(self.groups, "has_%s" % value, True)
-                self.add_tokens_for_test_helpers(value)
+                self.add_tokens_for_test_helpers(value, with_async=with_async)
 
             else:
                 just_append = True
@@ -359,7 +360,7 @@ class Tracker(object):
             ]
         )
 
-    def add_tokens_for_test_helpers(self, value):
+    def add_tokens_for_test_helpers(self, value, with_async=False):
         """Add setup/teardown function to group"""
         # Add tokens for this block
         tokens = getattr(self.tokens, value)
@@ -371,7 +372,7 @@ class Tracker(object):
             self.adjust_indent_at.append(len(self.result) + 2)
 
             # Add tokens for super call
-            tokens_for_super = self.tokens.make_super(self.indent_type * self.current.scol, self.groups.kls_name, value)
+            tokens_for_super = self.tokens.make_super(self.indent_type * self.current.scol, self.groups.kls_name, value, with_async=with_async)
             self.result.extend(tokens_for_super)
 
             # Tell the machine we inserted a line

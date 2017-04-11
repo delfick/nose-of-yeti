@@ -96,21 +96,28 @@ class Tokens(object):
 
         return lst
 
-    def make_super(self, indent, kls, method):
+    def make_super(self, indent, kls, method, with_async=False):
         if kls:
             kls = tokens_in(kls)
         else:
             kls = self.default_kls
 
-        method_name = 'noy_sup_%s' % self.equivalence[method]
+        method_name = '%snoy_sup_%s' % ('async_' if with_async else '', self.equivalence[method])
         result = [ (OP, ':')
                  , (NEWLINE, '\n')
                  , (INDENT, indent)
-                 , (NAME, method_name)
-                 , (OP, '(')
-                 , (NAME, 'super')
-                 , (OP, '(')
                  ]
+
+        if with_async:
+            result.append((NAME, "await"))
+
+        result.extend(
+              [ (NAME, method_name)
+              , (OP, '(')
+              , (NAME, 'super')
+              , (OP, '(')
+              ]
+            )
 
         result.extend(kls)
 
