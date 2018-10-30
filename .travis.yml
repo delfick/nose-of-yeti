@@ -1,0 +1,22 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+
+  # I"ll add this when travis ci supports python3.7
+  # - "3.7"
+
+env:
+  global:
+    - CI_SERVER=true
+
+install:
+  - pip install pip --upgrade
+  - pip install -e .
+  - pip install -e '.[tests]'
+
+script:
+  - ./test.sh
