@@ -52,5 +52,6 @@ setup(
        { 'nose.plugins':
          [ 'noseOfYeti = noseOfYeti.plugins.nosetests:Plugin'
          ]
+       , "pytest11": ["nose_of_yeti = noseOfYeti.plugins.pytest"]
        }
      )
