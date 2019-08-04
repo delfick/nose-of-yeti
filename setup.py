@@ -1,6 +1,5 @@
 from noseOfYeti import VERSION
 from setuptools import setup
-from textwrap import dedent
 
 setup(
        name = 'noseOfYeti'

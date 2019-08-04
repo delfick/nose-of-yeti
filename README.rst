@@ -24,6 +24,12 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.8.1```
+    Added support for pytest.
+
+    The support means the spec codec is registered for you and nested describes
+    will not run inherited tests.
+
 ``1.8``
     Changed the license to MIT from GPL
 
