@@ -1,4 +1,4 @@
-from sphinx.util.compat import Directive
+from docutils.parsers.rst import Directive
 from docutils import nodes
 
 from noseOfYeti.plugins.support.spec_options import spec_options
