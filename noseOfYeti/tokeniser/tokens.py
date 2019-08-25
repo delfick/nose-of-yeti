@@ -18,7 +18,10 @@ def tokens_in(s, strip_it=True):
             return s.strip()
         else:
             return s
-    return [(t, v) for t, v, _, _, _ in generate_tokens(get)][:-1]
+    res = [(t, v) for t, v, _, _, _ in generate_tokens(get)][:-1]
+    while res and res[-1][0] == 4:
+        res.pop()
+    return res
 
 ########################
 ###   TOKENS
