@@ -21,8 +21,23 @@ class TokeniserCodec(object):
     """Class to register the spec codec"""
     def __init__(self, tokeniser):
         self.tokeniser = tokeniser
+        self.codec = self.get_codec()
+
+    def translate(self, value):
+        if isinstance(value, six.string_types):
+            value = value.encode()
+        return self.codec.decode(value, return_tuple=False)
 
     def register(self):
+        def search_function(s):
+            """Determine if a file is of spec encoding and return special CodecInfo if it is"""
+            if s != 'spec': return None
+            return self.codec
+
+        # Do the register
+        codecs.register(search_function)
+
+    def get_codec(self):
         """Register spec codec"""
         # Assume utf8 encoding
         utf8 = encodings.search_function('utf8')
@@ -91,21 +106,15 @@ class TokeniserCodec(object):
                 return decode(*args, **kwargs)
             incrementaldecoder = type("IncrementalDecoder", (utf8.incrementaldecoder, ), {"decode": incremental_decode})
 
-        def search_function(s):
-            """Determine if a file is of spec encoding and return special CodecInfo if it is"""
-            if s != 'spec': return None
-            return codecs.CodecInfo(
-                  name='spec'
-                , encode=utf8.encode
-                , decode=decode
-                , streamreader=StreamReader
-                , streamwriter=utf8.streamwriter
-                , incrementalencoder=utf8.incrementalencoder
-                , incrementaldecoder=incrementaldecoder
-                )
-
-        # Do the register
-        codecs.register(search_function)
+        return codecs.CodecInfo(
+              name='spec'
+            , encode=utf8.encode
+            , decode=decode
+            , streamreader=StreamReader
+            , streamwriter=utf8.streamwriter
+            , incrementalencoder=utf8.incrementalencoder
+            , incrementaldecoder=incrementaldecoder
+            )
 
     def dealwith(self, readline, **kwargs):
         """
@@ -153,7 +162,7 @@ class TokeniserCodec(object):
 ###   CODEC REGISTER
 ########################
 
-def register_from_options(options=None, template=None, extractor=None):
+def codec_from_options(options=None, template=None, extractor=None):
     """Register the spec codec using the provided options"""
     if template is None:
         from noseOfYeti.plugins.support.spec_options import spec_options as template
@@ -176,5 +185,7 @@ def register_from_options(options=None, template=None, extractor=None):
         , with_describe_attrs = not config.no_describe_attrs
         )
 
-    TokeniserCodec(tok).register()
+    return TokeniserCodec(tok)
 
+def register_from_options(options=None, template=None, extractor=None):
+    codec_from_options(options, template, extractor).register()
