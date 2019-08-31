@@ -24,6 +24,15 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.8.3``
+    Make pytest support __only_run_tests_in_children__ property on describes
+
+    You can now translate a string by doing::
+
+        from noseOfYeti.tokeniser.spec_codec import codec_from_options
+        spec_codec = codec_from_options()
+        translated = spec_codec.translate(src_str_or_bytes)
+
 ``1.8.2``
     Made pytest support play nicer when running against a unittest suite
 
