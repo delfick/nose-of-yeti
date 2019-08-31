@@ -68,5 +68,16 @@ def filter_collection(collected, obj):
         except Exception:
             pass
 
+        if obj.__dict__.get("__only_run_tests_in_children__"):
+            # Only run these tests in the children, not in this class itself
+            continue
+
         if thing.obj.__name__ in obj.__dict__:
             yield thing
+        else:
+            method_passed_down = any(
+                thing.obj.__name__ in superkls.__dict__ and getattr(superkls, "__only_run_tests_in_children__", False)
+                for superkls in obj.__bases__
+            )
+            if method_passed_down:
+                yield thing
