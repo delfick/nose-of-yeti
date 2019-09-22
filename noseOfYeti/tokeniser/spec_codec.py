@@ -98,14 +98,6 @@ class TokeniserCodec(object):
             else:
                 return data
 
-        incrementaldecoder = utf8.incrementaldecoder
-        if six.PY3:
-            def incremental_decode(decoder, *args, **kwargs):
-                """Wrapper for decode from IncrementalDecoder"""
-                kwargs["return_tuple"] = False
-                return decode(*args, **kwargs)
-            incrementaldecoder = type("IncrementalDecoder", (utf8.incrementaldecoder, ), {"decode": incremental_decode})
-
         return codecs.CodecInfo(
               name='spec'
             , encode=utf8.encode
@@ -113,7 +105,7 @@ class TokeniserCodec(object):
             , streamreader=StreamReader
             , streamwriter=utf8.streamwriter
             , incrementalencoder=utf8.incrementalencoder
-            , incrementaldecoder=incrementaldecoder
+            , incrementaldecoder=utf8.incrementaldecoder
             )
 
     def dealwith(self, readline, **kwargs):

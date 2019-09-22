@@ -24,6 +24,13 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``1.8.4``
+    Made the incremental decoder just utf8 so that pdb inside a spec file is able
+    to show lines from the test. This works because the import time translation
+    doesn't use the incremental decoder. And this is necessary because the
+    incremental decoder would often get confused by the indentation and return
+    nothing
+
 ``1.8.3``
     Make pytest support __only_run_tests_in_children__ property on describes
 
