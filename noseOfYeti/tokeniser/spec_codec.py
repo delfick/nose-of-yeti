@@ -100,6 +100,15 @@ class TokeniserCodec(object):
             else:
                 return data
 
+        class incrementaldecoder(utf8.incrementaldecoder):
+            def decode(s, obj, final, **kwargs): 
+                lines = obj.split("\n".encode("utf-8"))
+                if re.match("#\s*coding:\s*spec", lines[0].decode("utf-8", "replace")) and final:
+                    kwargs["return_tuple"] = False
+                    return decode(obj, final, **kwargs)
+                else:
+                    return super().decode(obj, final, **kwargs)
+
         return codecs.CodecInfo(
               name='spec'
             , encode=utf8.encode
@@ -107,7 +116,7 @@ class TokeniserCodec(object):
             , streamreader=StreamReader
             , streamwriter=utf8.streamwriter
             , incrementalencoder=utf8.incrementalencoder
-            , incrementaldecoder=utf8.incrementaldecoder
+            , incrementaldecoder=incrementaldecoder
             )
 
     def dealwith(self, readline, **kwargs):

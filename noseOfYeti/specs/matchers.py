@@ -24,7 +24,6 @@ class MatchRegexLines(object):
 
         for a, r in zip(actual_lines, radicand_lines):
             if not re.match(r, a):
-                __import__("nose").tools.set_trace()
                 self.mismatched = "'{0}'\ndid not match\n'{1}'".format(r, a)
                 return False
 

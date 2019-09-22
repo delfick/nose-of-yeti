@@ -81,7 +81,7 @@ class Test_RegisteringCodec(object):
         expected = dedent(r'''
         msg = """
         Traceback \(most recent call last\):
-        File ".+noseOfYeti/tokeniser/spec_codec.py", line 123, in dealwith
+        File ".+noseOfYeti/tokeniser/spec_codec.py", line 132, in dealwith
             self.tokeniser.translate\(readline, data, \*\*kwargs\)
         File ".+fudge/__init__.py", line 365, in __call__
             raise self.exception_to_raise
