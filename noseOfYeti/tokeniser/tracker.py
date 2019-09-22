@@ -54,11 +54,11 @@ class Tracker(object):
         while len(self.result) > 1 and self.result[-2][0] in (INDENT, ERRORTOKEN, NEWLINE):
             self.result.pop(-2)
 
-    def next_token(self, tokenum, value, scol):
+    def next_token(self, tokenum, value, srow, scol):
         """Determine what to do with the next token"""
 
         # Make self.current reflect these values
-        self.current.set(tokenum, value, scol)
+        self.current.set(tokenum, value, srow, scol)
 
         # Determine indent_type based on this token
         if self.current.tokenum == INDENT and self.current.value:
@@ -100,6 +100,12 @@ class Tracker(object):
             # Set after_space so next line knows if it is after space
             self.after_space = self.is_space
 
+    def raise_about_open_containers(self):
+        if self.containers:
+            val, srow, scol = self.containers[-1]
+            where = "line {0}, column {1}".format(srow, scol)
+            raise SyntaxError("Found an open '{0}' ({1}) that wasn't closed".format(val, where))
+
     ########################
     ###   PROGRESS
     ########################
@@ -110,7 +116,7 @@ class Tracker(object):
             Used to create, fillout and end groups and singles
             As well as just append everything else
         """
-        tokenum, value, scol = self.current.values()
+        tokenum, value, srow, scol = self.current.values()
 
         # Default to not appending anything
         just_append = False
@@ -457,16 +463,28 @@ class Tracker(object):
         starting_container = False
 
         if tokenum == OP:
+            srow = self.current.srow
+            scol = self.current.scol
+
             # Record when we're inside a container of some sort (tuple, list, dictionary)
             # So that we can care about that when determining what to do with whitespace
             if value in ['(', '[', '{']:
                 # add to the stack because we started a list
-                self.containers.append(value)
+                self.containers.append((value, srow, scol))
                 starting_container = True
 
             elif value in [')', ']', '}']:
                 # not necessary to check for correctness
-                self.containers.pop()
+                if not self.containers:
+                    raise SyntaxError("Found a hanging '{0}' on line {1}, column {2}".format(value, srow, scol))
+
+                v, sr, sc = self.containers.pop()
+                if v != {")": "(", "]": "[", "}": "{"}[value]:
+                    found_at = "line {0}, column {1}".format(srow, scol)
+                    found_last = "line {0}, column {1}".format(sr, sc)
+                    msg = "Trying to close the wrong type of bracket. Found '{0}' ({1}) instead of closing a '{2}' ({3})"
+                    raise SyntaxError(msg.format(value, found_at, v, found_last))
+
                 ending_container = True
 
         self.just_ended_container = not len(self.containers) and ending_container

@@ -26,10 +26,11 @@ def acceptable(value, capitalize=False):
 
 class TokenDetails(object):
     """Container for current token"""
-    def __init__(self, tokenum=None, value=None, scol=0):
-        self.set(tokenum, value, scol)
+    def __init__(self, tokenum=None, value=None, srow=0, scol=0):
+        self.set(tokenum, value, srow, scol)
 
-    def set(self, tokenum, value, scol):
+    def set(self, tokenum, value, srow, scol):
+        self.srow = srow
         self.scol = scol
         self.value = value
         self.tokenum = tokenum
@@ -38,7 +39,7 @@ class TokenDetails(object):
         details.set(*self.values())
 
     def values(self):
-        return self.tokenum, self.value, self.scol
+        return self.tokenum, self.value, self.srow, self.scol
 
 class Single(object):
     """Container for a single block (i.e. it or ignore block)"""

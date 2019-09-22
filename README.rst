@@ -31,6 +31,11 @@ This means that any changes in the translation process won't happen untill eithe
     incremental decoder would often get confused by the indentation and return
     nothing
 
+    Also, noseOfYeti will now detect bracket mismatches and tell you where you've
+    made a mistake. I.e. if you close the wrong type of bracket, or have a
+    mismatched bracket, or have a hanging open bracket, it will tell you line
+    and column numbers of where this is happening
+
 ``1.8.3``
     Make pytest support __only_run_tests_in_children__ property on describes
 

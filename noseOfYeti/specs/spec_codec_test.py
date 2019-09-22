@@ -1,8 +1,13 @@
 '''
 Tests to make sure registering the spec codec actually works
 '''
+
+from noseOfYeti.tokeniser.spec_codec import TokeniserCodec
+
 from should_dsl import should
+from textwrap import dedent
 import subprocess
+import fudge
 import sys
 import os
 
@@ -60,3 +65,34 @@ class Test_RegisteringCodec(object):
 
             expected_output = 'test_should_totally_work'
             process.stdout.read().decode('utf8').strip() |should| equal_to(expected_output)
+
+    @fudge.patch("noseOfYeti.tokeniser.spec_codec.TokeniserCodec.get_codec")
+    def test_it_shows_errors(self, fake_get_codec):
+        exc = Exception("WAT")
+        fake_get_codec.is_a_stub()
+        readline = fudge.Fake("readline")
+        tokeniser = (fudge.Fake("tokeniser")
+            .expects("translate").with_args(readline, []).raises(exc)
+            )
+        tok = TokeniserCodec(tokeniser)
+
+        data = tok.dealwith(readline)
+
+        expected = dedent(r'''
+        msg = """
+        Traceback \(most recent call last\):
+        File ".+noseOfYeti/tokeniser/spec_codec.py", line 123, in dealwith
+            self.tokeniser.translate\(readline, data, \*\*kwargs\)
+        File ".+fudge/__init__.py", line 365, in __call__
+            raise self.exception_to_raise
+        Exception: WAT
+        """
+        raise Exception\('--- internal spec codec error --- \\n\{0\}'.format\(msg\)\)
+        ''')
+        data |should| match_regex_lines(expected)
+
+        try:
+            exec(data)
+            assert False, "Expected an exception"
+        except Exception as error:
+            str(error) |should| start_with("--- internal spec codec error ---")
