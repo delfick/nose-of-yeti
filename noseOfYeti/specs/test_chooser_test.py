@@ -84,13 +84,6 @@ class Test_TestChooser_Consider(object):
     def test_it_ignores_if_method_has__test__set_to_false(self):
         self.test_chooser.consider(self.TestKlsForTest().test_with__test__set) | should | be(False)
 
-    def test_it_ignores_if_method_has_kls_in_ignoreKls(self):
-        self.TestIgnoredKls.is_noy_spec = True
-        self.test_chooser.consider(self.TestIgnoredKls().test_things) | should | be(True)
-        self.test_chooser.consider(
-            self.TestIgnoredKls().test_things, ignore_kls=["TestIgnoredKls"]
-        ) | should | be(False)
-
     def test_it_returns_None_if_kls_does_not_have_is_noy_test_set(self):
         self.test_chooser.consider(self.TestKlsForTest().test_actual) | should | be(None)
 

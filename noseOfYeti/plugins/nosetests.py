@@ -39,27 +39,14 @@ class Plugin(Plugin):
             help="Enable nose of yeti",
         )
 
-        default_ignore_kls = []
-        if "NOSE_NOY_IGNORE_KLS" in env:
-            default_ignore_kls.append(env["NOSE_NOY_IGNORE_KLS"].split(","))
-
-        parser.add_option(
-            "--noy-ignore-kls",
-            default=default_ignore_kls,
-            action="append",
-            dest="ignore_kls",
-            help="Set class name to ignore in wantMethod",
-        )
-
     def wantModule(self, mod):
         self.test_chooser.new_module()
 
     def wantMethod(self, method):
-        return self.test_chooser.consider(method, self.ignore_kls)
+        return self.test_chooser.consider(method)
 
     def configure(self, options, conf):
         super(Plugin, self).configure(options, conf)
-        self.ignore_kls = options.ignore_kls
 
         if options.enabled:
             self.done = {}
