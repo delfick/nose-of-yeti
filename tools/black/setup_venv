@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+from venvstarter import ignite
+
+ignite(
+    __file__,
+    "black",
+    deps=["noy_black==0.1.5"],
+    min_python_version=3.6,
+)
