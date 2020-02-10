@@ -10,15 +10,16 @@ func_accessor = ""
 if six.PY2:
     func_accessor = "__func__ ."
 
+
 class Test_Tokeniser_Complex(object):
     def setUp(self):
         self.toka = Tokeniser()
-        self.tokb = Tokeniser(default_kls = 'other')
+        self.tokb = Tokeniser(default_kls="other")
 
         ###   SMALL EXAMPLE
 
         self.small_example = [
-        '''
+            """
         describe "This":
             before_each:
                 self.x = 5
@@ -36,9 +37,8 @@ class Test_Tokeniser_Complex(object):
                     pass
         describe "Another":
             before_each:
-                self.z = 8 '''
-        ,
-        '''
+                self.z = 8 """,
+            """
         class TestThis (%(o)s ):
             def setUp (self ):
                 noy_sup_setUp (super (TestThis ,self ));self .x =5
@@ -64,13 +64,13 @@ class Test_Tokeniser_Complex(object):
         TestThis_Blah .is_noy_spec =True
         TestThis_Async .is_noy_spec =True
         TestAnother .is_noy_spec =True
-        '''
+        """,
         ]
 
         ###   BIG EXAMPLE
 
         self.big_example = [
-        '''
+            """
         describe "This":
             before_each:
                 self.x = 5
@@ -112,9 +112,8 @@ class Test_Tokeniser_Complex(object):
                     pass
         async it 'supports level 0 async its':
             pass
-        '''
-        ,
-        '''
+        """,
+            """
         class TestThis (%(o)s ):
             def setUp (self ):
                 noy_sup_setUp (super (TestThis ,self ));self .x =5
@@ -164,28 +163,29 @@ class Test_Tokeniser_Complex(object):
         TestAnother .is_noy_spec =True
         ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"
         TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .{func_accessor}__testname__ ="should set __testname__ for non alpha names ' $^"
-        '''.format(func_accessor=func_accessor)
+        """.format(
+                func_accessor=func_accessor
+            ),
         ]
 
     ###   TESTS
 
     def test_works_with_space(self):
         test, desired = self.small_example
-        (self.toka, test) |should| result_in(desired % {'o' : 'object'})
-        (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
+        (self.toka, test) | should | result_in(desired % {"o": "object"})
+        (self.tokb, test) | should | result_in(desired % {"o": "other"})
 
     def test_works_with_tabs(self):
-        test, desired = [d.replace('    ', '\t') for d in self.small_example]
-        (self.toka, test) |should| result_in(desired % {'o' : 'object'})
-        (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
+        test, desired = [d.replace("    ", "\t") for d in self.small_example]
+        (self.toka, test) | should | result_in(desired % {"o": "object"})
+        (self.tokb, test) | should | result_in(desired % {"o": "other"})
 
     def test_keeps_good_indentation_in_body_with_spaces(self):
         test, desired = self.big_example
-        (self.toka, test) |should| result_in(desired % {'o' : 'object'})
-        (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
+        (self.toka, test) | should | result_in(desired % {"o": "object"})
+        (self.tokb, test) | should | result_in(desired % {"o": "other"})
 
     def test_keeps_good_indentation_in_body_with_tabs(self):
-        test, desired = [d.replace('    ', '\t') for d in self.big_example]
-        (self.toka, test) |should| result_in(desired % {'o' : 'object'})
-        (self.tokb, test) |should| result_in(desired % {'o' : 'other'})
-
+        test, desired = [d.replace("    ", "\t") for d in self.big_example]
+        (self.toka, test) | should | result_in(desired % {"o": "object"})
+        (self.tokb, test) | should | result_in(desired % {"o": "other"})

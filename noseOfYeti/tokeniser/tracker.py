@@ -5,15 +5,19 @@ import re
 from noseOfYeti.tokeniser.containers import TokenDetails, Group
 
 # Regex for matching whitespace
-regexes = {'whitespace': re.compile('\s+')}
+regexes = {"whitespace": re.compile("\s+")}
+
 
 class WildCard(object):
     """Used to determine if tokens should be inserted untill ignored token"""
+
     def __repr__(self):
         return "<WildCard>"
 
+
 class Tracker(object):
     """Keep track of what each next token should mean"""
+
     def __init__(self, result, tokens, wrapped_setup):
         if result is None:
             self.result = []
@@ -33,7 +37,7 @@ class Tracker(object):
         self.indent_amounts = []
         self.adjust_indent_at = []
 
-        self.indent_type = ' '
+        self.indent_type = " "
         self.insert_till = None
         self.after_space = True
         self.inserted_line = False
@@ -86,7 +90,7 @@ class Tracker(object):
             # If we have a non space, non comment after an inserted line, then insert a semicolon
             if self.result and not self.is_space and self.inserted_line:
                 if self.current.tokenum != COMMENT:
-                    self.result.append((OP, ';'))
+                    self.result.append((OP, ";"))
                 self.inserted_line = False
 
             # Progress the tracker
@@ -95,7 +99,7 @@ class Tracker(object):
             # Add a newline if we just skipped a single
             if self.single and self.single.skipped:
                 self.single.skipped = False
-                self.result.append((NEWLINE, '\n'))
+                self.result.append((NEWLINE, "\n"))
 
             # Set after_space so next line knows if it is after space
             self.after_space = self.is_space
@@ -123,7 +127,7 @@ class Tracker(object):
 
         # Prevent from group having automatic pass given to it
         # If it already has a pass
-        if tokenum == NAME and value == 'pass':
+        if tokenum == NAME and value == "pass":
             self.groups.empty = False
 
         # Set variables to be used later on to determine if this will likely make group not empty
@@ -137,7 +141,7 @@ class Tracker(object):
             if tokenum == STRING:
                 self.groups.name = value
 
-            elif tokenum == NAME or (tokenum == OP and value == '.'):
+            elif tokenum == NAME or (tokenum == OP and value == "."):
                 # Modify super class for group
                 self.groups.modify_kls(value)
 
@@ -175,7 +179,7 @@ class Tracker(object):
             else:
                 self.after_an_async = False
 
-            if value in ('describe', 'context'):
+            if value in ("describe", "context"):
                 created_group = True
 
                 # add pass to previous group if nothing added between then and now
@@ -186,10 +190,10 @@ class Tracker(object):
                 self.groups = self.groups.start_group(scol, value)
                 self.all_groups.append(self.groups)
 
-            elif value in ('it', 'ignore'):
+            elif value in ("it", "ignore"):
                 self.single = self.groups.start_single(value, scol)
 
-            elif value in ('before_each', 'after_each'):
+            elif value in ("before_each", "after_each"):
                 setattr(self.groups, "has_%s" % value, True)
                 if with_async:
                     setattr(self.groups, "async_%s" % value, True)
@@ -226,6 +230,7 @@ class Tracker(object):
 
     def ignore_token(self):
         """Determine if we should ignore current token"""
+
         def get_next_ignore(remove=False):
             """Get next ignore from ignore_next and remove from ignore_next"""
             next_ignore = self.ignore_next
@@ -285,13 +290,12 @@ class Tracker(object):
                     lst.extend(self.tokens.wrap_after_each(group.kls_name, group.async_after_each))
 
                 if group.has_before_each:
-                    lst.extend(self.tokens.wrap_before_each(group.kls_name, group.async_before_each))
+                    lst.extend(
+                        self.tokens.wrap_before_each(group.kls_name, group.async_before_each)
+                    )
 
         if lst:
-            indentation_reset = [
-                  (NEWLINE, '\n')
-                , (INDENT, '')
-                ]
+            indentation_reset = [(NEWLINE, "\n"), (INDENT, "")]
             lst = indentation_reset + lst
 
         return lst
@@ -302,16 +306,18 @@ class Tracker(object):
         for group in self.all_groups:
             for single in group.singles:
                 name, english = single.name, single.english
-                if english[1:-1] != name.replace('_', ' '):
-                    lst.extend(self.tokens.make_name_modifier(not group.root, single.identifier, english))
+                if english[1:-1] != name.replace("_", " "):
+                    lst.extend(
+                        self.tokens.make_name_modifier(not group.root, single.identifier, english)
+                    )
         return lst
 
     def make_describe_attrs(self):
         """Create tokens for setting is_noy_spec on describes"""
         lst = []
         if self.all_groups:
-            lst.append((NEWLINE, '\n'))
-            lst.append((INDENT, ''))
+            lst.append((NEWLINE, "\n"))
+            lst.append((INDENT, ""))
 
             for group in self.all_groups:
                 if group.name:
@@ -330,10 +336,13 @@ class Tracker(object):
             # Determine where to append this token
             append_at = -1
             if self.inserted_line:
-                append_at = -self.inserted_line+1
+                append_at = -self.inserted_line + 1
 
             # Reset insert_till if we found it
-            if self.current.tokenum == self.insert_till[0] and self.current.value == self.insert_till[1]:
+            if (
+                self.current.tokenum == self.insert_till[0]
+                and self.current.value == self.insert_till[1]
+            ):
                 self.insert_till = None
             else:
                 # Adjust self.adjust_indent_at to take into account the new token
@@ -362,10 +371,7 @@ class Tracker(object):
 
         # Add pass and indentation
         self.add_tokens(
-            [ (NAME, 'pass')
-            , (NEWLINE, '\n')
-            , (INDENT, self.indent_type * self.current.scol)
-            ]
+            [(NAME, "pass"), (NEWLINE, "\n"), (INDENT, self.indent_type * self.current.scol)]
         )
 
     def add_tokens_for_test_helpers(self, value, with_async=False):
@@ -380,7 +386,12 @@ class Tracker(object):
             self.adjust_indent_at.append(len(self.result) + 2)
 
             # Add tokens for super call
-            tokens_for_super = self.tokens.make_super(self.indent_type * self.current.scol, self.groups.kls_name, value, with_async=with_async)
+            tokens_for_super = self.tokens.make_super(
+                self.indent_type * self.current.scol,
+                self.groups.kls_name,
+                value,
+                with_async=with_async,
+            )
             self.result.extend(tokens_for_super)
 
             # Tell the machine we inserted a line
@@ -388,7 +399,7 @@ class Tracker(object):
 
             # Make sure colon and newline are ignored
             # Already added as part of making super
-            self.ignore_next = [(OP, ':'), WildCard(), (NEWLINE, '\n')]
+            self.ignore_next = [(OP, ":"), WildCard(), (NEWLINE, "\n")]
 
     def add_tokens_for_group(self, with_pass=False):
         """Add the tokens for the group signature"""
@@ -396,7 +407,7 @@ class Tracker(object):
         name = self.groups.kls_name
 
         # Reset indentation to beginning and add signature
-        self.reset_indentation('')
+        self.reset_indentation("")
         self.result.extend(self.tokens.make_describe(kls, name))
 
         # Add pass if necessary
@@ -444,11 +455,11 @@ class Tracker(object):
         """
         value = self.current.value
 
-        if value == '\n':
+        if value == "\n":
             self.is_space = True
         else:
             self.is_space = False
-            if (value == '' or regexes['whitespace'].match(value)):
+            if value == "" or regexes["whitespace"].match(value):
                 self.is_space = True
 
     def determine_inside_container(self):
@@ -468,15 +479,17 @@ class Tracker(object):
 
             # Record when we're inside a container of some sort (tuple, list, dictionary)
             # So that we can care about that when determining what to do with whitespace
-            if value in ['(', '[', '{']:
+            if value in ["(", "[", "{"]:
                 # add to the stack because we started a list
                 self.containers.append((value, srow, scol))
                 starting_container = True
 
-            elif value in [')', ']', '}']:
+            elif value in [")", "]", "}"]:
                 # not necessary to check for correctness
                 if not self.containers:
-                    raise SyntaxError("Found a hanging '{0}' on line {1}, column {2}".format(value, srow, scol))
+                    raise SyntaxError(
+                        "Found a hanging '{0}' on line {1}, column {2}".format(value, srow, scol)
+                    )
 
                 v, sr, sc = self.containers.pop()
                 if v != {")": "(", "]": "[", "}": "{"}[value]:
@@ -489,26 +502,35 @@ class Tracker(object):
 
         self.just_ended_container = not len(self.containers) and ending_container
         self.just_started_container = len(self.containers) == 1 and starting_container
-        self.in_container = len(self.containers) or self.just_ended_container or self.just_started_container
+        self.in_container = (
+            len(self.containers) or self.just_ended_container or self.just_started_container
+        )
 
     def determine_indentation(self):
         """Reset indentation for current token and in self.result to be consistent and normalized"""
         # Ensuring NEWLINE tokens are actually specified as such
-        if self.current.tokenum != NEWLINE and self.current.value == '\n':
+        if self.current.tokenum != NEWLINE and self.current.value == "\n":
             self.current.tokenum = NEWLINE
 
         # I want to change dedents into indents, because they seem to screw nesting up
         if self.current.tokenum == DEDENT:
             self.current.tokenum, self.current.value = self.convert_dedent()
 
-        if self.after_space and not self.is_space and (not self.in_container or self.just_started_container):
+        if (
+            self.after_space
+            and not self.is_space
+            and (not self.in_container or self.just_started_container)
+        ):
             # Record current indentation level
             if not self.indent_amounts or self.current.scol > self.indent_amounts[-1]:
                 self.indent_amounts.append(self.current.scol)
 
             # Adjust indent as necessary
             while self.adjust_indent_at:
-                self.result[self.adjust_indent_at.pop()] = (INDENT, self.indent_type * (self.current.scol - self.groups.level))
+                self.result[self.adjust_indent_at.pop()] = (
+                    INDENT,
+                    self.indent_type * (self.current.scol - self.groups.level),
+                )
 
         # Roll back groups as necessary
         if not self.is_space and not self.in_container:
@@ -518,7 +540,7 @@ class Tracker(object):
 
         # Reset indentation to deal with nesting
         if self.current.tokenum == INDENT and not self.groups.root:
-           self.current.value = self.current.value[self.groups.level:]
+            self.current.value = self.current.value[self.groups.level :]
 
     def convert_dedent(self):
         """Convert a dedent into an indent"""
@@ -540,4 +562,3 @@ class Tracker(object):
 
         value = self.indent_type * last_indent
         return tokenum, value
-

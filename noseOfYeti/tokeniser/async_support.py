@@ -11,6 +11,7 @@ NB: We pull this into it's own module to:
 from functools import wraps
 import asyncio
 
+
 async def async_noy_sup_setUp(sup):
     if hasattr(sup, "setup"):
         res = sup.setup()
@@ -25,6 +26,7 @@ async def async_noy_sup_setUp(sup):
             return await res
         else:
             return res
+
 
 async def async_noy_sup_tearDown(sup):
     if hasattr(sup, "teardown"):
@@ -41,13 +43,16 @@ async def async_noy_sup_tearDown(sup):
         else:
             return res
 
+
 def async_noy_wrap_setUp(kls, func):
     @wraps(func)
     async def wrapped(self, *args, **kwargs):
         sup = super(kls, self)
         await async_noy_sup_setUp(sup)
         return await func(self, *args, **kwargs)
+
     return wrapped
+
 
 def async_noy_wrap_tearDown(kls, func):
     @wraps(func)
@@ -55,4 +60,5 @@ def async_noy_wrap_tearDown(kls, func):
         sup = super(kls, self)
         await async_noy_sup_tearDown(sup)
         return await func(self, *args, **kwargs)
+
     return wrapped

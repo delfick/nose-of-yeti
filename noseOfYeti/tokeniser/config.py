@@ -1,17 +1,22 @@
 import json
 import os
 
-class MissingConfigFile(Exception): pass
+
+class MissingConfigFile(Exception):
+    pass
+
 
 ########################
 ###   DEFAULT
 ########################
+
 
 class Default(object):
     """
         Wrapper for default values
         So we can tell the difference between default and no value
     """
+
     def __init__(self, val):
         self.val = val
 
@@ -25,19 +30,22 @@ class Default(object):
         """Make sure argparse doesn't fail"""
         self.val.append(val)
 
+
 ########################
 ###   CONFIGUTIL
 ########################
 
+
 class ConfigUtil(object):
     """Config functionality"""
+
     def __init__(self, template=None):
         self.values = {}
         self.template = template
 
     def normalise_key(self, key):
         """Make sure key is a valid python attribute"""
-        key = key.replace('-', '_')
+        key = key.replace("-", "_")
         if key.startswith("noy_"):
             key = key[4:]
         return key
@@ -88,7 +96,7 @@ class ConfigUtil(object):
 
             If however, the value isn't a default and it doesn't exist, an error is raised
         """
-        filename = self.values.get('config_file', Default('noy.json'))
+        filename = self.values.get("config_file", Default("noy.json"))
 
         ignore_missing = False
         if isinstance(filename, Default):
@@ -106,6 +114,7 @@ class ConfigUtil(object):
             Add options from config file to self.values
             Leave alone existing values that are not an instance of Default
         """
+
         def extractor(template, options):
             """Ignore things that are existing non default values"""
             for name, val in options:
@@ -124,9 +133,11 @@ class ConfigUtil(object):
         if self.config_file:
             self.apply_config_file(self.config_file)
 
+
 ########################
 ###   CONFIG
 ########################
+
 
 class Config(object):
     """
@@ -138,6 +149,7 @@ class Config(object):
 
         It then provides a __getattr__ to access the values on the ConfigUtil.
     """
+
     def __init__(self, template=None):
         self._util = ConfigUtil(template)
 
@@ -159,4 +171,3 @@ class Config(object):
             return object.__getattribute__(self, key)
 
         return self._util.find_value(key)
-

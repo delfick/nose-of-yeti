@@ -3,9 +3,17 @@ from noseOfYeti.tokeniser.tokens import Tokens
 
 from tokenize import generate_tokens
 
+
 class Tokeniser(object):
     """Endpoint for tokenising a file"""
-    def __init__(self, default_kls='object', with_describe_attrs=True, import_tokens=None, wrapped_setup=False):
+
+    def __init__(
+        self,
+        default_kls="object",
+        with_describe_attrs=True,
+        import_tokens=None,
+        wrapped_setup=False,
+    ):
         self.default_kls = default_kls
         self.import_tokens = import_tokens
         self.wrapped_setup = wrapped_setup
@@ -47,4 +55,3 @@ class Tokeniser(object):
 
         # Return translated list of tokens
         return self.tracker.result
-

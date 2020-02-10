@@ -10,133 +10,157 @@ func_accessor = ""
 if six.PY2:
     func_accessor = "__func__ ."
 
+
 class Test_Tokenisor_translation(object):
     def setUp(self):
         self.toka = Tokeniser(with_describe_attrs=False)
-        self.tokb = Tokeniser(with_describe_attrs=False, default_kls = 'other')
+        self.tokb = Tokeniser(with_describe_attrs=False, default_kls="other")
 
     def test_translates_a_describe(self):
-        (self.toka, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (object ):pass')
-        (self.tokb, 'describe "Something testable"') |should| result_in('class TestSomethingTestable (other ):pass')
+        (self.toka, 'describe "Something testable"') | should | result_in(
+            "class TestSomethingTestable (object ):pass"
+        )
+        (self.tokb, 'describe "Something testable"') | should | result_in(
+            "class TestSomethingTestable (other ):pass"
+        )
 
         # Same tests, but with newlines in front
-        (self.toka, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (object ):pass')
-        (self.tokb, '\ndescribe "Something testable"') |should| result_in('\nclass TestSomethingTestable (other ):pass')
+        (self.toka, '\ndescribe "Something testable"') | should | result_in(
+            "\nclass TestSomethingTestable (object ):pass"
+        )
+        (self.tokb, '\ndescribe "Something testable"') | should | result_in(
+            "\nclass TestSomethingTestable (other ):pass"
+        )
 
     def test_translates_an_it(self):
-        (self.toka, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing ():')
-        (self.tokb, 'it "should do this thing":') |should| result_in('def test_should_do_this_thing ():')
+        (self.toka, 'it "should do this thing":') | should | result_in(
+            "def test_should_do_this_thing ():"
+        )
+        (self.tokb, 'it "should do this thing":') | should | result_in(
+            "def test_should_do_this_thing ():"
+        )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing":') |should| result_in('\ndef test_should_do_this_thing ():')
-        (self.tokb, '\nit "should do this thing":') |should| result_in('\ndef test_should_do_this_thing ():')
+        (self.toka, '\nit "should do this thing":') | should | result_in(
+            "\ndef test_should_do_this_thing ():"
+        )
+        (self.tokb, '\nit "should do this thing":') | should | result_in(
+            "\ndef test_should_do_this_thing ():"
+        )
 
         ## and with async
 
-        (self.toka, 'async it "should do this thing":') |should| result_in('async def test_should_do_this_thing ():')
-        (self.tokb, 'async it "should do this thing":') |should| result_in('async def test_should_do_this_thing ():')
+        (self.toka, 'async it "should do this thing":') | should | result_in(
+            "async def test_should_do_this_thing ():"
+        )
+        (self.tokb, 'async it "should do this thing":') | should | result_in(
+            "async def test_should_do_this_thing ():"
+        )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nasync it "should do this thing":') |should| result_in('\nasync def test_should_do_this_thing ():')
-        (self.tokb, '\nasync it "should do this thing":') |should| result_in('\nasync def test_should_do_this_thing ():')
+        (self.toka, '\nasync it "should do this thing":') | should | result_in(
+            "\nasync def test_should_do_this_thing ():"
+        )
+        (self.tokb, '\nasync it "should do this thing":') | should | result_in(
+            "\nasync def test_should_do_this_thing ():"
+        )
 
     def test_adds_arguments_to_its_if_declared_on_same_line(self):
-        (self.toka, 'it "should do this thing", blah, meh:') |should| result_in(
-            'def test_should_do_this_thing (blah ,meh ):'
-            )
-        (self.tokb, 'it "should do this thing", blah, meh:') |should| result_in(
-            'def test_should_do_this_thing (blah ,meh ):'
-            )
+        (self.toka, 'it "should do this thing", blah, meh:') | should | result_in(
+            "def test_should_do_this_thing (blah ,meh ):"
+        )
+        (self.tokb, 'it "should do this thing", blah, meh:') | should | result_in(
+            "def test_should_do_this_thing (blah ,meh ):"
+        )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing", blah, meh:') |should| result_in(
-            '\ndef test_should_do_this_thing (blah ,meh ):'
-            )
-        (self.tokb, '\nit "should do this thing", blah, meh:') |should| result_in(
-            '\ndef test_should_do_this_thing (blah ,meh ):'
-            )
+        (self.toka, '\nit "should do this thing", blah, meh:') | should | result_in(
+            "\ndef test_should_do_this_thing (blah ,meh ):"
+        )
+        (self.tokb, '\nit "should do this thing", blah, meh:') | should | result_in(
+            "\ndef test_should_do_this_thing (blah ,meh ):"
+        )
 
     def test_adds_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
-        (self.toka, 'it "should do this thing", blah, meh') |should| result_in(
-            'def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest '
-            )
-        (self.tokb, 'it "should do this thing", blah, meh') |should| result_in(
-            'def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest '
-            )
+        (self.toka, 'it "should do this thing", blah, meh') | should | result_in(
+            "def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
+        )
+        (self.tokb, 'it "should do this thing", blah, meh') | should | result_in(
+            "def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
+        )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing", blah, meh') |should| result_in(
-            '\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest '
-            )
-        (self.tokb, '\nit "should do this thing", blah, meh') |should| result_in(
-            '\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest '
-            )
+        (self.toka, '\nit "should do this thing", blah, meh') | should | result_in(
+            "\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
+        )
+        (self.tokb, '\nit "should do this thing", blah, meh') | should | result_in(
+            "\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
+        )
 
     def test_no_added_arguments_to_its_if_not_declared_on_same_line(self):
-        (self.toka, 'it "should do this thing"\n, blah, meh') |should| result_in(
+        (self.toka, 'it "should do this thing"\n, blah, meh') | should | result_in(
             "def test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
-            )
-        (self.tokb, 'it "should do this thing"\n, blah, meh') |should| result_in(
+        )
+        (self.tokb, 'it "should do this thing"\n, blah, meh') | should | result_in(
             "def test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
-            )
+        )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing"\n, blah, meh') |should| result_in(
+        (self.toka, '\nit "should do this thing"\n, blah, meh') | should | result_in(
             "\ndef test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
-            )
-        (self.tokb, '\nit "should do this thing"\n, blah, meh') |should| result_in(
+        )
+        (self.tokb, '\nit "should do this thing"\n, blah, meh') | should | result_in(
             "\ndef test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
-            )
+        )
 
     def test_turns_an_it_without_colon_into_skippable(self):
-        (self.toka, 'it "should be skipped"\n') |should| result_in(
-            'def test_should_be_skipped ():raise nose.SkipTest '
+        (self.toka, 'it "should be skipped"\n') | should | result_in(
+            "def test_should_be_skipped ():raise nose.SkipTest "
         )
 
-        (self.toka, 'it "should not be skipped":\n') |should| result_in(
-            'def test_should_not_be_skipped ():'
+        (self.toka, 'it "should not be skipped":\n') | should | result_in(
+            "def test_should_not_be_skipped ():"
         )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nit "should be skipped"\n') |should| result_in(
-            '\ndef test_should_be_skipped ():raise nose.SkipTest '
+        (self.toka, '\nit "should be skipped"\n') | should | result_in(
+            "\ndef test_should_be_skipped ():raise nose.SkipTest "
         )
 
-        (self.toka, '\nit "should not be skipped":\n') |should| result_in(
-            '\ndef test_should_not_be_skipped ():'
+        (self.toka, '\nit "should not be skipped":\n') | should | result_in(
+            "\ndef test_should_not_be_skipped ():"
         )
-
 
         ## And with async
 
-        (self.toka, 'async it "should be skipped"\n') |should| result_in(
-            'async def test_should_be_skipped ():raise nose.SkipTest '
+        (self.toka, 'async it "should be skipped"\n') | should | result_in(
+            "async def test_should_be_skipped ():raise nose.SkipTest "
         )
 
-        (self.toka, 'async it "should not be skipped":\n') |should| result_in(
-            'async def test_should_not_be_skipped ():'
+        (self.toka, 'async it "should not be skipped":\n') | should | result_in(
+            "async def test_should_not_be_skipped ():"
         )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nasync it "should be skipped"\n') |should| result_in(
-            '\nasync def test_should_be_skipped ():raise nose.SkipTest '
+        (self.toka, '\nasync it "should be skipped"\n') | should | result_in(
+            "\nasync def test_should_be_skipped ():raise nose.SkipTest "
         )
 
-        (self.toka, '\nasync it "should not be skipped":\n') |should| result_in(
-            '\nasync def test_should_not_be_skipped ():'
+        (self.toka, '\nasync it "should not be skipped":\n') | should | result_in(
+            "\nasync def test_should_not_be_skipped ():"
         )
 
     def test_turns_before_each_into_setup(self):
-        (self.toka, 'before_each:') |should| result_in('def setUp (self ):')
+        (self.toka, "before_each:") | should | result_in("def setUp (self ):")
 
         # Same tests, but with newlines in front
-        (self.toka, '\nbefore_each:') |should| result_in('\ndef setUp (self ):')
+        (self.toka, "\nbefore_each:") | should | result_in("\ndef setUp (self ):")
 
         # And with async
-        (self.toka, 'async before_each:') |should| result_in('async def setUp (self ):')
+        (self.toka, "async before_each:") | should | result_in("async def setUp (self ):")
 
         # Same tests, but with newlines in front
-        (self.toka, '\nasync before_each:') |should| result_in('\nasync def setUp (self ):')
+        (self.toka, "\nasync before_each:") | should | result_in("\nasync def setUp (self ):")
 
     def test_indentation_should_work_regardless_of_crazy_groups(self):
         test = """
@@ -186,7 +210,7 @@ class Test_Tokenisor_translation(object):
             def test_asdf2 (self ):raise nose.SkipTest
         """
 
-        (self.toka, test) |should| result_in(desired)
+        (self.toka, test) | should | result_in(desired)
 
     def test_indentation_for_test_should_work_after_skipped_test(self):
         test = """
@@ -212,123 +236,125 @@ class Test_Tokenisor_translation(object):
                 print 'hi'
         """
 
-        (self.toka, test) |should| result_in(desired)
+        (self.toka, test) | should | result_in(desired)
 
     def test_indentation_for_describe_should_work_after_skipped_test(self):
-        test = '''
+        test = """
         describe 'thing':
             it 'should be skipped'
             describe 'that':
-                pass'''
+                pass"""
 
-        desired = '''
+        desired = """
         class TestThing (object ):
             def test_should_be_skipped (self ):raise nose.SkipTest
         class TestThing_That (TestThing ):
             pass
-        '''
-        (self.toka, test) |should| result_in(desired)
+        """
+        (self.toka, test) | should | result_in(desired)
 
     def test_indentation_should_work_for_inline_python_code(self):
-        test = '''
+        test = """
         describe 'this':
             describe 'that':
                 pass
 
         class SomeMockObject(object):
             def indented_method()
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestThis (object ):pass
         class TestThis_That (TestThis ):
             pass
 
         class SomeMockObject (object ):
             def indented_method ()
-        '''
+        """
 
         (self.toka, test) | should | result_in(desired)
 
     def test_gives_setups_super_call_when_in_describes_that_know_about_await_if_async(self):
-        test = '''
+        test = """
         describe "Thing":
             async before_each:
                 self.x = 5
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestThing (object ):
             async def setUp (self ):
                 await async_noy_sup_setUp (super (TestThing ,self ));self .x =5
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired)
+        (self.toka, test) | should | result_in(desired)
         # and with tabs
-        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
 
     def test_gives_setups_super_call_when_in_describes(self):
-        test = '''
+        test = """
         describe "Thing":
             before_each:
                 self.x = 5
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestThing (object ):
             def setUp (self ):
                 noy_sup_setUp (super (TestThing ,self ));self .x =5
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired)
+        (self.toka, test) | should | result_in(desired)
         # and with tabs
-        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
 
     def test_turns_after_each_into_teardown(self):
-        (self.toka, 'after_each:') |should| result_in('def tearDown (self ):')
+        (self.toka, "after_each:") | should | result_in("def tearDown (self ):")
 
         # Same tests, but with newlines in front
-        (self.toka, '\nafter_each:') |should| result_in('\ndef tearDown (self ):')
+        (self.toka, "\nafter_each:") | should | result_in("\ndef tearDown (self ):")
 
     def test_gives_teardowns_super_call_that_awaits_when_in_describes_and_async(self):
-        test = '''
+        test = """
         describe "Thing":
             async after_each:
                 self.x = 5
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestThing (object ):
             async def tearDown (self ):
                 await async_noy_sup_tearDown (super (TestThing ,self ));self .x =5
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired)
+        (self.toka, test) | should | result_in(desired)
         # and with tabs
-        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
 
     def test_gives_teardowns_super_call_when_in_describes(self):
-        test = '''
+        test = """
         describe "Thing":
             after_each:
                 self.x = 5
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestThing (object ):
             def tearDown (self ):
                 noy_sup_tearDown (super (TestThing ,self ));self .x =5
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired)
+        (self.toka, test) | should | result_in(desired)
         # and with tabs
-        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
 
-    def test_it_has_the_ability_to_wrap_async_setup_and_tearDown_instead_of_inserting_sup_call(self):
+    def test_it_has_the_ability_to_wrap_async_setup_and_tearDown_instead_of_inserting_sup_call(
+        self,
+    ):
         self.toka.wrapped_setup = True
         self.tokb.wrapped_setup = True
 
-        test = '''
+        test = """
         describe "Thing":
             async after_each:
                 self.x = 5
@@ -336,9 +362,9 @@ class Test_Tokenisor_translation(object):
             describe "Other":
                 async before_each:
                     self.y = 8
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestThing (object ):
             async def tearDown (self ):
                 self .x =5
@@ -349,16 +375,16 @@ class Test_Tokenisor_translation(object):
 
         TestThing .tearDown =async_noy_wrap_tearDown (TestThing ,TestThing .tearDown )
         TestThing_Other .setUp =async_noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired)
-        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+        (self.toka, test) | should | result_in(desired)
+        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
 
     def test_it_has_the_ability_to_wrap_setup_and_tearDown_instead_of_inserting_sup_call(self):
         self.toka.wrapped_setup = True
         self.tokb.wrapped_setup = True
 
-        test = '''
+        test = """
         describe "Thing":
             after_each:
                 self.x = 5
@@ -366,9 +392,9 @@ class Test_Tokenisor_translation(object):
             describe "Other":
                 before_each:
                     self.y = 8
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestThing (object ):
             def tearDown (self ):
                 self .x =5
@@ -379,16 +405,16 @@ class Test_Tokenisor_translation(object):
 
         TestThing .tearDown =noy_wrap_tearDown (TestThing ,TestThing .tearDown )
         TestThing_Other .setUp =noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired)
-        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
+        (self.toka, test) | should | result_in(desired)
+        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
 
     def test_it_is_possible_to_have_indented_block_after_setup_with_wrapped_setup_option(self):
         self.toka.wrapped_setup = True
         self.tokb.wrapped_setup = True
 
-        test = '''
+        test = """
         describe "Thing":
             after_each:
                 def blah(self):
@@ -398,9 +424,9 @@ class Test_Tokenisor_translation(object):
                 before_each:
                     class Stuff(object):
                         pass
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestThing (object ):
             def tearDown (self ):
                 def blah (self ):
@@ -413,57 +439,56 @@ class Test_Tokenisor_translation(object):
 
         TestThing .tearDown =noy_wrap_tearDown (TestThing ,TestThing .tearDown )
         TestThing_Other .setUp =noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired)
-        (self.toka, test.replace('    ', '\t')) |should| result_in(desired.replace('    ', '\t'))
-
+        (self.toka, test) | should | result_in(desired)
+        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
 
     def test_has_ignorable_its(self):
-        (self.toka, '\nignore "should be ignored"') |should| result_in(
-            '\ndef ignore__should_be_ignored ():raise nose.SkipTest '
-            )
-        (self.toka, '\nignore "should be ignored"') |should| result_in(
-            '\ndef ignore__should_be_ignored ():raise nose.SkipTest '
-            )
-        (self.toka, '\nasync ignore "should be ignored"') |should| result_in(
-            '\nasync def ignore__should_be_ignored ():raise nose.SkipTest '
-            )
+        (self.toka, '\nignore "should be ignored"') | should | result_in(
+            "\ndef ignore__should_be_ignored ():raise nose.SkipTest "
+        )
+        (self.toka, '\nignore "should be ignored"') | should | result_in(
+            "\ndef ignore__should_be_ignored ():raise nose.SkipTest "
+        )
+        (self.toka, '\nasync ignore "should be ignored"') | should | result_in(
+            "\nasync def ignore__should_be_ignored ():raise nose.SkipTest "
+        )
 
     def test_no_transform_inside_expression(self):
-        (self.toka, 'variable = before_each') |should| result_in('variable =before_each ')
-        (self.toka, 'variable = after_each')  |should| result_in('variable =after_each ')
-        (self.toka, 'variable = describe')    |should| result_in('variable =describe ')
-        (self.toka, 'variable = ignore')      |should| result_in('variable =ignore ')
-        (self.toka, 'variable = it')          |should| result_in('variable =it ')
+        (self.toka, "variable = before_each") | should | result_in("variable =before_each ")
+        (self.toka, "variable = after_each") | should | result_in("variable =after_each ")
+        (self.toka, "variable = describe") | should | result_in("variable =describe ")
+        (self.toka, "variable = ignore") | should | result_in("variable =ignore ")
+        (self.toka, "variable = it") | should | result_in("variable =it ")
 
         # Same tests, but with newlines in front
-        (self.toka, '\nvariable = before_each') |should| result_in('\nvariable =before_each ')
-        (self.toka, '\nvariable = after_each')  |should| result_in('\nvariable =after_each ')
-        (self.toka, '\nvariable = describe')    |should| result_in('\nvariable =describe ')
-        (self.toka, '\nvariable = ignore')      |should| result_in('\nvariable =ignore ')
-        (self.toka, '\nvariable = it')          |should| result_in('\nvariable =it ')
+        (self.toka, "\nvariable = before_each") | should | result_in("\nvariable =before_each ")
+        (self.toka, "\nvariable = after_each") | should | result_in("\nvariable =after_each ")
+        (self.toka, "\nvariable = describe") | should | result_in("\nvariable =describe ")
+        (self.toka, "\nvariable = ignore") | should | result_in("\nvariable =ignore ")
+        (self.toka, "\nvariable = it") | should | result_in("\nvariable =it ")
 
     def test_allows_definition_of_different_base_class_for_next_describe(self):
-        test = '''
+        test = """
         describe unittest.TestCase "This thing":pass
         describe "Another thing":pass
-        '''
+        """
 
-        desired = '''%s
+        desired = """%s
         class TestThisThing (unittest .TestCase ):pass
         class TestAnotherThing (%s ):pass
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired % ('', 'object'))
-        (self.tokb, test) |should| result_in(desired % ('', 'other'))
+        (self.toka, test) | should | result_in(desired % ("", "object"))
+        (self.tokb, test) | should | result_in(desired % ("", "other"))
 
         # Same tests, but with newlines in front
-        (self.toka, '\n%s' % test) |should| result_in(desired % ('\n', 'object'))
-        (self.tokb, '\n%s' % test) |should| result_in(desired % ('\n', 'other'))
+        (self.toka, "\n%s" % test) | should | result_in(desired % ("\n", "object"))
+        (self.tokb, "\n%s" % test) | should | result_in(desired % ("\n", "other"))
 
     def test_sets__testname__on_non_alphanumeric_test_names(self):
-        test = '''
+        test = """
         it "(root level) should work {well}"
             3 |should| be(4)
         describe "SomeTests":
@@ -473,9 +498,9 @@ class Test_Tokenisor_translation(object):
                 it "asdf $% asdf":
                     1 |should| be(2)
         it "(root level) should also [work]"
-        '''
+        """
 
-        desired = '''
+        desired = """
         def test_root_level_should_work_well ():raise nose.SkipTest
             3 |should |be (4 )
         class TestSomeTests (%s ):
@@ -489,13 +514,15 @@ class Test_Tokenisor_translation(object):
         test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
         TestSomeTests .test_doesnt_get_phased_by_special_characters .{func_accessor}__testname__ ="doesn't get phased by $special characters"
         TestSomeTests_NestedDescribe .test_asdf_asdf .{func_accessor}__testname__ ="asdf $%% asdf"
-        '''.format(func_accessor=func_accessor)
+        """.format(
+            func_accessor=func_accessor
+        )
 
-        (self.toka, test) |should| result_in(desired % "object")
-        (self.tokb, test) |should| result_in(desired % "other")
+        (self.toka, test) | should | result_in(desired % "object")
+        (self.tokb, test) | should | result_in(desired % "other")
 
     def test_it_maintains_line_numbers_when_pass_on_another_line(self):
-        test = '''
+        test = """
         it "is a function with a pass": pass
 
         it "is a function with a pass on another line":
@@ -524,9 +551,9 @@ class Test_Tokenisor_translation(object):
 
 
                     pass
-        '''
+        """
 
-        desired = '''
+        desired = """
         def test_is_a_function_with_a_pass ():pass
 
         def test_is_a_function_with_a_pass_on_another_line ():
@@ -555,13 +582,13 @@ class Test_Tokenisor_translation(object):
 
 
             pass
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired % {'dflt': "object"})
-        (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
+        (self.toka, test) | should | result_in(desired % {"dflt": "object"})
+        (self.tokb, test) | should | result_in(desired % {"dflt": "other"})
 
     def test_it_allows_default_arguments_for_its(self):
-        test = '''
+        test = """
         it "is a test with default arguments", thing=2, other=[3]
 
         describe "group":
@@ -570,9 +597,9 @@ class Test_Tokenisor_translation(object):
                 # Test space is respected
 
                 1 |should| be(2)
-        '''
+        """
 
-        desired = '''
+        desired = """
         def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):raise nose.SkipTest
 
         class TestGroup (%(dflt)s ):
@@ -581,13 +608,13 @@ class Test_Tokenisor_translation(object):
             # Test space is respected
 
                 1 |should |be (2 )
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired % {'dflt': "object"})
-        (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
+        (self.toka, test) | should | result_in(desired % {"dflt": "object"})
+        (self.tokb, test) | should | result_in(desired % {"dflt": "other"})
 
     def test_can_properly_dedent_after_block_of_just_containers(self):
-        test = '''
+        test = """
         it "should ensure askers are None or boolean or string":
             for val in (None, False, 'asdf', u'asdf', lambda: 1):
                 (lambda : Step(askBeforeAction  = val)) |should_not| throw(Problem)
@@ -600,9 +627,9 @@ class Test_Tokenisor_translation(object):
                 (lambda : Step(blockBeforeGet   = val)) |should| throw(Problem)
 
             3 |should| be(3)
-        '''
+        """
 
-        desired = '''
+        desired = """
         def test_should_ensure_askers_are_None_or_boolean_or_string ():
             for val in (None ,False ,'asdf',u'asdf',lambda :1 ):
                 (lambda :Step (askBeforeAction =val ))|should_not |throw (Problem )
@@ -615,13 +642,13 @@ class Test_Tokenisor_translation(object):
                 (lambda :Step (blockBeforeGet =val ))|should |throw (Problem )
 
             3 |should |be (3 )
-        '''
+        """
 
-        (self.toka, test) |should| result_in(desired)
-        (self.tokb, test) |should| result_in(desired)
+        (self.toka, test) | should | result_in(desired)
+        (self.tokb, test) | should | result_in(desired)
 
     def test_it_doesnt_add_semicolon_after_noy_setup_if_not_necessary(self):
-        test = '''
+        test = """
             describe "block with necessary semicolon":
                 before_each:
                     two = 1 + 1
@@ -634,9 +661,9 @@ class Test_Tokenisor_translation(object):
                 after_each:
 
                     pass
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestBlockWithNecessarySemicolon (%(dflt)s ):
             def setUp (self ):
                 noy_sup_setUp (super (TestBlockWithNecessarySemicolon ,self ));two =1 +1
@@ -649,12 +676,12 @@ class Test_Tokenisor_translation(object):
             def tearDown (self ):
                 noy_sup_tearDown (super (TestBlockWithUnecessarySemiclon ,self ))
                 pass
-        '''
-        (self.toka, test) |should| result_in(desired % {'dflt': "object"})
-        (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
+        """
+        (self.toka, test) | should | result_in(desired % {"dflt": "object"})
+        (self.tokb, test) | should | result_in(desired % {"dflt": "other"})
 
     def test_it_keeps_comments_placed_after_setup_and_teardown_methods(self):
-        test = '''
+        test = """
             describe "Kls":
                 before_each: # Comment one
 
@@ -671,9 +698,9 @@ class Test_Tokenisor_translation(object):
                 after_each: # Comment four
                     #comment
                     pass
-        '''
+        """
 
-        desired = '''
+        desired = """
         class TestKls (%(dflt)s ):
             def setUp (self ):# Comment one
                 noy_sup_setUp (super (TestKls ,self ))
@@ -690,7 +717,6 @@ class Test_Tokenisor_translation(object):
             def tearDown (self ):# Comment four
                 noy_sup_tearDown (super (TestKls2 ,self ))#comment
                 pass
-        '''
-        (self.toka, test) |should| result_in(desired % {'dflt': "object"})
-        (self.tokb, test) |should| result_in(desired % {'dflt': "other"})
-
+        """
+        (self.toka, test) | should | result_in(desired % {"dflt": "object"})
+        (self.tokb, test) | should | result_in(desired % {"dflt": "other"})

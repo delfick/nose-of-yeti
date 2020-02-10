@@ -9,24 +9,26 @@ import logging
 import sys
 import os
 
-log = logging.getLogger('nose2.plugins.noseOfYeti')
+log = logging.getLogger("nose2.plugins.noseOfYeti")
+
 
 def extract_options(template, options):
     for option, val in template.items():
         yield option, options.get(option)
 
+
 class NoseOfYetiPlugin(Plugin):
-    configSection = 'noseOfYeti'
+    configSection = "noseOfYeti"
 
     def __init__(self):
         self.test_chooser = TestChooser()
         default_ignore_kls = []
         if "NOSE_NOY_IGNORE_KLS" in os.environ:
             default_ignore_kls.extend(os.environ["NOSE_NOY_IGNORE_KLS"].split(","))
-        self.ignore_kls = self.config.as_list('ignore-kls', default=default_ignore_kls)
-        self.always_on = self.config.as_bool('always-on', default=False)
+        self.ignore_kls = self.config.as_list("ignore-kls", default=default_ignore_kls)
+        self.always_on = self.config.as_bool("always-on", default=False)
 
-        parser_options = ['default', 'action', 'dest', 'help']
+        parser_options = ["default", "action", "dest", "help"]
         for option, attributes in spec_options.items():
             action = attributes.get("action", "store")
             default = attributes.get("default")
@@ -46,7 +48,11 @@ class NoseOfYetiPlugin(Plugin):
 
             if callable(default):
                 default = default(os.environ)
-            setattr(self, option.replace("-", "_"), getattr(self.config, action)(option, default=Default(default)))
+            setattr(
+                self,
+                option.replace("-", "_"),
+                getattr(self.config, action)(option, default=Default(default)),
+            )
 
     def handleFile(self, event):
         if not getattr(self, "_configured", False):
@@ -64,10 +70,13 @@ class NoseOfYetiPlugin(Plugin):
         names = filter(event.isTestMethod, dir(event.testCase))
         methods = [(name, getattr(event.testCase, name)) for name in names]
         event.handled = True
-        return [name for name, method in methods if self.test_chooser.consider(method, self.ignore_kls) is not False]
+        return [
+            name
+            for name, method in methods
+            if self.test_chooser.consider(method, self.ignore_kls) is not False
+        ]
 
     def enable(self):
         self.done = {}
-        options = dict((option, getattr(self, option.replace('-', '_'))) for option in spec_options)
+        options = dict((option, getattr(self, option.replace("-", "_"))) for option in spec_options)
         register_from_options(options, spec_options, extractor=extract_options)
-

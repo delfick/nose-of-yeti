@@ -2,30 +2,33 @@ from tokenize import NAME, OP
 import re
 
 regexes = {
-      'joins': re.compile('[- /]')
-    , 'punctuation': re.compile('[+\-*/=\$%^&\'",.:;?{()}#<>\[\]]')
-    , 'repeated_underscore': re.compile('_{2,}')
-    }
+    "joins": re.compile("[- /]"),
+    "punctuation": re.compile("[+\-*/=\$%^&'\",.:;?{()}#<>\[\]]"),
+    "repeated_underscore": re.compile("_{2,}"),
+}
+
 
 def acceptable(value, capitalize=False):
     """Convert a string into something that can be used as a valid python variable name"""
-    name = regexes['punctuation'].sub("", regexes['joins'].sub("_", value))
+    name = regexes["punctuation"].sub("", regexes["joins"].sub("_", value))
     # Clean up irregularities in underscores.
-    name = regexes['repeated_underscore'].sub("_", name.strip('_'))
+    name = regexes["repeated_underscore"].sub("_", name.strip("_"))
     if capitalize:
         # We don't use python's built in capitalize method here because it
         # turns all upper chars into lower chars if not at the start of
         # the string and we only want to change the first character.
         name_parts = []
-        for word in name.split('_'):
+        for word in name.split("_"):
             name_parts.append(word[0].upper())
             if len(word) > 1:
                 name_parts.append(word[1:])
-        name = ''.join(name_parts)
+        name = "".join(name_parts)
     return name
+
 
 class TokenDetails(object):
     """Container for current token"""
+
     def __init__(self, tokenum=None, value=None, srow=0, scol=0):
         self.set(tokenum, value, srow, scol)
 
@@ -41,8 +44,10 @@ class TokenDetails(object):
     def values(self):
         return self.tokenum, self.value, self.srow, self.scol
 
+
 class Single(object):
     """Container for a single block (i.e. it or ignore block)"""
+
     def __init__(self, group, typ=None, indent=0):
         self.typ = typ
         self.group = group
@@ -56,7 +61,7 @@ class Single(object):
         self.starting_arg = False
 
         if not self.group.root:
-            self.args.append([(NAME, 'self')])
+            self.args.append([(NAME, "self")])
 
     @property
     def name(self):
@@ -69,7 +74,7 @@ class Single(object):
 
     @property
     def python_name(self):
-        if self.typ == 'it':
+        if self.typ == "it":
             return "test_%s" % self.name
         else:
             return "ignore__%s" % self.name
@@ -82,7 +87,7 @@ class Single(object):
             return "%s.%s" % (self.group.kls_name, self.python_name)
 
     def add_to_arg(self, tokenum, value):
-        if tokenum == OP and value ==',':
+        if tokenum == OP and value == ",":
             self.starting_arg = True
             return
 
@@ -92,8 +97,10 @@ class Single(object):
         else:
             self.args[-1].append((tokenum, value))
 
+
 class Group(object):
     """Container for group blocks (i.e. describe or context)"""
+
     def __init__(self, name=None, root=False, parent=None, level=0, typ=None):
         self.kls = None
         self.typ = typ
@@ -145,13 +152,13 @@ class Group(object):
         """Determine python name for group"""
         # Determine kls for group
         if not self.parent or not self.parent.name:
-            return 'Test{0}'.format(self.name)
+            return "Test{0}".format(self.name)
         else:
             use = self.parent.kls_name
-            if use.startswith('Test'):
+            if use.startswith("Test"):
                 use = use[4:]
 
-            return 'Test{0}_{1}'.format(use, self.name)
+            return "Test{0}_{1}".format(use, self.name)
 
     @property
     def super_kls(self):
@@ -185,4 +192,3 @@ class Group(object):
             self.kls = name
         else:
             self.kls += name
-

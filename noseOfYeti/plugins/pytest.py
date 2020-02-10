@@ -15,8 +15,10 @@ from unittest import mock
 import inspect
 import pytest
 
+
 def pytest_configure():
     register_from_options()
+
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_pycollect_makeitem(collector, name, obj):
@@ -40,20 +42,26 @@ def pytest_pycollect_makeitem(collector, name, obj):
 
         def collect():
             yield from filter_collection(original_item_collect(), res.obj)
+
         mock.patch.object(res, "collect", collect).start()
     else:
+
         def collect():
             got = original_item_collect()
             for g in got:
                 original_collect = g.collect
-                mock.patch.object(g, "collect", partial(modified_class_collect, g, original_collect)).start()
+                mock.patch.object(
+                    g, "collect", partial(modified_class_collect, g, original_collect)
+                ).start()
             return got
 
         mock.patch.object(res, "collect", collect).start()
 
+
 def modified_class_collect(instance, original_collect):
     instance.session._fixturemanager.parsefactories(instance)
     yield from filter_collection(original_collect(), instance.obj)
+
 
 def filter_collection(collected, obj):
     for thing in collected:
@@ -76,7 +84,8 @@ def filter_collection(collected, obj):
             yield thing
         else:
             method_passed_down = any(
-                thing.obj.__name__ in superkls.__dict__ and getattr(superkls, "__only_run_tests_in_children__", False)
+                thing.obj.__name__ in superkls.__dict__
+                and getattr(superkls, "__only_run_tests_in_children__", False)
                 for superkls in obj.__bases__
             )
             if method_passed_down:

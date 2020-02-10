@@ -4,12 +4,13 @@ import tempfile
 import shutil
 import os
 
+
 @contextmanager
 def a_temp_file(contents):
     tempfle = None
     try:
         tempfle = tempfile.NamedTemporaryFile(delete=False)
-        with open(tempfle.name, 'w') as fle:
+        with open(tempfle.name, "w") as fle:
             fle.write(dedent(contents))
 
         yield tempfle.name
@@ -17,6 +18,7 @@ def a_temp_file(contents):
         if tempfle:
             if os.path.exists(tempfle.name):
                 os.remove(tempfle.name)
+
 
 @contextmanager
 def a_temp_dir():
@@ -28,4 +30,3 @@ def a_temp_dir():
         if tempdir:
             if os.path.exists(tempdir):
                 shutil.rmtree(tempdir)
-

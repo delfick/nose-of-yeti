@@ -5,17 +5,20 @@ from .support.test_chooser import TestChooser
 
 from nose.plugins import Plugin
 
+
 def add_to_argparse(parser, env, template):
-    parser_options = ['default', 'action', 'dest', 'help']
+    parser_options = ["default", "action", "dest", "help"]
     for option, attributes in template.items():
         opts = dict((k, v) for k, v in attributes.items() if k in parser_options)
-        opts['default'] = Default(opts['default'](env))
-        parser.add_option('--noy-%s' % option, **opts)
+        opts["default"] = Default(opts["default"](env))
+        parser.add_option("--noy-%s" % option, **opts)
+
 
 def extract_options(template, options):
     for option, val in template.items():
-        name = option.replace('-', '_')
+        name = option.replace("-", "_")
         yield option, getattr(options, name)
+
 
 class Plugin(Plugin):
     name = "noseOfYeti"
@@ -28,23 +31,25 @@ class Plugin(Plugin):
         super(Plugin, self).options(parser, env)
         add_to_argparse(parser, env, spec_options)
 
-        parser.add_option('--with-noy'
-            , default = False
-            , action  = 'store_true'
-            , dest    = 'enabled'
-            , help    = 'Enable nose of yeti'
-            )
+        parser.add_option(
+            "--with-noy",
+            default=False,
+            action="store_true",
+            dest="enabled",
+            help="Enable nose of yeti",
+        )
 
         default_ignore_kls = []
-        if 'NOSE_NOY_IGNORE_KLS' in env:
-            default_ignore_kls.append(env['NOSE_NOY_IGNORE_KLS'].split(','))
+        if "NOSE_NOY_IGNORE_KLS" in env:
+            default_ignore_kls.append(env["NOSE_NOY_IGNORE_KLS"].split(","))
 
-        parser.add_option('--noy-ignore-kls'
-            , default = default_ignore_kls
-            , action  = 'append'
-            , dest    = 'ignore_kls'
-            , help    = 'Set class name to ignore in wantMethod'
-            )
+        parser.add_option(
+            "--noy-ignore-kls",
+            default=default_ignore_kls,
+            action="append",
+            dest="ignore_kls",
+            help="Set class name to ignore in wantMethod",
+        )
 
     def wantModule(self, mod):
         self.test_chooser.new_module()
@@ -60,4 +65,3 @@ class Plugin(Plugin):
             self.done = {}
             self.enabled = True
             register_from_options(options, spec_options, extractor=extract_options)
-

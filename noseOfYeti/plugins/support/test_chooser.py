@@ -1,5 +1,6 @@
 from inspect import getmembers
 
+
 class TestChooser(object):
     def __init__(self):
         self.new_module()
@@ -10,7 +11,7 @@ class TestChooser(object):
 
     def already_visited(self, kls, name):
         """Determine if a method has already been accepted for this module"""
-        key = '%s.%s' % (kls, name)
+        key = "%s.%s" % (kls, name)
         if key not in self.done:
             self.done[key] = True
             return False
@@ -32,7 +33,7 @@ class TestChooser(object):
             # Method wants to be ignored
             return False
 
-        if hasattr(method, '__test__') and not method.__test__:
+        if hasattr(method, "__test__") and not method.__test__:
             # Method doesn't want to be tested
             return False
 
@@ -43,10 +44,10 @@ class TestChooser(object):
         if not kls:
             # im_class seems to be None in pypy
             for k, v in getmembers(method):
-                if k == 'im_self' and v:
+                if k == "im_self" and v:
                     kls = v.__class__
                     break
-                elif k == 'im_class' and v:
+                elif k == "im_class" and v:
                     kls = v
                     break
 
@@ -54,7 +55,7 @@ class TestChooser(object):
             # Kls should be ignored
             return False
 
-        if not hasattr(kls, 'is_noy_spec'):
+        if not hasattr(kls, "is_noy_spec"):
             # Kls not a noy_spec, we don't care if it runs or not
             return None
 
@@ -63,9 +64,10 @@ class TestChooser(object):
             return False
 
         method_in_kls = method.__name__ in kls.__dict__
-        method_is_test = method.__name__.startswith('test_')
+        method_is_test = method.__name__.startswith("test_")
         method_passed_down = any(
-            method.__name__ in superkls.__dict__ and getattr(superkls, "__only_run_tests_in_children__", False)
+            method.__name__ in superkls.__dict__
+            and getattr(superkls, "__only_run_tests_in_children__", False)
             for superkls in kls.__bases__
         )
 
@@ -75,4 +77,3 @@ class TestChooser(object):
 
         # Is a noy_spec method but not a valid test, refuse it
         return False
-
