@@ -18,7 +18,7 @@ class WildCard(object):
 class Tracker(object):
     """Keep track of what each next token should mean"""
 
-    def __init__(self, result, tokens, wrapped_setup):
+    def __init__(self, result, tokens):
         if result is None:
             self.result = []
         else:
@@ -30,7 +30,6 @@ class Tracker(object):
         self.current = TokenDetails()
         self.all_groups = [self.groups]
         self.in_container = False
-        self.wrapped_setup = wrapped_setup
 
         self.containers = []
         self.ignore_next = []
@@ -281,25 +280,6 @@ class Tracker(object):
                         self.insert_till = next_ignore
                     return False
 
-    def wrapped_setups(self):
-        """Create tokens for Described.setup = noy_wrap_setup(Described, Described.setup) for setup/teardown"""
-        lst = []
-        for group in self.all_groups:
-            if not group.root:
-                if group.has_after_each:
-                    lst.extend(self.tokens.wrap_after_each(group.kls_name, group.async_after_each))
-
-                if group.has_before_each:
-                    lst.extend(
-                        self.tokens.wrap_before_each(group.kls_name, group.async_before_each)
-                    )
-
-        if lst:
-            indentation_reset = [(NEWLINE, "\n"), (INDENT, "")]
-            lst = indentation_reset + lst
-
-        return lst
-
     def make_method_names(self):
         """Create tokens for setting __testname__ on functions"""
         lst = []
@@ -381,7 +361,7 @@ class Tracker(object):
         self.result.extend(tokens)
 
         # Add super call if we're inside a class
-        if not self.groups.root and not self.wrapped_setup:
+        if not self.groups.root:
             # We need to adjust the indent before the super call later on
             self.adjust_indent_at.append(len(self.result) + 2)
 

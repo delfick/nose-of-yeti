@@ -21,8 +21,8 @@ equal_to = None
 start_with = None
 
 init_codez = """
-from noseOfYeti.tokeniser.spec_codec import register_from_options
-register_from_options()
+from noseOfYeti.tokeniser import register
+register()
 """
 
 example_specd_tests = """
@@ -90,7 +90,7 @@ class Test_RegisteringCodec(object):
             r'''
         msg = """
         Traceback \(most recent call last\):
-        File ".+noseOfYeti/tokeniser/spec_codec.py", line 136, in dealwith
+        File ".+noseOfYeti/tokeniser/spec_codec.py", line 134, in dealwith
             self.tokeniser.translate\(readline, data, \*\*kwargs\)
         File ".+fudge/__init__.py", line 365, in __call__
             raise self.exception_to_raise
