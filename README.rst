@@ -29,6 +29,9 @@ This means that any changes in the translation process won't happen untill eithe
     * Removed support for nose2. It was a little broken and I don't think it's
       worth fixing
     * Removed configurability as I believe all the options are unecessary.
+    * ``noseOfYeti.tokeniser.register_from_options`` is now just ``register``
+    * Removed ``noseOfYeti.tokeniser.{config,imports}``
+    * Removed ``noseOfYeti.plugins.support.spec_options``
 
 ``1.9.1``
     Turns out the incremental decoder does get used for the whole file, so I've

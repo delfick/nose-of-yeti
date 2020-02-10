@@ -12,11 +12,20 @@ func_accessor = ""
 if six.PY2:
     func_accessor = "__func__ ."
 
+class Test_Tokeniser(object):
+    def test_gives_describes_noy_specific_attributes(self):
+        tok = Tokeniser()
+        (tok, 'describe "Something testable"') | should | result_in(
+            """
+        class TestSomethingTestable ():pass
+
+        TestSomethingTestable .is_noy_spec =True
+        """
+        )
 
 class Test_Tokeniser_Complex(object):
     def setUp(self):
         self.toka = Tokeniser()
-        self.tokb = Tokeniser(default_kls="other")
 
         ###   SMALL EXAMPLE
 
@@ -41,7 +50,7 @@ class Test_Tokeniser_Complex(object):
             before_each:
                 self.z = 8 """,
             """
-        class TestThis (%(o)s ):
+        class TestThis ():
             def setUp (self ):
                 noy_sup_setUp (super (TestThis ,self ));self .x =5
         class TestThis_That (TestThis ):
@@ -56,7 +65,7 @@ class Test_Tokeniser_Complex(object):
                 await async_noy_sup_setUp (super (TestThis_Async ,self ));pass
             async def tearDown (self ):
                 await async_noy_sup_tearDown (super (TestThis_Async ,self ));pass
-        class TestAnother (%(o)s ):
+        class TestAnother ():
             def setUp (self ):
                 noy_sup_setUp (super (TestAnother ,self ));self .z =8
 
@@ -116,7 +125,7 @@ class Test_Tokeniser_Complex(object):
             pass
         """,
             """
-        class TestThis (%(o)s ):
+        class TestThis ():
             def setUp (self ):
                 noy_sup_setUp (super (TestThis ,self ));self .x =5
             def test_should (self ):
@@ -143,7 +152,7 @@ class Test_Tokeniser_Complex(object):
                 blah |should |be_good ()
         class TestThis_Blah (TestThis ):pass
         def ignore__root_level_pecial_method ():raise nose.SkipTest
-        class TestAnother (%(o)s ):
+        class TestAnother ():
             def setUp (self ):
                 noy_sup_setUp (super (TestAnother ,self ));self .z =8
             def test_should (self ):
@@ -174,20 +183,16 @@ class Test_Tokeniser_Complex(object):
 
     def test_works_with_space(self):
         test, desired = self.small_example
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_works_with_tabs(self):
         test, desired = [d.replace("    ", "\t") for d in self.small_example]
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_keeps_good_indentation_in_body_with_spaces(self):
         test, desired = self.big_example
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_keeps_good_indentation_in_body_with_tabs(self):
         test, desired = [d.replace("    ", "\t") for d in self.big_example]
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)

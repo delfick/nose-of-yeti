@@ -9,7 +9,6 @@ result_in = None
 class Test_Tokeniser_Nesting(object):
     def setUp(self):
         self.toka = Tokeniser(with_describe_attrs=False)
-        self.tokb = Tokeniser(with_describe_attrs=False, default_kls="other")
 
         ###   SMALL EXAMPLE (WITHOUT PASS)
 
@@ -22,11 +21,11 @@ class Test_Tokeniser_Nesting(object):
             context "Blah":pass
         describe "Another":pass """,
             """
-        class TestThis (%(o)s ):pass
+        class TestThis ():pass
         class TestThis_That (TestThis ):pass
         class TestThis_That_Meh (TestThis_That ):pass
         class TestThis_Blah (TestThis ):pass
-        class TestAnother (%(o)s ):pass
+        class TestAnother ():pass
         """,
         ]
 
@@ -40,11 +39,11 @@ class Test_Tokeniser_Nesting(object):
             describe "Blah":pass
         describe "Another":pass """,
             """
-        class TestThis (%(o)s ):pass
+        class TestThis ():pass
         class TestThis_That (TestThis ):pass
         class TestThis_That_Meh (TestThis_That ):pass
         class TestThis_Blah (TestThis ):pass
-        class TestAnother (%(o)s ):pass
+        class TestAnother ():pass
         """,
         ]
 
@@ -78,7 +77,7 @@ class Test_Tokeniser_Nesting(object):
                     pass
         """,
             """
-        class TestThis (%(o)s ):
+        class TestThis ():
             def test_should (self ):
                 if x :
                     pass
@@ -92,7 +91,7 @@ class Test_Tokeniser_Nesting(object):
                 else :
                     pass
         class TestThis_Blah (TestThis ):pass
-        class TestAnother (%(o)s ):
+        class TestAnother ():
             def test_should (self ):
                 if z :
                     if u :
@@ -109,35 +108,29 @@ class Test_Tokeniser_Nesting(object):
 
     def test_works_with_space(self):
         test, desired = self.small_example
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_works_with_tabs(self):
         test, desired = [d.replace("    ", "\t") for d in self.small_example]
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_works_with_space_and_inline_pass(self):
         test, desired = self.small_example_with_pass
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_works_with_tabs_and_inline_pass(self):
         test, desired = [d.replace("    ", "\t") for d in self.small_example_with_pass]
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_keeps_good_indentation_in_body_with_spaces(self):
         test, desired = self.big_example
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_keeps_good_indentation_in_body_with_tabs(self):
         test, desired = [d.replace("    ", "\t") for d in self.big_example]
-        (self.toka, test) | should | result_in(desired % {"o": "object"})
-        (self.tokb, test) | should | result_in(desired % {"o": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_names_nested_describes_with_part_of_parents_name(self):
         test = 'describe "a":\n\tdescribe "b":'
-        desired = "class TestA (object ):pass\nclass TestA_B (TestA ):"
+        desired = "class TestA ():pass\nclass TestA_B (TestA ):"
         (self.toka, test) | should | result_in(desired)

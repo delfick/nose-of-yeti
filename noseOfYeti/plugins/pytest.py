@@ -7,7 +7,7 @@ same tests multiple times.
 It achieves this by making classes have a ModifiedInstance object that discards
 any collected tests that aren't on that class.
 """
-from noseOfYeti.tokeniser.spec_codec import register_from_options
+from noseOfYeti.tokeniser.spec_codec import register
 
 from _pytest.unittest import UnitTestCase
 from functools import partial
@@ -17,7 +17,7 @@ import pytest
 
 
 def pytest_configure():
-    register_from_options()
+    register()
 
 
 @pytest.hookimpl(hookwrapper=True)

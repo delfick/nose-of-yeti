@@ -14,37 +14,24 @@ if six.PY2:
 class Test_Tokenisor_translation(object):
     def setUp(self):
         self.toka = Tokeniser(with_describe_attrs=False)
-        self.tokb = Tokeniser(with_describe_attrs=False, default_kls="other")
 
     def test_translates_a_describe(self):
         (self.toka, 'describe "Something testable"') | should | result_in(
-            "class TestSomethingTestable (object ):pass"
-        )
-        (self.tokb, 'describe "Something testable"') | should | result_in(
-            "class TestSomethingTestable (other ):pass"
+            "class TestSomethingTestable ():pass"
         )
 
         # Same tests, but with newlines in front
         (self.toka, '\ndescribe "Something testable"') | should | result_in(
-            "\nclass TestSomethingTestable (object ):pass"
-        )
-        (self.tokb, '\ndescribe "Something testable"') | should | result_in(
-            "\nclass TestSomethingTestable (other ):pass"
+            "\nclass TestSomethingTestable ():pass"
         )
 
     def test_translates_an_it(self):
         (self.toka, 'it "should do this thing":') | should | result_in(
             "def test_should_do_this_thing ():"
         )
-        (self.tokb, 'it "should do this thing":') | should | result_in(
-            "def test_should_do_this_thing ():"
-        )
 
         # Same tests, but with newlines in front
         (self.toka, '\nit "should do this thing":') | should | result_in(
-            "\ndef test_should_do_this_thing ():"
-        )
-        (self.tokb, '\nit "should do this thing":') | should | result_in(
             "\ndef test_should_do_this_thing ():"
         )
 
@@ -53,15 +40,9 @@ class Test_Tokenisor_translation(object):
         (self.toka, 'async it "should do this thing":') | should | result_in(
             "async def test_should_do_this_thing ():"
         )
-        (self.tokb, 'async it "should do this thing":') | should | result_in(
-            "async def test_should_do_this_thing ():"
-        )
 
         # Same tests, but with newlines in front
         (self.toka, '\nasync it "should do this thing":') | should | result_in(
-            "\nasync def test_should_do_this_thing ():"
-        )
-        (self.tokb, '\nasync it "should do this thing":') | should | result_in(
             "\nasync def test_should_do_this_thing ():"
         )
 
@@ -69,15 +50,9 @@ class Test_Tokenisor_translation(object):
         (self.toka, 'it "should do this thing", blah, meh:') | should | result_in(
             "def test_should_do_this_thing (blah ,meh ):"
         )
-        (self.tokb, 'it "should do this thing", blah, meh:') | should | result_in(
-            "def test_should_do_this_thing (blah ,meh ):"
-        )
 
         # Same tests, but with newlines in front
         (self.toka, '\nit "should do this thing", blah, meh:') | should | result_in(
-            "\ndef test_should_do_this_thing (blah ,meh ):"
-        )
-        (self.tokb, '\nit "should do this thing", blah, meh:') | should | result_in(
             "\ndef test_should_do_this_thing (blah ,meh ):"
         )
 
@@ -85,15 +60,9 @@ class Test_Tokenisor_translation(object):
         (self.toka, 'it "should do this thing", blah, meh') | should | result_in(
             "def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
         )
-        (self.tokb, 'it "should do this thing", blah, meh') | should | result_in(
-            "def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
-        )
 
         # Same tests, but with newlines in front
         (self.toka, '\nit "should do this thing", blah, meh') | should | result_in(
-            "\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
-        )
-        (self.tokb, '\nit "should do this thing", blah, meh') | should | result_in(
             "\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
         )
 
@@ -101,15 +70,9 @@ class Test_Tokenisor_translation(object):
         (self.toka, 'it "should do this thing"\n, blah, meh') | should | result_in(
             "def test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
         )
-        (self.tokb, 'it "should do this thing"\n, blah, meh') | should | result_in(
-            "def test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
-        )
 
         # Same tests, but with newlines in front
         (self.toka, '\nit "should do this thing"\n, blah, meh') | should | result_in(
-            "\ndef test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
-        )
-        (self.tokb, '\nit "should do this thing"\n, blah, meh') | should | result_in(
             "\ndef test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
         )
 
@@ -187,7 +150,7 @@ class Test_Tokenisor_translation(object):
             it 'asdf2'"""
 
         desired = """
-        class TestA (object ):
+        class TestA ():
             def test_asdf (self ):
                 l =[True
                 ,False
@@ -225,7 +188,7 @@ class Test_Tokenisor_translation(object):
                 print 'hi'"""
 
         desired = """
-        class TestThing (object ):
+        class TestThing ():
             def test_should_be_skipped (self ):raise nose.SkipTest
             def test_shouldnt_be_skipped (self ):
                 print 'hi'
@@ -246,7 +209,7 @@ class Test_Tokenisor_translation(object):
                 pass"""
 
         desired = """
-        class TestThing (object ):
+        class TestThing ():
             def test_should_be_skipped (self ):raise nose.SkipTest
         class TestThing_That (TestThing ):
             pass
@@ -259,16 +222,16 @@ class Test_Tokenisor_translation(object):
             describe 'that':
                 pass
 
-        class SomeMockObject(object):
+        class SomeMockObject():
             def indented_method()
         """
 
         desired = """
-        class TestThis (object ):pass
+        class TestThis ():pass
         class TestThis_That (TestThis ):
             pass
 
-        class SomeMockObject (object ):
+        class SomeMockObject ():
             def indented_method ()
         """
 
@@ -282,7 +245,7 @@ class Test_Tokenisor_translation(object):
         """
 
         desired = """
-        class TestThing (object ):
+        class TestThing ():
             async def setUp (self ):
                 await async_noy_sup_setUp (super (TestThing ,self ));self .x =5
         """
@@ -299,7 +262,7 @@ class Test_Tokenisor_translation(object):
         """
 
         desired = """
-        class TestThing (object ):
+        class TestThing ():
             def setUp (self ):
                 noy_sup_setUp (super (TestThing ,self ));self .x =5
         """
@@ -322,7 +285,7 @@ class Test_Tokenisor_translation(object):
         """
 
         desired = """
-        class TestThing (object ):
+        class TestThing ():
             async def tearDown (self ):
                 await async_noy_sup_tearDown (super (TestThing ,self ));self .x =5
         """
@@ -339,7 +302,7 @@ class Test_Tokenisor_translation(object):
         """
 
         desired = """
-        class TestThing (object ):
+        class TestThing ():
             def tearDown (self ):
                 noy_sup_tearDown (super (TestThing ,self ));self .x =5
         """
@@ -347,113 +310,6 @@ class Test_Tokenisor_translation(object):
         (self.toka, test) | should | result_in(desired)
         # and with tabs
         (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
-
-    def test_it_has_the_ability_to_wrap_async_setup_and_tearDown_instead_of_inserting_sup_call(
-        self,
-    ):
-        self.toka.wrapped_setup = True
-        self.tokb.wrapped_setup = True
-
-        test = """
-        describe "Thing":
-            async after_each:
-                self.x = 5
-
-            describe "Other":
-                async before_each:
-                    self.y = 8
-        """
-
-        desired = """
-        class TestThing (object ):
-            async def tearDown (self ):
-                self .x =5
-
-        class TestThing_Other (TestThing ):
-            async def setUp (self ):
-                self .y =8
-
-        TestThing .tearDown =async_noy_wrap_tearDown (TestThing ,TestThing .tearDown )
-        TestThing_Other .setUp =async_noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
-        """
-
-        (self.toka, test) | should | result_in(desired)
-        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
-
-    def test_it_has_the_ability_to_wrap_setup_and_tearDown_instead_of_inserting_sup_call(self):
-        self.toka.wrapped_setup = True
-        self.tokb.wrapped_setup = True
-
-        test = """
-        describe "Thing":
-            after_each:
-                self.x = 5
-
-            describe "Other":
-                before_each:
-                    self.y = 8
-        """
-
-        desired = """
-        class TestThing (object ):
-            def tearDown (self ):
-                self .x =5
-
-        class TestThing_Other (TestThing ):
-            def setUp (self ):
-                self .y =8
-
-        TestThing .tearDown =noy_wrap_tearDown (TestThing ,TestThing .tearDown )
-        TestThing_Other .setUp =noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
-        """
-
-        (self.toka, test) | should | result_in(desired)
-        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
-
-    def test_it_is_possible_to_have_indented_block_after_setup_with_wrapped_setup_option(self):
-        self.toka.wrapped_setup = True
-        self.tokb.wrapped_setup = True
-
-        test = """
-        describe "Thing":
-            after_each:
-                def blah(self):
-                    pass
-
-            describe "Other":
-                before_each:
-                    class Stuff(object):
-                        pass
-        """
-
-        desired = """
-        class TestThing (object ):
-            def tearDown (self ):
-                def blah (self ):
-                    pass
-
-        class TestThing_Other (TestThing ):
-            def setUp (self ):
-                class Stuff (object ):
-                    pass
-
-        TestThing .tearDown =noy_wrap_tearDown (TestThing ,TestThing .tearDown )
-        TestThing_Other .setUp =noy_wrap_setUp (TestThing_Other ,TestThing_Other .setUp )
-        """
-
-        (self.toka, test) | should | result_in(desired)
-        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
-
-    def test_has_ignorable_its(self):
-        (self.toka, '\nignore "should be ignored"') | should | result_in(
-            "\ndef ignore__should_be_ignored ():raise nose.SkipTest "
-        )
-        (self.toka, '\nignore "should be ignored"') | should | result_in(
-            "\ndef ignore__should_be_ignored ():raise nose.SkipTest "
-        )
-        (self.toka, '\nasync ignore "should be ignored"') | should | result_in(
-            "\nasync def ignore__should_be_ignored ():raise nose.SkipTest "
-        )
 
     def test_no_transform_inside_expression(self):
         (self.toka, "variable = before_each") | should | result_in("variable =before_each ")
@@ -468,24 +324,6 @@ class Test_Tokenisor_translation(object):
         (self.toka, "\nvariable = describe") | should | result_in("\nvariable =describe ")
         (self.toka, "\nvariable = ignore") | should | result_in("\nvariable =ignore ")
         (self.toka, "\nvariable = it") | should | result_in("\nvariable =it ")
-
-    def test_allows_definition_of_different_base_class_for_next_describe(self):
-        test = """
-        describe unittest.TestCase "This thing":pass
-        describe "Another thing":pass
-        """
-
-        desired = """%s
-        class TestThisThing (unittest .TestCase ):pass
-        class TestAnotherThing (%s ):pass
-        """
-
-        (self.toka, test) | should | result_in(desired % ("", "object"))
-        (self.tokb, test) | should | result_in(desired % ("", "other"))
-
-        # Same tests, but with newlines in front
-        (self.toka, "\n%s" % test) | should | result_in(desired % ("\n", "object"))
-        (self.tokb, "\n%s" % test) | should | result_in(desired % ("\n", "other"))
 
     def test_sets__testname__on_non_alphanumeric_test_names(self):
         test = """
@@ -503,7 +341,7 @@ class Test_Tokenisor_translation(object):
         desired = """
         def test_root_level_should_work_well ():raise nose.SkipTest
             3 |should |be (4 )
-        class TestSomeTests (%s ):
+        class TestSomeTests ():
             def test_doesnt_get_phased_by_special_characters (self ):raise nose.SkipTest
 
         class TestSomeTests_NestedDescribe (TestSomeTests ):
@@ -513,13 +351,12 @@ class Test_Tokenisor_translation(object):
         test_root_level_should_work_well .__testname__ ="(root level) should work {{well}}"
         test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
         TestSomeTests .test_doesnt_get_phased_by_special_characters .{func_accessor}__testname__ ="doesn't get phased by $special characters"
-        TestSomeTests_NestedDescribe .test_asdf_asdf .{func_accessor}__testname__ ="asdf $%% asdf"
+        TestSomeTests_NestedDescribe .test_asdf_asdf .{func_accessor}__testname__ ="asdf $% asdf"
         """.format(
             func_accessor=func_accessor
         )
 
-        (self.toka, test) | should | result_in(desired % "object")
-        (self.tokb, test) | should | result_in(desired % "other")
+        (self.toka, test) | should | result_in(desired)
 
     def test_it_maintains_line_numbers_when_pass_on_another_line(self):
         test = """
@@ -565,14 +402,14 @@ class Test_Tokenisor_translation(object):
 
             pass
 
-        class TestBlockWithAPass (%(dflt)s ):
+        class TestBlockWithAPass ():
             pass
 
-        class TestBlockWithCommentAndPass (%(dflt)s ):
+        class TestBlockWithCommentAndPass ():
         # comment or something
             pass
 
-        class TestNestingAndPasses (%(dflt)s ):pass
+        class TestNestingAndPasses ():pass
         # comment
         class TestNestingAndPasses_Nested (TestNestingAndPasses ):
             pass
@@ -584,8 +421,7 @@ class Test_Tokenisor_translation(object):
             pass
         """
 
-        (self.toka, test) | should | result_in(desired % {"dflt": "object"})
-        (self.tokb, test) | should | result_in(desired % {"dflt": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_it_allows_default_arguments_for_its(self):
         test = """
@@ -602,7 +438,7 @@ class Test_Tokenisor_translation(object):
         desired = """
         def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):raise nose.SkipTest
 
-        class TestGroup (%(dflt)s ):
+        class TestGroup ():
             def test_has_self_and_default_args (self ,blah =None ,you =(3 ,4 ,
             5 ,5 )):
             # Test space is respected
@@ -610,8 +446,7 @@ class Test_Tokenisor_translation(object):
                 1 |should |be (2 )
         """
 
-        (self.toka, test) | should | result_in(desired % {"dflt": "object"})
-        (self.tokb, test) | should | result_in(desired % {"dflt": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_can_properly_dedent_after_block_of_just_containers(self):
         test = """
@@ -645,7 +480,6 @@ class Test_Tokenisor_translation(object):
         """
 
         (self.toka, test) | should | result_in(desired)
-        (self.tokb, test) | should | result_in(desired)
 
     def test_it_doesnt_add_semicolon_after_noy_setup_if_not_necessary(self):
         test = """
@@ -664,11 +498,11 @@ class Test_Tokenisor_translation(object):
         """
 
         desired = """
-        class TestBlockWithNecessarySemicolon (%(dflt)s ):
+        class TestBlockWithNecessarySemicolon ():
             def setUp (self ):
                 noy_sup_setUp (super (TestBlockWithNecessarySemicolon ,self ));two =1 +1
 
-        class TestBlockWithUnecessarySemiclon (%(dflt)s ):
+        class TestBlockWithUnecessarySemiclon ():
             def setUp (self ):
                 noy_sup_setUp (super (TestBlockWithUnecessarySemiclon ,self ))#comment
                 pass
@@ -677,8 +511,7 @@ class Test_Tokenisor_translation(object):
                 noy_sup_tearDown (super (TestBlockWithUnecessarySemiclon ,self ))
                 pass
         """
-        (self.toka, test) | should | result_in(desired % {"dflt": "object"})
-        (self.tokb, test) | should | result_in(desired % {"dflt": "other"})
+        (self.toka, test) | should | result_in(desired)
 
     def test_it_keeps_comments_placed_after_setup_and_teardown_methods(self):
         test = """
@@ -701,7 +534,7 @@ class Test_Tokenisor_translation(object):
         """
 
         desired = """
-        class TestKls (%(dflt)s ):
+        class TestKls ():
             def setUp (self ):# Comment one
                 noy_sup_setUp (super (TestKls ,self ))
                 pass
@@ -710,7 +543,7 @@ class Test_Tokenisor_translation(object):
                 noy_sup_tearDown (super (TestKls ,self ))
                 pass
 
-        class TestKls2 (%(dflt)s ):
+        class TestKls2 ():
             def setUp (self ):# Comment three
                 noy_sup_setUp (super (TestKls2 ,self ));two =1 +1
 
@@ -718,5 +551,4 @@ class Test_Tokenisor_translation(object):
                 noy_sup_tearDown (super (TestKls2 ,self ))#comment
                 pass
         """
-        (self.toka, test) | should | result_in(desired % {"dflt": "object"})
-        (self.tokb, test) | should | result_in(desired % {"dflt": "other"})
+        (self.toka, test) | should | result_in(desired)

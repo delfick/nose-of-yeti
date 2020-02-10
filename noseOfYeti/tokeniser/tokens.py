@@ -33,9 +33,7 @@ def tokens_in(s, strip_it=True):
 
 
 class Tokens(object):
-    def __init__(self, default_kls):
-        self.default_kls = tokens_in(default_kls)
-
+    def __init__(self):
         self.equivalence = {"after_each": "tearDown", "before_each": "setUp"}
 
         self.before_each = [
@@ -77,8 +75,6 @@ class Tokens(object):
         lst = [(NAME, "class"), (NAME, name), (OP, "(")]
         if kls:
             lst.extend(tokens_in(kls))
-        else:
-            lst.extend(self.default_kls)
 
         lst.extend([(OP, ")"), (OP, ":")])
 
@@ -87,8 +83,6 @@ class Tokens(object):
     def make_super(self, indent, kls, method, with_async=False):
         if kls:
             kls = tokens_in(kls)
-        else:
-            kls = self.default_kls
 
         method_name = "%snoy_sup_%s" % ("async_" if with_async else "", self.equivalence[method])
         result = [(OP, ":"), (NEWLINE, "\n"), (INDENT, indent)]
