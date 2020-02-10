@@ -26,9 +26,9 @@ This means that any changes in the translation process won't happen untill eithe
 
 ``2.0``
     * Removed the ignore-kls option
-    * Removed support for nose2. It was a little broken and I don't think it's
-      worth fixing
-    * Removed configurability as I believe all the options are unecessary.
+    * Removed support for nose2, pylint and sphinx.
+      * I don't use these and I'm not sure these plugins actually work.
+    * Removed configurability as I believe all the options are unnecessary.
     * ``noseOfYeti.tokeniser.register_from_options`` is now just ``register``
     * Removed ``noseOfYeti.tokeniser.{config,imports}``
     * Removed ``noseOfYeti.plugins.support.spec_options``
