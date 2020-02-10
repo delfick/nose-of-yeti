@@ -10,16 +10,18 @@
 
 # The test can then be specified using describes and its
 
+from noseOfYeti.tokeniser.support import noy_sup_setUp
+from unittest import TestCase
 import nose
 
 it "is possible to add numbers":
-    self.assertEqual(1 + 1, 2)
+    assert 1 + 1 == 2
 
 it "is possible to add the number three", three=3:
     # Contrived example of default arguments
-    self.assertEqual(1 + three, 4)
+    assert 1 + three == 4
 
-describe "Python Mathematics":
+describe TestCase, "Python Mathematics":
     # That is replaced with "class test_Python_Mathematics(object):"
 
     it 'is be able to add two numbers':
@@ -42,7 +44,7 @@ describe "Python Mathematics":
 # Either when we create the tokeniser and register it
 # Or inside the spec file itself, per describe
 
-class DifferentBase(object):
+class DifferentBase(TestCase):
     def x(self):
         return 5
 
@@ -53,7 +55,7 @@ describe DifferentBase 'Inheritance':
 # You can even nest describes !
 # The following is a bad example, but it demonstrates well enough
 
-describe 'numbers':
+describe TestCase, 'numbers':
     before_each:
         self.number1 = 1
         self.number2 = 2
