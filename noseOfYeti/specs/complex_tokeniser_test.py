@@ -3,6 +3,8 @@ from should_dsl import should
 
 import six
 
+# pylama:ignore=E501
+
 # Silencing code checker about should_dsl matchers
 result_in = None
 

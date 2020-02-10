@@ -24,7 +24,7 @@ class Default(object):
         return str(self.val)
 
     def __unicode__(self):
-        return unicode(self.val)
+        return unicode(self.val)  # noqa
 
     def append(self, val):
         """Make sure argparse doesn't fail"""

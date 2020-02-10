@@ -57,7 +57,7 @@ class ResultInSyntaxError(object):
         self._actual = dedent(self._actual).strip()
         s = StringIO(self._actual)
         try:
-            tokens = tokeniser.translate(s.readline)
+            tokeniser.translate(s.readline)
             self.error = "Expected a syntax error"
             return False
         except SyntaxError as error:

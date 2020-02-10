@@ -5,7 +5,7 @@ import re
 from noseOfYeti.tokeniser.containers import TokenDetails, Group
 
 # Regex for matching whitespace
-regexes = {"whitespace": re.compile("\s+")}
+regexes = {"whitespace": re.compile(r"\s+")}
 
 
 class WildCard(object):

@@ -28,7 +28,6 @@ class NoseOfYetiPlugin(Plugin):
         self.ignore_kls = self.config.as_list("ignore-kls", default=default_ignore_kls)
         self.always_on = self.config.as_bool("always-on", default=False)
 
-        parser_options = ["default", "action", "dest", "help"]
         for option, attributes in spec_options.items():
             action = attributes.get("action", "store")
             default = attributes.get("default")

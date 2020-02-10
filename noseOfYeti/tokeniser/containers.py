@@ -2,9 +2,9 @@ from tokenize import NAME, OP
 import re
 
 regexes = {
-    "joins": re.compile("[- /]"),
-    "punctuation": re.compile("[+\-*/=\$%^&'\",.:;?{()}#<>\[\]]"),
-    "repeated_underscore": re.compile("_{2,}"),
+    "joins": re.compile(r"[- /]"),
+    "punctuation": re.compile(r"[+\-*/=\$%^&'\",.:;?{()}#<>\[\]]"),
+    "repeated_underscore": re.compile(r"_{2,}"),
 }
 
 

@@ -6,6 +6,8 @@ from .helpers import a_temp_file
 
 import six
 
+# pylama:ignore=E0602
+
 # Silencing code checker about should_dsl matchers
 be = None
 equal_to = None

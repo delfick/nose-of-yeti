@@ -13,10 +13,10 @@ from noseOfYeti.tokeniser.tokeniser import Tokeniser
 from noseOfYeti.tokeniser.config import Config
 
 regexes = {
-    "whitespace": re.compile("\s*"),
-    "only_whitespace": re.compile("^\s*$"),
-    "encoding_matcher": re.compile("#\s*coding\s*:\s*spec"),
-    "leading_whitespace": re.compile("^(\s*)[^\s]"),
+    "whitespace": re.compile(r"\s*"),
+    "only_whitespace": re.compile(r"^\s*$"),
+    "encoding_matcher": re.compile(r"#\s*coding\s*:\s*spec"),
+    "leading_whitespace": re.compile(r"^(\s*)[^\s]"),
 }
 
 
@@ -107,7 +107,7 @@ class TokeniserCodec(object):
         class incrementaldecoder(utf8.incrementaldecoder):
             def decode(s, obj, final, **kwargs):
                 lines = obj.split("\n".encode("utf-8"))
-                if re.match("#\s*coding:\s*spec", lines[0].decode("utf-8", "replace")) and final:
+                if re.match(r"#\s*coding:\s*spec", lines[0].decode("utf-8", "replace")) and final:
                     kwargs["return_tuple"] = False
                     return decode(obj, final, **kwargs)
                 else:
@@ -145,8 +145,8 @@ class TokeniserCodec(object):
             # At this point, data is a list of tokens
             data = untokenize(data)
 
-        if six.PY2 and type(data) is not unicode:
-            data = unicode(data)
+        if six.PY2 and type(data) is not unicode:  # noqa
+            data = unicode(data)  # noqa
 
         return data
 
