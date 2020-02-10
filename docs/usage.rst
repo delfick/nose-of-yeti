@@ -5,16 +5,6 @@ Usage
 
 All that's needed to setup nose-of-yeti is to register the spec codec before importing the specs. Python mechanics handle the rest. Included with nose-of-yeti is plugins for nosetests and pylint for doing just this.
 
-Nose2
-=====
-
-After installation, just add "noseOfYeti.plugins.nose2_plugin" to your list of nose2 plugins and something like::
-
-    [noseOfYeti]
-    always-on = true
-
-to your nose2 config
-
 Nosetests
 =========
 

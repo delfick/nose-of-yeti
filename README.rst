@@ -24,6 +24,11 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
+``2.0``
+    * Removed the ignore-kls option
+    * Removed support for nose2. It was a little broken and I don't think it's
+      worth fixing
+
 ``1.9.1``
     Turns out the incremental decoder does get used for the whole file, so I've
     fixed that. But I was still able to make read the file as is if I've only
