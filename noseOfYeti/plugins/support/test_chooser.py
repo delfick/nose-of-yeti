@@ -18,17 +18,12 @@ class TestChooser(object):
         else:
             return True
 
-    def consider(self, method, ignore_kls=None):
+    def consider(self, method):
         """
             Determines whether a method should be considered a Test
             Returns False if it believes it isn't a test
             Will return True otherwise
-
-            ignore_kls should be a list of classes to ignore
         """
-        if not ignore_kls:
-            ignore_kls = []
-
         if method.__name__.startswith("ignore__"):
             # Method wants to be ignored
             return False
@@ -38,6 +33,7 @@ class TestChooser(object):
             return False
 
         kls = None
+        print(method)
         if getattr(method, "__self__"):
             kls = method.__self__.__class__
 
@@ -50,10 +46,6 @@ class TestChooser(object):
                 elif k == "im_class" and v:
                     kls = v
                     break
-
-        if kls.__name__ in ignore_kls:
-            # Kls should be ignored
-            return False
 
         if not hasattr(kls, "is_noy_spec"):
             # Kls not a noy_spec, we don't care if it runs or not
