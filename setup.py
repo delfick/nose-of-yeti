@@ -30,13 +30,6 @@ setup(
         , 'fudge'
         , 'should-dsl'
         ]
-      , 'docs':
-        [ 'nose'
-        , 'fudge'
-        , 'sphinx'
-        , 'pinocchio'
-        , 'should_dsl'
-        ]
       }
 
     , entry_points =

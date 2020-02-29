@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+cd "$(git rev-parse --show-toplevel)"
+cd docs
+
+if [[ $1 == "fresh" ]]; then
+    rm -rf _build
+fi
+
+./_docs -b html . _build/html -d _build/doctrees

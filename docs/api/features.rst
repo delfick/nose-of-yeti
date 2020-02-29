@@ -26,7 +26,7 @@ becomes::
 
     class TestName(NiceTestCase): pass
 
-The default class to inherit from is ``object``, however this can be changed with the :ref:`default-kls option <options>`.
+The default class to inherit from is ``object``.
 
 Describe blocks can also be nested. The way this works is that each nested level will inherit from the class of the previous level. Then, to ensure that tests from inherited super classes aren't run multiple times, a special ``is_noy_spec`` attribute is set on each class and the nose plugin will ensure only methods defined on the class itself will be run::
 
