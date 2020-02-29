@@ -1,4 +1,4 @@
-from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMMENT
+from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMMENT, ENDMARKER
 from contextlib import contextmanager
 import re
 
@@ -282,7 +282,7 @@ class Tracker(object):
 
     def make_method_names(self):
         """Create tokens for setting __testname__ on functions"""
-        lst = []
+        lst = [(DEDENT, "") for i in range(len(self.indent_amounts) + 1)]
         for group in self.all_groups:
             for single in group.singles:
                 name, english = single.name, single.english
@@ -290,20 +290,27 @@ class Tracker(object):
                     lst.extend(
                         self.tokens.make_name_modifier(not group.root, single.identifier, english)
                     )
-        return lst
+
+        endmarker = False
+
+        if not all(l[0] == DEDENT for l in lst):
+            if self.result and self.result[-1][0] is ENDMARKER:
+                endmarker = True
+                self.result.pop()
+            self.result.extend(lst)
+
+        if endmarker:
+            self.result.append((ENDMARKER, ""))
 
     def make_describe_attrs(self):
         """Create tokens for setting is_noy_spec on describes"""
-        lst = []
         if self.all_groups:
-            lst.append((NEWLINE, "\n"))
-            lst.append((INDENT, ""))
+            self.result.append((NEWLINE, "\n"))
+            self.result.append((INDENT, ""))
 
             for group in self.all_groups:
                 if group.name:
-                    lst.extend(self.tokens.make_describe_attr(group.kls_name))
-
-        return lst
+                    self.result.extend(self.tokens.make_describe_attr(group.kls_name))
 
     def forced_insert(self):
         """
@@ -401,19 +408,23 @@ class Tracker(object):
         args = self.single.args
         name = self.single.python_name
 
-        # Reset indentation to proper amount and add signature
-        self.reset_indentation(self.indent_type * self.single.indent)
+        # Reset indentation to proper amount
+        if not self.result or self.result[-1][0] != NAME:
+            self.reset_indentation(self.indent_type * self.single.indent)
+
+        # And add signature
         self.result.extend(self.tokens.make_single(name, args))
 
         # Add skip if necessary
         if ignore:
-            self.single.skipped = True
-            self.result.extend(self.tokens.test_skip)
+            srow = self.current.srow
+            scol = self.current.scol
+            raise SyntaxError("Found a missing ':' on line {0}, column {1}".format(srow, scol))
 
         self.groups.finish_signature()
 
     def finish_hanging(self):
-        """Add tokens for hanging singature if any"""
+        """Add tokens for hanging signature if any"""
         if self.groups.starting_signature:
             if self.groups.starting_group:
                 self.add_tokens_for_group(with_pass=True)

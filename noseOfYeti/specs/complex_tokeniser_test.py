@@ -12,6 +12,7 @@ func_accessor = ""
 if six.PY2:
     func_accessor = "__func__ ."
 
+
 class Test_Tokeniser(object):
     def test_gives_describes_noy_specific_attributes(self):
         tok = Tokeniser()
@@ -22,6 +23,7 @@ class Test_Tokeniser(object):
         TestSomethingTestable .is_noy_spec =True
         """
         )
+
 
 class Test_Tokeniser_Complex(object):
     def setUp(self):
@@ -108,7 +110,8 @@ class Test_Tokeniser_Complex(object):
                     it 'should have args', arg1, arg2:
                         blah |should| be_good()
             describe "Blah":pass
-        ignore "root level $pecial-method*+"
+        ignore "root level $pecial-method*+":
+            pass
         describe "Another":
             before_each:
                 self.z = 8
@@ -151,7 +154,8 @@ class Test_Tokeniser_Complex(object):
             def test_should_have_args (self ,arg1 ,arg2 ):
                 blah |should |be_good ()
         class TestThis_Blah (TestThis ):pass
-        def ignore__root_level_pecial_method ():raise nose.SkipTest
+        def ignore__root_level_pecial_method ():
+            pass
         class TestAnother ():
             def setUp (self ):
                 noy_sup_setUp (super (TestAnother ,self ));self .z =8

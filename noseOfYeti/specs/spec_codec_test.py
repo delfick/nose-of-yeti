@@ -99,7 +99,7 @@ class Test_RegisteringCodec(object):
         raise Exception\('--- internal spec codec error --- \\n\{0\}'.format\(msg\)\)
         '''
         )
-        data | should | match_regex_lines(expected)
+        data.strip() | should | match_regex_lines(expected.strip())
 
         try:
             exec(data)

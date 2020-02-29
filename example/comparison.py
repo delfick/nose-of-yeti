@@ -10,9 +10,9 @@ from noseOfYeti.tokeniser.support import noy_sup_setUp
 from unittest import TestCase
 import nose
 
-it 'can exist without a describe'
+it 'can exist without a describe': pass
 
-it 'can have args', blah=1
+it 'can have args', blah=1: pass
 
 describe TestCase, 'numbers':
     before_each:
@@ -24,8 +24,6 @@ describe TestCase, 'numbers':
 
     ignore 'some test that I want to be named so it isnt ran':
         pass
-
-    it 'is skipped'
 
     describe 'testing number 3':
         before_each:
@@ -67,9 +65,9 @@ from noseOfYeti.tokeniser.support import noy_sup_setUp
 from unittest import TestCase
 import nose
 
-def test_can_exist_without_a_describe(): raise nose.SkipTest
+def test_can_exist_without_a_describe(): pass
 
-def test_can_have_args(blah=1): raise nose.SkipTest
+def test_can_have_args(blah=1): pass
 
 class TestNumbers(TestCase):
     def setUp(self):
@@ -81,8 +79,6 @@ class TestNumbers(TestCase):
 
     def ignore__some_test_that_I_want_to_be_named_so_it_isnt_ran(self):
         pass
-
-    def test_is_skipped(self): raise nose.SkipTest
 
 class TestNumbers_TestingNumber3(TestNumbers):
     def setUp(self):
