@@ -6,9 +6,7 @@
 ########################
 # coding: spec
 
-from noseOfYeti.tokeniser.support import noy_sup_setUp
 from unittest import TestCase
-import nose
 
 it 'can exist without a describe': pass
 
@@ -61,9 +59,7 @@ describe TestCase, 'numbers':
 ### Note that I did clean it up very slightly
 ########################
 
-from noseOfYeti.tokeniser.support import noy_sup_setUp
 from unittest import TestCase
-import nose
 
 def test_can_exist_without_a_describe(): pass
 
@@ -71,7 +67,7 @@ def test_can_have_args(blah=1): pass
 
 class TestNumbers(TestCase):
     def setUp(self):
-        noy_sup_setUp(super(TestNumbers, self)); self.number1 = 1
+        __import__ ("noseOfYeti").TestSetup(super()).sync_before_each (); self.number1 = 1
         self.number2 = 2
 
     def test_has_number1_as_1(self):
@@ -82,7 +78,7 @@ class TestNumbers(TestCase):
 
 class TestNumbers_TestingNumber3(TestNumbers):
     def setUp(self):
-        noy_sup_setUp(super(TestNumbers_TestingNumber3, self)); self.number3 = 3
+        __import__ ("noseOfYeti").TestSetup(super()).sync_before_each (); self.number3 = 3
 
     def test_has_number1_from_the_lower_level_describe(self):
         self.assertEqual(self.number1, 1)
@@ -103,7 +99,7 @@ class TestNumbers_TestingNumber3(TestNumbers):
 
 class TestNumbers_TestingNumber3_LetsChangeANumber(TestNumbers_TestingNumber3):
     def setUp(self):
-        noy_sup_setUp(super(TestNumbers_TestingNumber3_LetsChangeANumber, self))
+        __import__ ("noseOfYeti").TestSetup(super()).sync_before_each ()
         self.number1 = 4
 
     def test_changed_number1_but_kept_others_the_same(self):
