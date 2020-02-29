@@ -10,8 +10,6 @@ Nosetests
 
 After running setup.py (``easy_install .`` or ``pip install .`` or even ``pip install noseOfYeti``) you can run nosetests with ``--with-noy``, which will enable the spec codec.
 
-see :ref:`options` for other options available.
-
 Pytests
 =======
 

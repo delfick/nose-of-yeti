@@ -12,12 +12,11 @@ The way nose-of-yeti works is when a file with the necessary codec is imported, 
 
 To tell python to use the correct encoding, you first let nose-of-yeti register it's codec (it comes with a plugin for both nose and pylint for this) and then you have ``# coding: spec`` as the first line of the file.
 
-.. literalinclude:: ../example/comparison.py
+.. literalinclude:: ../../example/comparison.py
    :language: python
 
 Another Example
 ---------------
 
-.. literalinclude:: ../example/test.py
+.. literalinclude:: ../../example/test.py
    :language: python
-
