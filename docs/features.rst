@@ -3,28 +3,20 @@
 Features
 ========
 
-describe and context
---------------------
+describe
+--------
 
-To group a bunch of tests together you can use the describe or context keywords::
+To group a bunch of tests together you can use the describe keyword::
 
     describe "Some Test":
         it "does things":
             assert 1 == 1
 
-    context "Some Context":
-        it "does other things":
-            assert 2 == 2
-
-Will be converted into classes where each test under the group becomes a method prefixed with test\_::
+It will be converted into classes where each test under the group becomes a method prefixed with test\_::
 
     class Test_SomeTest(object):
         def test_does_things(self):
             assert 1 == 1
-
-    class Test_SomeContext(object):
-        def test_does_other_things(self):
-            assert 2 == 2
 
 The class that is inherited can be changed by putting the name of the super class between the describe keyword and the name of the group::
 
@@ -36,7 +28,7 @@ becomes::
 
 The default class to inherit from is ``object``, however this can be changed with the :ref:`default-kls option <options>`.
 
-Describe and context blocks can also be nested. The way this works is that each nested level will inherit from the class of the previous level. Then, to ensure that tests from inherited super classes aren't run multiple times, a special ``is_noy_spec`` attribute is set on each class and the nose plugin will ensure only methods defined on the class itself will be run::
+Describe blocks can also be nested. The way this works is that each nested level will inherit from the class of the previous level. Then, to ensure that tests from inherited super classes aren't run multiple times, a special ``is_noy_spec`` attribute is set on each class and the nose plugin will ensure only methods defined on the class itself will be run::
 
     describe "NestedOne":
         it "has test":
@@ -46,7 +38,7 @@ Describe and context blocks can also be nested. The way this works is that each 
             it "also has test":
                 pass
 
-            context "You get the point":
+            describe "You get the point":
                 it "ladelalalal":
                     pass
 
@@ -73,7 +65,7 @@ It will prevent nested classes from having the same name as non-nested classes b
 it and ignore
 -------------
 
-The tests themselves can be specified with ``it`` or ``ignore`` in a similar fashion to ``describe`` and ``context``::
+The tests themselves can be specified with ``it`` or ``ignore`` in a similar fashion to ``describe``::
 
     it "is a test without a describe":
         # Note that it doesn't have a self paramater

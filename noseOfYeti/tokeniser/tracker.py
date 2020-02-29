@@ -178,7 +178,7 @@ class Tracker(object):
             else:
                 self.after_an_async = False
 
-            if value in ("describe", "context"):
+            if value == "describe":
                 created_group = True
 
                 # add pass to previous group if nothing added between then and now

@@ -99,7 +99,7 @@ class Single(object):
 
 
 class Group(object):
-    """Container for group blocks (i.e. describe or context)"""
+    """Container for describe blocks"""
 
     def __init__(self, name=None, root=False, parent=None, level=0, typ=None):
         self.kls = None

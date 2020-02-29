@@ -18,7 +18,7 @@ class Test_Tokeniser_Nesting(object):
             describe "That":
 
                 describe "Meh":pass
-            context "Blah":pass
+            describe "Blah":pass
         describe "Another":pass """,
             """
         class TestThis ():pass
@@ -33,7 +33,7 @@ class Test_Tokeniser_Nesting(object):
 
         self.small_example_with_pass = [
             """
-        context "This":pass
+        describe "This":pass
             describe "That":pass
                 describe "Meh":pass
             describe "Blah":pass
