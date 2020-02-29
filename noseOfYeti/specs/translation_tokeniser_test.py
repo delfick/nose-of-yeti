@@ -196,7 +196,7 @@ class Test_Tokenisor_translation(TestCase):
         desired = """
         class TestThing ():
             async def setUp (self ):
-                await async_noy_sup_setUp (super (TestThing ,self ));self .x =5
+                await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_before_each ();self .x =5
         """
 
         (self.toka, test) | should | result_in(desired)
@@ -213,7 +213,7 @@ class Test_Tokenisor_translation(TestCase):
         desired = """
         class TestThing ():
             def setUp (self ):
-                noy_sup_setUp (super (TestThing ,self ));self .x =5
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .x =5
         """
 
         (self.toka, test) | should | result_in(desired)
@@ -236,7 +236,7 @@ class Test_Tokenisor_translation(TestCase):
         desired = """
         class TestThing ():
             async def tearDown (self ):
-                await async_noy_sup_tearDown (super (TestThing ,self ));self .x =5
+                await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_after_each ();self .x =5
         """
 
         (self.toka, test) | should | result_in(desired)
@@ -253,7 +253,7 @@ class Test_Tokenisor_translation(TestCase):
         desired = """
         class TestThing ():
             def tearDown (self ):
-                noy_sup_tearDown (super (TestThing ,self ));self .x =5
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ();self .x =5
         """
 
         (self.toka, test) | should | result_in(desired)
@@ -448,15 +448,15 @@ class Test_Tokenisor_translation(TestCase):
         desired = """
         class TestBlockWithNecessarySemicolon ():
             def setUp (self ):
-                noy_sup_setUp (super (TestBlockWithNecessarySemicolon ,self ));two =1 +1
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();two =1 +1
 
         class TestBlockWithUnecessarySemiclon ():
             def setUp (self ):
-                noy_sup_setUp (super (TestBlockWithUnecessarySemiclon ,self ))#comment
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ()#comment
                 pass
 
             def tearDown (self ):
-                noy_sup_tearDown (super (TestBlockWithUnecessarySemiclon ,self ))
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ()
                 pass
         """
         (self.toka, test) | should | result_in(desired)
@@ -484,19 +484,19 @@ class Test_Tokenisor_translation(TestCase):
         desired = """
         class TestKls ():
             def setUp (self ):# Comment one
-                noy_sup_setUp (super (TestKls ,self ))
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ()
                 pass
 
             def tearDown (self ):# Comment two
-                noy_sup_tearDown (super (TestKls ,self ))
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ()
                 pass
 
         class TestKls2 ():
             def setUp (self ):# Comment three
-                noy_sup_setUp (super (TestKls2 ,self ));two =1 +1
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();two =1 +1
 
             def tearDown (self ):# Comment four
-                noy_sup_tearDown (super (TestKls2 ,self ))#comment
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ()#comment
                 pass
         """
         (self.toka, test) | should | result_in(desired)

@@ -204,23 +204,35 @@ NoseOfYeti will turn ``before_each`` and ``after_each`` into ``setUp`` and ``tea
 
 It will also make sure the ``setUp``/``tearDown`` method of the super class (if it has one) gets called as the first thing in a ``before_each``/``after_each``::
 
-    describe "Meh":
+    describe "sync example":
         before_each:
             doSomeSetup()
 
         after_each:
             doSomeTearDown()
 
+    describe "async example":
+        async before_each:
+            doSomeSetup()
+
+        async after_each:
+            doSomeTearDown()
+
 becomes::
 
-    class Test_Meh(object):
+    class Test_SyncExample(object):
         def setUp(self):
-            noy_sup_setUp(super(Test_Meh, self)); doSomeSetup()
+            __import__("noseOfYeti").TestSetup(super()).sync_before_each(); doSomeSetup()
 
         def tearDown(self):
-            noy_sup_tearDown(super(Test_Meh, self)); doSomeTearDown()
+            __import__("noseOfYeti").TestSetup(super()).sync_after_each(); doSomeTearDown()
 
-An example of a class that does have it's own ``setUp`` and ``tearDown`` functions is ``unittest.TestCase``. Use :ref:`default-kls option <options>` to set this as a default.
+    class Test_AsyncExample(object):
+        async def setUp(self):
+            await __import__("noseOfYeti").TestSetup(super()).async_before_each(); doSomeSetup()
+
+        async def tearDown(self):
+            await __import__("noseOfYeti").TestSetup(super()).async_after_each(); doSomeTearDown()
 
 .. note::
     To ensure that line numbers between the spec and translated output are the same, the first line of a ``setUp``/``tearDown`` will be placed on the same line as the inserted super call. This means if you don't want pylint to complain about multiple statements on the same line or you want to define a function inside ``setUp``/``tearDown``, then just don't do it on the first line after ``before_each``/``after_each``::
@@ -236,16 +248,14 @@ An example of a class that does have it's own ``setUp`` and ``tearDown`` functio
 
     becomes::
 
-        class Test_Meh(unittest.TestCase):
+        class Test_Thing(unittest.TestCase):
             def setUp(self):
-                noy_sup_setUp(super(Test_Meh, self)) # Comments are put on the same line, but no semicolon is inserted
+                __import__("noseOfYeti").TestSetup(super()).sync_before_each() # Comments are put on the same line, but no semicolon is inserted
 
             def tearDown(self):
-                noy_sup_tearDown(super(Test_Meh, self))
+                __import__("noseOfYeti").TestSetup(super()).sync_after_each()
                 # Blank line after the after_each
                 self.thing = 4
-
-Also, remember, unless you use the :ref:`with-default-imports option <options>` then you'll have to manually import ``noy_sup_setUp`` and ``noy_sup_tearDown`` by doing ``from noseOfYeti.tokeniser.support import noy_sup_setUp, noy_sup_tearDown``
 
 .. note::
     Anything on the same line as a ``before_each``/``after_each`` will remain on that line
@@ -255,63 +265,16 @@ Also, remember, unless you use the :ref:`with-default-imports option <options>` 
 
     becomes::
 
-        class Test_Meh(unittest.TestCase):
+        class Test_Thing(unittest.TestCase):
             def setUp(self): # pylint: disable-msg: C0103
-                noy_sup_setUp(super(Test_Meh, self))
+                __import__("noseOfYeti").TestSetup(super()).sync_before_each()
 
 .. _async_before_and_after_each:
-
-async before_each and after_each
---------------------------------
-
-.. versionadded:: 1.7
-
-The async equivalent for ``before_each`` and ``after_each`` are the same as the
-non-async version except aware of async/await semantics.
-
-So, if you are using something like https://asynctest.readthedocs.io/en/latest/
-then all you have to do is make sure you've imported
-``noseOfYeti.tokeniser.async_support.async_noy_sup_setUp`` and/or
-``noseOfYeti.tokeniser.async_support.async_noy_sup_tearDown`` and just prepend
-your ``before_each``/``after_each`` with ``async``.
-
-For example:
-
-.. code-block:: python
-
-    from noseOfYeti.tokeniser.async_support import async_noy_sup_setUp, async_noy_sup_tearDown
-
-    describe "Meh":
-        async before_each:
-            doSomeSetup()
-
-        async after_each:
-            doSomeTearDown()
-
-becomes:
-
-.. code-block:: python
-
-    class Test_Meh(object):
-        async def setUp(self):
-            await async_noy_sup_setUp(super(Test_Meh, self)); doSomeSetup()
-
-        async def tearDown(self):
-            await async_noy_sup_tearDown(super(Test_Meh, self)); doSomeTearDown()
-
-Default imports
----------------
-
-If you have :ref:`with-default-imports option <options>` set to True then the following will be imported at the top of the spec file::
-
-    import nose; from nose.tools import *; from noseOfYeti.tokeniser.support import *
 
 Line numbers
 ------------
 
 With many thanks to work by ``jerico_dev`` (https://bitbucket.org/delfick/nose-of-yeti/changeset/ebf4e335bb1c), noseOfYeti will ensure that the line numbers line up between spec files and translated output. It does this by doing the following:
-
- * Default imports are all placed on the same line where ``# coding: spec`` is in the original file. If you have pylint complaining about multiple statements on a single line, it is suggested you use the :ref:`no-default-imports option <options>` and import things manually.
 
  * As mentioned :ref:`above <before_and_after_each>`, lines after a ``before_each`` or ``after_each`` will be placed on the same line as the inserted super call.
 
