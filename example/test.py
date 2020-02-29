@@ -33,13 +33,6 @@ describe TestCase, "Python Mathematics":
         with self.assertRaises(ZeroDivisionError):
             2 / 0
 
-    it 'does this other thing'
-    # Because it doesn't have colon at the end it will be a skipped test.
-    # Which means it adds a raise nose.SkipTest for you
-    #  "def test_does_this_other_thing(self): raise nose.SkipTest"
-    # Note that if you don't have the "with-default-imports" option set,
-    # then it is up to you to import nose
-
 # We can also define a class for the describes
 # Either when we create the tokeniser and register it
 # Or inside the spec file itself, per describe

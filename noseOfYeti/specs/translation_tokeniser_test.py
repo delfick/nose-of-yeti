@@ -1,6 +1,7 @@
 from noseOfYeti.tokeniser import Tokeniser
 from should_dsl import should
 
+from unittest import TestCase
 import six
 
 # Silencing code checker about should_dsl matchers
@@ -11,7 +12,7 @@ if six.PY2:
     func_accessor = "__func__ ."
 
 
-class Test_Tokenisor_translation(object):
+class Test_Tokenisor_translation(TestCase):
     def setUp(self):
         self.toka = Tokeniser(with_describe_attrs=False)
 
@@ -57,60 +58,42 @@ class Test_Tokenisor_translation(object):
         )
 
     def test_adds_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
-        (self.toka, 'it "should do this thing", blah, meh') | should | result_in(
-            "def test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
+        (self.toka, 'it "should do this thing", blah, meh: pass') | should | result_in(
+            "def test_should_do_this_thing (blah ,meh ):pass"
         )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing", blah, meh') | should | result_in(
-            "\ndef test_should_do_this_thing (blah ,meh ):raise nose.SkipTest "
+        (self.toka, '\nit "should do this thing", blah, meh:\n    pass') | should | result_in(
+            "\ndef test_should_do_this_thing (blah ,meh ):\n    pass"
         )
 
-    def test_no_added_arguments_to_its_if_not_declared_on_same_line(self):
-        (self.toka, 'it "should do this thing"\n, blah, meh') | should | result_in(
-            "def test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
-        )
-
-        # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing"\n, blah, meh') | should | result_in(
-            "\ndef test_should_do_this_thing ():raise nose.SkipTest\n,blah ,meh "
-        )
-
-    def test_turns_an_it_without_colon_into_skippable(self):
-        (self.toka, 'it "should be skipped"\n') | should | result_in(
-            "def test_should_be_skipped ():raise nose.SkipTest "
-        )
-
-        (self.toka, 'it "should not be skipped":\n') | should | result_in(
-            "def test_should_not_be_skipped ():"
-        )
+    def test_complains_about_it_that_isnt_a_block(self):
+        with self.assertRaisesRegex(SyntaxError, "Found a missing ':' on line 1, column 22"):
+            (self.toka, 'it "should be skipped"\n') | should | result_in("")
 
         # Same tests, but with newlines in front
-        (self.toka, '\nit "should be skipped"\n') | should | result_in(
-            "\ndef test_should_be_skipped ():raise nose.SkipTest "
-        )
+        with self.assertRaisesRegex(SyntaxError, "Found a missing ':' on line 3, column 22"):
+            (self.toka, 'import os\n\nit "should be skipped"\n') | should | result_in("")
 
-        (self.toka, '\nit "should not be skipped":\n') | should | result_in(
-            "\ndef test_should_not_be_skipped ():"
+        (self.toka, 'import os\n\nit "should not be skipped":\n') | should | result_in(
+            "import os\n\ndef test_should_not_be_skipped ():"
         )
 
         ## And with async
 
-        (self.toka, 'async it "should be skipped"\n') | should | result_in(
-            "async def test_should_be_skipped ():raise nose.SkipTest "
-        )
+        with self.assertRaises(SyntaxError, msg="Found a missing ':' on line 1, column 28"):
+            (self.toka, 'async it "should be skipped"\n') | should | result_in("")
 
         (self.toka, 'async it "should not be skipped":\n') | should | result_in(
             "async def test_should_not_be_skipped ():"
         )
 
         # Same tests, but with newlines in front
-        (self.toka, '\nasync it "should be skipped"\n') | should | result_in(
-            "\nasync def test_should_be_skipped ():raise nose.SkipTest "
-        )
+        with self.assertRaises(SyntaxError, msg="Found a missing ':' on line 2, column 28"):
+            (self.toka, 'import os\nasync it "should be skipped"\n') | should | result_in("")
 
-        (self.toka, '\nasync it "should not be skipped":\n') | should | result_in(
-            "\nasync def test_should_not_be_skipped ():"
+        (self.toka, 'import os\nasync it "should not be skipped":\n') | should | result_in(
+            "import os\nasync def test_should_not_be_skipped ():"
         )
 
     def test_turns_before_each_into_setup(self):
@@ -147,7 +130,8 @@ class Test_Tokenisor_translation(object):
                 t2 = (True
                 ,    False
         )
-            it 'asdf2'"""
+            it 'asdf2':
+                pass"""
 
         desired = """
         class TestA ():
@@ -170,51 +154,21 @@ class Test_Tokenisor_translation(object):
                 t2 =(True
                 ,False
                 )
-            def test_asdf2 (self ):raise nose.SkipTest
+            def test_asdf2 (self ):
+                pass
         """
 
         (self.toka, test) | should | result_in(desired)
 
-    def test_indentation_for_test_should_work_after_skipped_test(self):
-        test = """
-        describe 'thing':
-            it 'should be skipped'
-            it 'shouldnt be skipped':
-                print 'hi'
-
-            it 'another that should be skipped'
-
-            it 'another that shouldnt be skipped':
-                print 'hi'"""
-
-        desired = """
-        class TestThing ():
-            def test_should_be_skipped (self ):raise nose.SkipTest
-            def test_shouldnt_be_skipped (self ):
-                print 'hi'
-
-            def test_another_that_should_be_skipped (self ):raise nose.SkipTest
-
-            def test_another_that_shouldnt_be_skipped (self ):
-                print 'hi'
-        """
-
-        (self.toka, test) | should | result_in(desired)
-
-    def test_indentation_for_describe_should_work_after_skipped_test(self):
+    def test_complains_if_describe_after_hanging_it(self):
         test = """
         describe 'thing':
             it 'should be skipped'
             describe 'that':
                 pass"""
 
-        desired = """
-        class TestThing ():
-            def test_should_be_skipped (self ):raise nose.SkipTest
-        class TestThing_That (TestThing ):
-            pass
-        """
-        (self.toka, test) | should | result_in(desired)
+        with self.assertRaisesRegex(SyntaxError, "Found a missing ':' on line 2, column 26"):
+            (self.toka, test) | should | result_in("")
 
     def test_indentation_should_work_for_inline_python_code(self):
         test = """
@@ -327,29 +281,28 @@ class Test_Tokenisor_translation(object):
 
     def test_sets__testname__on_non_alphanumeric_test_names(self):
         test = """
-        it "(root level) should work {well}"
+        it "(root level) should work {well}":
             3 |should| be(4)
         describe "SomeTests":
-            it "doesn't get phased by $special characters"
+            it "doesn't get phased by $special characters":
+                pass
 
             describe "NestedDescribe":
                 it "asdf $% asdf":
                     1 |should| be(2)
-        it "(root level) should also [work]"
         """
 
         desired = """
-        def test_root_level_should_work_well ():raise nose.SkipTest
+        def test_root_level_should_work_well ():
             3 |should |be (4 )
         class TestSomeTests ():
-            def test_doesnt_get_phased_by_special_characters (self ):raise nose.SkipTest
+            def test_doesnt_get_phased_by_special_characters (self ):
+                pass
 
         class TestSomeTests_NestedDescribe (TestSomeTests ):
             def test_asdf_asdf (self ):
                 1 |should |be (2 )
-        def test_root_level_should_also_work ():raise nose.SkipTest
         test_root_level_should_work_well .__testname__ ="(root level) should work {{well}}"
-        test_root_level_should_also_work .__testname__ ="(root level) should also [work]"
         TestSomeTests .test_doesnt_get_phased_by_special_characters .{func_accessor}__testname__ ="doesn't get phased by $special characters"
         TestSomeTests_NestedDescribe .test_asdf_asdf .{func_accessor}__testname__ ="asdf $% asdf"
         """.format(
@@ -425,7 +378,8 @@ class Test_Tokenisor_translation(object):
 
     def test_it_allows_default_arguments_for_its(self):
         test = """
-        it "is a test with default arguments", thing=2, other=[3]
+        it "is a test with default arguments", thing=2, other=[3]:
+            pass
 
         describe "group":
             it "has self and default args", blah=None, you=(3, 4,
@@ -436,7 +390,8 @@ class Test_Tokenisor_translation(object):
         """
 
         desired = """
-        def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):raise nose.SkipTest
+        def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):
+            pass
 
         class TestGroup ():
             def test_has_self_and_default_args (self ,blah =None ,you =(3 ,4 ,

@@ -39,24 +39,30 @@ The default class to inherit from is ``object``, however this can be changed wit
 Describe and context blocks can also be nested. The way this works is that each nested level will inherit from the class of the previous level. Then, to ensure that tests from inherited super classes aren't run multiple times, a special ``is_noy_spec`` attribute is set on each class and the nose plugin will ensure only methods defined on the class itself will be run::
 
     describe "NestedOne":
-        it "has test"
+        it "has test":
+            pass
 
         describe "NestedTwo":
-            it "also has test"
+            it "also has test":
+                pass
 
             context "You get the point":
-                it "ladelalalal"
+                it "ladelalalal":
+                    pass
 
 becomes::
 
     class Test_NestedOne(object):
-        def test_has_test(self): raise nose.skipTest
+        def test_has_test(self):
+            pass
 
     class Test_NestedOne_NestedTwo(NestedOne):
-        def test_also_has_test(self): raise nose.skipTest
+        def test_also_has_test(self):
+            pass
 
     class Test_NestedOne_NestedTwo_You_get_the_point(Test_NestedOne_NestedTwo):
-        def test_ladelalalal(self): raise nose.skipTest
+        def test_ladelalalal(self):
+            pass
 
     Test_NestedOne.is_noy_spec = True
     Test_NestedOne_NestedTwo.is_noy_spec = True
@@ -73,7 +79,8 @@ The tests themselves can be specified with ``it`` or ``ignore`` in a similar fas
         # Note that it doesn't have a self paramater
         pass
 
-    # This function has no colon, it raises nose.SkipTest
+    # This function has no colon, it will raise a Syntax Error
+    # You must specify a colon after blocks.
     it "is a method without a colon"
 
     describe "AGroup":
@@ -85,17 +92,15 @@ The tests themselves can be specified with ``it`` or ``ignore`` in a similar fas
             # This method is named ignore__%s
             assert 1 == 3
 
-        # This method has no colon, it raises nose.SkipTest
-        it "is a test without a colon"
-
 becomes::
 
     def test_is_a_test_without_a_describe":
         # Note that it doesn't have a self parameter
         pass
 
-    # This function has no colon, it raises nose.SkipTest
-    def test_is_a_method_without_a_colon(): raise nose.SkipTest
+    # This function has no colon, it will raise a Syntax Error
+    # You must specify a colon after blocks.
+    def test_is_a_method_without_a_colon()
 
     class Test_AGroup(object):
         def test_is_a_test_with_a_describe(self):
@@ -106,30 +111,31 @@ becomes::
             # This method is named ignore__%s
             assert 1 == 3
 
-        # This method has no colon, it raises nose.SkipTest
-        def test_is_a_test_without_a_colon(self): raise nose.SkipTest
-
     Test_AGroup.is_noy_spec = True
 
 As shown in the example:
  * ``it "name"`` converts to ``def test_name``
  * ``ignore "name""`` converts to ``def ignore__name``
  * If it is part of a describe block, it is given a ``self`` parameter
- * If it has no colon, it raises nose.SkipTest
+ * If it has no colon, it will cause a SyntaxError
 
 NoseOfYeti can also cope with non-alphanumeric characters in the name of a test, by removing them from the function name, and then setting ``__testname__`` on the function/method later on::
 
-    it "won't don't $houldn't"
+    it "won't don't $houldn't":
+        pass
 
     describe "Blah":
-        it "copes with 1!2@3#"
+        it "copes with 1!2@3#":
+            pass
 
 becomes::
 
-    def test_wont_dont_houldnt(): raise nose.SkipTest
+    def test_wont_dont_houldnt():
+        pass
 
     class Test_Blah(object):
-        def test_copes_with_123(self): raise nose.SkipTest
+        def test_copes_with_123(self):
+            pass
 
     test_wont_dont_houldnt.__testname__ = "won't don't $houldn't"
     Test_Blah.test_copes_with_123.__testname__ = "copes with 1!2@3#"
@@ -185,7 +191,8 @@ Note that it will also cope with multiline lists as default parameters::
         1
         , 2
         , 3
-        ]
+        ]:
+        pass
 
 becomes::
 
@@ -193,7 +200,8 @@ becomes::
         1
         , 2
         , 3
-        ]): raise nose.SkipTest
+        ]):
+        pass
 
 .. _before_and_after_each:
 

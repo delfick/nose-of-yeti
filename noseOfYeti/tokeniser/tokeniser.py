@@ -27,10 +27,10 @@ class Tokeniser(object):
         # Add attributes to our Describes so that the plugin can handle some nesting issues
         # Where we have tests in upper level describes being run in lower level describes
         if self.with_describe_attrs:
-            self.tracker.add_tokens(self.tracker.make_describe_attrs())
+            self.tracker.make_describe_attrs()
 
         # Add lines to bottom of file to add __testname__ attributes
-        self.tracker.add_tokens(self.tracker.make_method_names())
+        self.tracker.make_method_names()
 
         # Return translated list of tokens
         return self.tracker.result

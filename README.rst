@@ -32,6 +32,11 @@ This means that any changes in the translation process won't happen untill eithe
     * ``noseOfYeti.tokeniser.register_from_options`` is now just ``register``
     * Removed ``noseOfYeti.tokeniser.{config,imports}``
     * Removed ``noseOfYeti.plugins.support.spec_options``
+    * It is no longer valid to end an ``it`` or ``ignore`` block without a colon.
+      Previously it would replace these with a line that raises nose.SkipTest.
+      This obviously won't work in a non nosetests environment and I think it's
+      best if skipped tests were explicit rather than injected when you forget
+      a ``:``.
 
 ``1.9.1``
     Turns out the incremental decoder does get used for the whole file, so I've

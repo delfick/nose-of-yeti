@@ -52,8 +52,6 @@ class Tokens(object):
             (OP, ")"),
         ]
 
-        self.test_skip = [(NAME, "raise"), (NAME, "nose.SkipTest")]
-
     ########################
     ###   MAKERS
     ########################
