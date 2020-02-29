@@ -121,28 +121,3 @@ class Tokens(object):
         result.extend([(OP, "."), (NAME, "__testname__"), (OP, "="), (STRING, english)])
 
         return result
-
-    def wrap_setup(self, class_name, typ, with_async=False):
-        """Described.typ = noy_wrap_typ(Described, Described.typ)"""
-        equivalence = self.equivalence[typ]
-        return [
-            (NEWLINE, "\n"),
-            (NAME, class_name),
-            (OP, "."),
-            (NAME, equivalence),
-            (OP, "="),
-            (NAME, "%snoy_wrap_%s" % ("async_" if with_async else "", equivalence)),
-            (OP, "("),
-            (NAME, class_name),
-            (OP, ","),
-            (NAME, class_name),
-            (OP, "."),
-            (NAME, equivalence),
-            (OP, ")"),
-        ]
-
-    def wrap_after_each(self, class_name, with_async=False):
-        return self.wrap_setup(class_name, "after_each", with_async=with_async)
-
-    def wrap_before_each(self, class_name, with_async=False):
-        return self.wrap_setup(class_name, "before_each", with_async=with_async)
