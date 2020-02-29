@@ -4,53 +4,53 @@ from setuptools import setup
 # fmt: off
 
 setup(
-       name = 'noseOfYeti'
-     , version = VERSION
-     , classifiers =
-       [ 'Intended Audience :: Developers'
-       , 'Programming Language :: Python'
-       , 'Topic :: Software Development :: Documentation'
-       , 'Topic :: Software Development :: Testing'
-       ]
+      name = 'noseOfYeti'
+    , version = VERSION
+    , classifiers =
+      [ 'Intended Audience :: Developers'
+      , 'Programming Language :: Python'
+      , 'Topic :: Software Development :: Documentation'
+      , 'Topic :: Software Development :: Testing'
+      ]
 
-     , author = 'Stephen Moore'
-     , license = 'MIT'
-     , keywords = 'bdd rspec spec'
-     , author_email = 'delfick755@gmail.com'
+    , author = 'Stephen Moore'
+    , license = 'MIT'
+    , keywords = 'bdd rspec spec'
+    , author_email = 'delfick755@gmail.com'
 
-     , url = "https://github.com/delfick/nose-of-yeti"
-     , description = 'Nose plugin providing BDD dsl for python'
-     , long_description = open("README.rst").read()
+    , url = "https://github.com/delfick/nose-of-yeti"
+    , description = 'Nose plugin providing BDD dsl for python'
+    , long_description = open("README.rst").read()
 
-     , extras_require =
-       { 'tests':
-         [ 'nose'
-         , 'fudge'
-         , 'should-dsl'
-         ]
-       , 'docs':
-         [ 'nose'
-         , 'fudge'
-         , 'sphinx'
-         , 'pinocchio'
-         , 'should_dsl'
-         ]
-       }
+    , extras_require =
+      { 'tests':
+        [ 'nose'
+        , 'fudge'
+        , 'should-dsl'
+        ]
+      , 'docs':
+        [ 'nose'
+        , 'fudge'
+        , 'sphinx'
+        , 'pinocchio'
+        , 'should_dsl'
+        ]
+      }
 
-     , packages =
-       [ 'noseOfYeti'
-       , 'noseOfYeti.specs'
-       , 'noseOfYeti.plugins'
-       , 'noseOfYeti.tokeniser'
-       , 'noseOfYeti.plugins.support'
-       ]
+    , packages =
+      [ 'noseOfYeti'
+      , 'noseOfYeti.specs'
+      , 'noseOfYeti.plugins'
+      , 'noseOfYeti.tokeniser'
+      , 'noseOfYeti.plugins.support'
+      ]
 
-     , entry_points =
-       { 'nose.plugins':
-         [ 'noseOfYeti = noseOfYeti.plugins.nosetests:Plugin'
-         ]
-       , "pytest11": ["nose_of_yeti = noseOfYeti.plugins.pytest"]
-       }
-     )
+    , entry_points =
+      { 'nose.plugins':
+        [ 'noseOfYeti = noseOfYeti.plugins.nosetests:Plugin'
+        ]
+      , "pytest11": ["nose_of_yeti = noseOfYeti.plugins.pytest"]
+      }
+    )
 
 # fmt: on
