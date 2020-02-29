@@ -2,7 +2,7 @@
 Tests to make sure registering the spec codec actually works
 """
 
-from noseOfYeti.tokeniser.spec_codec import TokeniserCodec
+from noseOfYeti.tokeniser.spec_codec import TokeniserCodec, Tokeniser
 
 from should_dsl import should
 from textwrap import dedent
@@ -12,6 +12,9 @@ import sys
 import os
 
 from .helpers import a_temp_file, a_temp_dir
+
+this_dir = os.path.dirname(__file__)
+example_dir = os.path.join(this_dir, "..", "..", "example")
 
 # pylama:ignore=E0602
 
@@ -75,6 +78,19 @@ class Test_RegisteringCodec(object):
 
             expected_output = "test_should_totally_work"
             process.stdout.read().decode("utf8").strip() | should | equal_to(expected_output)
+
+    def test_can_correctly_translate_file(self):
+        with open(os.path.join(example_dir, "test.py")) as fle:
+            before = fle.read()
+        with open(os.path.join(example_dir, "converted.test.py")) as fle:
+            want = fle.read()
+        after = TokeniserCodec(Tokeniser()).translate(before)
+
+        for i, (al, wl) in enumerate(zip(after.split("\n"), want.split("\n"))):
+            if al.rstrip() != wl.rstrip():
+                print(f"WANT: '{wl}'")
+                print(f"GOT : '{al}'")
+                assert False, f"Line {i + 1} does not match"
 
     @fudge.patch("noseOfYeti.tokeniser.spec_codec.TokeniserCodec.get_codec")
     def test_it_shows_errors(self, fake_get_codec):

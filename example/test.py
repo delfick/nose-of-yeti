@@ -10,9 +10,7 @@
 
 # The test can then be specified using describes and its
 
-from noseOfYeti.tokeniser.support import noy_sup_setUp
 from unittest import TestCase
-import nose
 
 it "is possible to add numbers":
     assert 1 + 1 == 2
@@ -74,4 +72,3 @@ describe TestCase, 'numbers':
                 self.assertEqual(self.number1, 4)
                 self.assertEqual(self.number2, 2)
                 self.assertEqual(self.number3, 3)
-
