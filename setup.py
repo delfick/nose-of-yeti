@@ -1,11 +1,13 @@
+from setuptools import setup, find_packages
 from noseOfYeti import VERSION
-from setuptools import setup
 
 # fmt: off
 
 setup(
       name = 'noseOfYeti'
     , version = VERSION
+    , packages = find_packages(include="noseOfYeti.*", exclude=["tests*"])
+
     , classifiers =
       [ 'Intended Audience :: Developers'
       , 'Programming Language :: Python'
@@ -19,7 +21,7 @@ setup(
     , author_email = 'delfick755@gmail.com'
 
     , url = "https://github.com/delfick/nose-of-yeti"
-    , description = 'Nose plugin providing BDD dsl for python'
+    , description = 'A custom pyton codec that provides an RSpec style dsl for python'
     , long_description = open("README.rst").read()
 
     , extras_require =
@@ -36,14 +38,6 @@ setup(
         , 'should_dsl'
         ]
       }
-
-    , packages =
-      [ 'noseOfYeti'
-      , 'noseOfYeti.specs'
-      , 'noseOfYeti.plugins'
-      , 'noseOfYeti.tokeniser'
-      , 'noseOfYeti.plugins.support'
-      ]
 
     , entry_points =
       { 'nose.plugins':
