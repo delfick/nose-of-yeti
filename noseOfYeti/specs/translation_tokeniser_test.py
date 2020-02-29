@@ -297,6 +297,7 @@ class Test_Tokenisor_translation(TestCase):
         class TestSomeTests_NestedDescribe (TestSomeTests ):
             def test_asdf_asdf (self ):
                 1 |should |be (2 )
+
         test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
         TestSomeTests .test_doesnt_get_phased_by_special_characters .__testname__ ="doesn't get phased by $special characters"
         TestSomeTests_NestedDescribe .test_asdf_asdf .__testname__ ="asdf $% asdf"
@@ -343,7 +344,7 @@ class Test_Tokenisor_translation(TestCase):
             pass
 
         def test_is_a_function_with_a_pass_on_another_line_further_below ():
-        #comment or something
+            #comment or something
 
 
             pass
@@ -352,16 +353,16 @@ class Test_Tokenisor_translation(TestCase):
             pass
 
         class TestBlockWithCommentAndPass ():
-        # comment or something
+            # comment or something
             pass
 
         class TestNestingAndPasses ():pass
-        # comment
+            # comment
         class TestNestingAndPasses_Nested (TestNestingAndPasses ):
             pass
 
         class TestNestingAndPasses_Nested_MoreNesting (TestNestingAndPasses_Nested ):
-        # comment
+            # comment
 
 
             pass
@@ -389,7 +390,7 @@ class Test_Tokenisor_translation(TestCase):
         class TestGroup ():
             def test_has_self_and_default_args (self ,blah =None ,you =(3 ,4 ,
             5 ,5 )):
-            # Test space is respected
+                # Test space is respected
 
                 1 |should |be (2 )
         """

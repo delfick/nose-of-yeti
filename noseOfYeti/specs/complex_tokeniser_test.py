@@ -171,6 +171,7 @@ class Test_Tokeniser_Complex(object):
         TestThis_That_Meh .is_noy_spec =True
         TestThis_Blah .is_noy_spec =True
         TestAnother .is_noy_spec =True
+
         ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"
         TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__testname__ ="should set __testname__ for non alpha names ' $^"
         """,

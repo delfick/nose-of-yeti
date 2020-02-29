@@ -211,6 +211,11 @@ class Tracker(object):
 
         # Just append if token should be
         if just_append:
+            # Make sure comments are indented appropriately
+            if tokenum == COMMENT:
+                indent = self.indent_type * (self.current.scol - self.groups.level)
+                self.result.append((INDENT, indent))
+
             self.result.append([tokenum, value])
 
     ########################
@@ -282,12 +287,19 @@ class Tracker(object):
 
     def make_method_names(self):
         """Create tokens for setting __testname__ on functions"""
-        lst = [(DEDENT, "") for i in range(len(self.indent_amounts) + 1)]
+        lst = [(NEWLINE, "\n"), (INDENT, "")]
+        added = False
+
         for group in self.all_groups:
             for single in group.singles:
                 name, english = single.name, single.english
+
                 if english[1:-1] != name.replace("_", " "):
                     lst.extend(self.tokens.make_name_modifier(single.identifier, english))
+                    added = True
+
+        if not added:
+            return
 
         endmarker = False
 
