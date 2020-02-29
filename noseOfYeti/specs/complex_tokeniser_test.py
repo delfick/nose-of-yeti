@@ -49,22 +49,22 @@ class Test_Tokeniser_Complex(object):
             """
         class TestThis ():
             def setUp (self ):
-                noy_sup_setUp (super (TestThis ,self ));self .x =5
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .x =5
         class TestThis_That (TestThis ):
             def setUp (self ):
-                noy_sup_setUp (super (TestThis_That ,self ));self .y =6
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .y =6
         class TestThis_That_Meh (TestThis_That ):
             def tearDown (self ):
-                noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ();self .y =None
         class TestThis_Blah (TestThis ):pass
         class TestThis_Async (TestThis ):
             async def setUp (self ):
-                await async_noy_sup_setUp (super (TestThis_Async ,self ));pass
+                await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_before_each ();pass
             async def tearDown (self ):
-                await async_noy_sup_tearDown (super (TestThis_Async ,self ));pass
+                await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_after_each ();pass
         class TestAnother ():
             def setUp (self ):
-                noy_sup_setUp (super (TestAnother ,self ));self .z =8
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .z =8
 
         TestThis .is_noy_spec =True
         TestThis_That .is_noy_spec =True
@@ -125,7 +125,7 @@ class Test_Tokeniser_Complex(object):
             """
         class TestThis ():
             def setUp (self ):
-                noy_sup_setUp (super (TestThis ,self ));self .x =5
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .x =5
             def test_should (self ):
                 if x :
                     pass
@@ -135,10 +135,10 @@ class Test_Tokeniser_Complex(object):
                 pass
         class TestThis_That (TestThis ):
             def setUp (self ):
-                noy_sup_setUp (super (TestThis_That ,self ));self .y =6
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .y =6
         class TestThis_That_Meh (TestThis_That ):
             def tearDown (self ):
-                noy_sup_tearDown (super (TestThis_That_Meh ,self ));self .y =None
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ();self .y =None
             def test_should_set_testname_for_non_alpha_names (self ):
                 pass
             def test_should (self ):
@@ -153,7 +153,7 @@ class Test_Tokeniser_Complex(object):
             pass
         class TestAnother ():
             def setUp (self ):
-                noy_sup_setUp (super (TestAnother ,self ));self .z =8
+                __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .z =8
             def test_should (self ):
                 if z :
                     if u :

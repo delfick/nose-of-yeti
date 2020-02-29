@@ -40,6 +40,8 @@ This means that any changes in the translation process won't happen untill eithe
       a ``:``.
     * Removed the ``context`` block. Groups can now only be a ``describe``.
     * Removed wrapped setup/teardown helpers
+    * You no longer need to import sync and async ``noy_sup_setUp`` or
+      ``noy_sup_tearDown`` methods anymore.
 
 ``1.9.1``
     Turns out the incremental decoder does get used for the whole file, so I've

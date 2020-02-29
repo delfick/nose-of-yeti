@@ -2,24 +2,49 @@
 A helper module to access the superclass'
 setUp() and tearDown() methods of generated
 test classes.
-
-NB: We pull this into it's own module to:
-1) not repeat these methods in all generated modules
-2) avoid errors when inspecting the stack (e.g. in flexmock)
 """
 
-
-def noy_sup_setUp(sup):
-    if hasattr(sup, "setup"):
-        return sup.setup()
-
-    if hasattr(sup, "setUp"):
-        return sup.setUp()
+import asyncio
 
 
-def noy_sup_tearDown(sup):
-    if hasattr(sup, "teardown"):
-        return sup.teardown()
+class TestSetup:
+    def __init__(self, sup):
+        self.sup = sup
 
-    if hasattr(sup, "tearDown"):
-        return sup.tearDown()
+    @property
+    def setup(self):
+        if hasattr(self.sup, "setup"):
+            return self.sup.setup
+        if hasattr(self.sup, "setUp"):
+            return self.sup.setUp
+
+    @property
+    def teardown(self):
+        if hasattr(self.sup, "teardown"):
+            return self.sup.teardown
+        if hasattr(self.sup, "tearDown"):
+            return self.sup.tearDown
+
+    def sync_before_each(self):
+        setup = self.setup
+        if setup:
+            return setup()
+
+    def sync_after_each(self):
+        teardown = self.teardown
+        if teardown:
+            return teardown()
+
+    async def async_before_each(self):
+        res = self.sync_before_each()
+        if res and asyncio.iscoroutine(res):
+            return await res
+        else:
+            return res
+
+    async def async_after_each(self):
+        res = self.sync_after_each()
+        if res and asyncio.iscoroutine(res):
+            return await res
+        else:
+            return res

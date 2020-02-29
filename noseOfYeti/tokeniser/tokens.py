@@ -80,18 +80,36 @@ class Tokens(object):
         if kls:
             kls = tokens_in(kls)
 
-        prefix = "async_" if with_async else ""
-        method_name = f"{prefix}noy_sup_{self.equivalence[method]}"
+        prefix = "async" if with_async else "sync"
+
         result = [(OP, ":"), (NEWLINE, "\n"), (INDENT, indent)]
 
         if with_async:
             result.append((NAME, "await"))
 
-        result.extend([(NAME, method_name), (OP, "("), (NAME, "super"), (OP, "(")])
-
-        result.extend(kls)
-
-        result.extend([(OP, ","), (NAME, "self"), (OP, ")"), (OP, ")")])
+        result.extend(
+            [
+                (NAME, "__import__"),
+                (OP, "("),
+                (OP, '"'),
+                (STRING, "noseOfYeti"),
+                (OP, '"'),
+                (OP, ")"),
+                (OP, "."),
+                (NAME, "tokeniser"),
+                (OP, "."),
+                (NAME, "TestSetup"),
+                (OP, "("),
+                (NAME, "super"),
+                (OP, "("),
+                (OP, ")"),
+                (OP, ")"),
+                (OP, "."),
+                (NAME, f"{prefix}_{method}"),
+                (OP, "("),
+                (OP, ")"),
+            ]
+        )
 
         return result
 
