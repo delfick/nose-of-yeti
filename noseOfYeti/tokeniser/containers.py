@@ -75,16 +75,16 @@ class Single(object):
     @property
     def python_name(self):
         if self.typ == "it":
-            return "test_%s" % self.name
+            return f"test_{self.name}"
         else:
-            return "ignore__%s" % self.name
+            return f"ignore__{self.name}"
 
     @property
     def identifier(self):
         if self.group.root:
             return self.python_name
         else:
-            return "%s.%s" % (self.group.kls_name, self.python_name)
+            return f"{self.group.kls_name}.{self.python_name}"
 
     def add_to_arg(self, tokenum, value):
         if tokenum == OP and value == ",":
@@ -129,7 +129,7 @@ class Group(object):
         if self.root:
             return "<Root Group>"
         else:
-            return "<Group %s:%s(%s)>" % (self.kls_name, self.super_kls, self.parent)
+            return f"<Group {self.kls_name}:{self.super_kls}({self.parent})>"
 
     @property
     def name(self):
@@ -152,13 +152,13 @@ class Group(object):
         """Determine python name for group"""
         # Determine kls for group
         if not self.parent or not self.parent.name:
-            return "Test{0}".format(self.name)
+            return f"Test{self.name}"
         else:
             use = self.parent.kls_name
             if use.startswith("Test"):
                 use = use[4:]
 
-            return "Test{0}_{1}".format(use, self.name)
+            return f"Test{use}_{self.name}"
 
     @property
     def super_kls(self):

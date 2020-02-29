@@ -47,7 +47,7 @@ class Test_RegisteringCodec(object):
             process.wait()
             process.returncode | should | be(1)
 
-            expected_output = 'File "{}", line 1\nSyntaxError: encoding problem'.format(filename)
+            expected_output = f'File "{filename}", line 1\nSyntaxError: encoding problem'
             process.stdout.read().decode("utf8").strip() | should | start_with(expected_output)
 
     def test_registering_codec_doesnt_lead_to_error(self):
@@ -90,13 +90,13 @@ class Test_RegisteringCodec(object):
             r'''
         msg = """
         Traceback \(most recent call last\):
-        File ".+noseOfYeti/tokeniser/spec_codec.py", line 134, in dealwith
+        File ".+noseOfYeti/tokeniser/spec_codec.py", line 125, in dealwith
             self.tokeniser.translate\(readline, data, \*\*kwargs\)
         File ".+fudge/__init__.py", line 365, in __call__
             raise self.exception_to_raise
         Exception: WAT
         """
-        raise Exception\('--- internal spec codec error --- \\n\{0\}'.format\(msg\)\)
+        raise Exception\(f"--- internal spec codec error --- \\n\{msg\}"\)
         '''
         )
         data.strip() | should | match_regex_lines(expected.strip())

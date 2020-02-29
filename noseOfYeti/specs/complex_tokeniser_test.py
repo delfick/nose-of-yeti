@@ -1,16 +1,11 @@
 from noseOfYeti.tokeniser import Tokeniser
 from should_dsl import should
 
-import six
 
 # pylama:ignore=E501
 
 # Silencing code checker about should_dsl matchers
 result_in = None
-
-func_accessor = ""
-if six.PY2:
-    func_accessor = "__func__ ."
 
 
 class Test_Tokeniser(object):
@@ -177,10 +172,8 @@ class Test_Tokeniser_Complex(object):
         TestThis_Blah .is_noy_spec =True
         TestAnother .is_noy_spec =True
         ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"
-        TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .{func_accessor}__testname__ ="should set __testname__ for non alpha names ' $^"
-        """.format(
-                func_accessor=func_accessor
-            ),
+        TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__testname__ ="should set __testname__ for non alpha names ' $^"
+        """,
         ]
 
     ###   TESTS

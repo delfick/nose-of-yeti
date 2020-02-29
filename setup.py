@@ -1,6 +1,8 @@
 from noseOfYeti import VERSION
 from setuptools import setup
 
+# fmt: off
+
 setup(
        name = 'noseOfYeti'
      , version = VERSION
@@ -35,10 +37,6 @@ setup(
          ]
        }
 
-     , install_requires =
-       [ 'six'
-       ]
-
      , packages =
        [ 'noseOfYeti'
        , 'noseOfYeti.specs'
@@ -54,3 +52,5 @@ setup(
        , "pytest11": ["nose_of_yeti = noseOfYeti.plugins.pytest"]
        }
      )
+
+# fmt: on

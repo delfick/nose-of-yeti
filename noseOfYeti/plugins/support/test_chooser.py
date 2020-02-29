@@ -11,7 +11,7 @@ class TestChooser(object):
 
     def already_visited(self, kls, name):
         """Determine if a method has already been accepted for this module"""
-        key = "%s.%s" % (kls, name)
+        key = f"{kls}.{name}"
         if key not in self.done:
             self.done[key] = True
             return False

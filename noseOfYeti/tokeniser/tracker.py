@@ -106,8 +106,8 @@ class Tracker(object):
     def raise_about_open_containers(self):
         if self.containers:
             val, srow, scol = self.containers[-1]
-            where = "line {0}, column {1}".format(srow, scol)
-            raise SyntaxError("Found an open '{0}' ({1}) that wasn't closed".format(val, where))
+            where = f"line {srow}, column {scol}"
+            raise SyntaxError(f"Found an open '{val}' ({where}) that wasn't closed")
 
     ########################
     ###   PROGRESS
@@ -193,9 +193,9 @@ class Tracker(object):
                 self.single = self.groups.start_single(value, scol)
 
             elif value in ("before_each", "after_each"):
-                setattr(self.groups, "has_%s" % value, True)
+                setattr(self.groups, f"has_{value}", True)
                 if with_async:
-                    setattr(self.groups, "async_%s" % value, True)
+                    setattr(self.groups, f"async_{value}", True)
                 self.add_tokens_for_test_helpers(value, with_async=with_async)
 
             else:
@@ -287,9 +287,7 @@ class Tracker(object):
             for single in group.singles:
                 name, english = single.name, single.english
                 if english[1:-1] != name.replace("_", " "):
-                    lst.extend(
-                        self.tokens.make_name_modifier(not group.root, single.identifier, english)
-                    )
+                    lst.extend(self.tokens.make_name_modifier(single.identifier, english))
 
         endmarker = False
 
@@ -419,7 +417,7 @@ class Tracker(object):
         if ignore:
             srow = self.current.srow
             scol = self.current.scol
-            raise SyntaxError("Found a missing ':' on line {0}, column {1}".format(srow, scol))
+            raise SyntaxError(f"Found a missing ':' on line {srow}, column {scol}")
 
         self.groups.finish_signature()
 
@@ -478,16 +476,15 @@ class Tracker(object):
             elif value in [")", "]", "}"]:
                 # not necessary to check for correctness
                 if not self.containers:
-                    raise SyntaxError(
-                        "Found a hanging '{0}' on line {1}, column {2}".format(value, srow, scol)
-                    )
+                    raise SyntaxError(f"Found a hanging '{value}' on line {srow}, column {scol}")
 
                 v, sr, sc = self.containers.pop()
                 if v != {")": "(", "]": "[", "}": "{"}[value]:
-                    found_at = "line {0}, column {1}".format(srow, scol)
-                    found_last = "line {0}, column {1}".format(sr, sc)
-                    msg = "Trying to close the wrong type of bracket. Found '{0}' ({1}) instead of closing a '{2}' ({3})"
-                    raise SyntaxError(msg.format(value, found_at, v, found_last))
+                    found_at = f"line {srow}, column {scol}"
+                    found_last = f"line {sr}, column {sc}"
+                    msg = "Trying to close the wrong type of bracket"
+                    msg = f"{msg}. Found '{value}' ({found_at}) instead of closing a '{v}' ({found_last})"
+                    raise SyntaxError(msg)
 
                 ending_container = True
 
