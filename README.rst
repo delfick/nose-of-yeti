@@ -37,7 +37,8 @@ This means that any changes in the translation process won't happen untill eithe
       This obviously won't work in a non nosetests environment and I think it's
       best if skipped tests were explicit rather than injected when you forget
       a ``:``.
-    * I removed the ``context`` block. Groups can now only be a ``describe``.
+    * Removed the ``context`` block. Groups can now only be a ``describe``.
+    * Removed wrapped setup/teardown helpers
 
 ``1.9.1``
     Turns out the incremental decoder does get used for the whole file, so I've
