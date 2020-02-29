@@ -1,7 +1,7 @@
 from tokenize import untokenize
 from should_dsl import matcher
 from textwrap import dedent
-from six import StringIO
+from io import StringIO
 import re
 
 
@@ -20,27 +20,21 @@ class MatchRegexLines(object):
         radicand_lines = self._radicand.strip().split("\n")
 
         if len(actual_lines) != len(radicand_lines):
-            self.mismatched = "Expected same number of lines, got {0} instead of {1}".format(
-                len(actual_lines), len(radicand_lines)
-            )
+            self.mismatched = f"Expected same number of lines, got {len(actual_lines)} instead of {len(radicand_lines)}"
             return False
 
         for a, r in zip(actual_lines, radicand_lines):
             if not re.match(r, a):
-                self.mismatched = "'{0}'\ndid not match\n'{1}'".format(r, a)
+                self.mismatched = f"'{r}'\ndid not match\n'{a}'"
                 return False
 
         return True
 
     def message_for_failed_should(self):
-        return "expected \n{0}\n\n to match \n{1}\n\n{2}".format(
-            self._radicand, self._actual, self.mismatched
-        )
+        return f"expected \n{self._radicand}\n\n to match \n{self._actual}\n\n{self.mismatched}"
 
     def message_for_failed_should_not(self):
-        return "expected \n{0}\n\n to not match \n{1}\n\n{2}".format(
-            self._radicand, self._actual, self.mismatched
-        )
+        return f"expected \n{self._radicand}\n\n to not match \n{self._actual}\n\n{self.mismatched}"
 
 
 @matcher
@@ -62,8 +56,8 @@ class ResultInSyntaxError(object):
             return False
         except SyntaxError as error:
             if str(error) != self._radicand:
-                self.error = "Error message didn't match, expected\n{0}\ngot\n{1}".format(
-                    self._radicand, str(error)
+                self.error = (
+                    f"Error message didn't match, expected\n{self._radicand}\ngot\n{str(error)}"
                 )
                 return False
 
@@ -106,14 +100,14 @@ class ResultIn(object):
         return self._expected == self._radicand
 
     def message_for_failed_should(self):
-        return 'expected "{0}"\n======================>\n"{1}"\n\n======================$\n"{2}"'.format(
-            *(
-                res.replace(" ", ".").replace("\t", "-")
-                for res in (self._actual, self._radicand, self._expected)
-            )
-        )
+        r = lambda res: res.replace(" ", ".").replace("\t", "-")
+        act = r(self._actual)
+        rad = r(self._radicand)
+        exp = r(self._expected)
+        return f'expected "{act}"\n======================>\n"{rad}"\n\n======================$\n"{exp}"'
 
     def message_for_failed_should_not(self):
-        return 'expected "{0}"\n\tTo not translate to "{1}"'.format(
-            *(res.replace(" ", ".").replace("\t", "-") for res in (self._actual, self._radicand))
-        )
+        r = lambda res: res.replace(" ", ".").replace("\t", "-")
+        act = r(self._actual)
+        rad = r(self._radicand)
+        return f'expected "{act}"\n\tTo not translate to "{rad}"'

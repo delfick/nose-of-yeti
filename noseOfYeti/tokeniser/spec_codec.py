@@ -1,11 +1,10 @@
 from tokenize import untokenize
 from encodings import utf_8
-from six import StringIO
+from io import StringIO
 import traceback
 import encodings
 import codecs
 import sys
-import six
 import re
 
 from noseOfYeti.tokeniser.tokeniser import Tokeniser
@@ -26,7 +25,7 @@ class TokeniserCodec(object):
         self.codec = self.get_codec()
 
     def translate(self, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = value.encode()
         return self.codec.decode(value, return_tuple=False)
 
@@ -57,26 +56,18 @@ class TokeniserCodec(object):
             """Used by pypy and pylint to deal with a spec file"""
             return_tuple = kwargs.get("return_tuple", True)
 
-            if six.PY3:
-                if hasattr(text, "tobytes"):
-                    text = text.tobytes().decode("utf8")
-                else:
-                    text = text.decode("utf8")
+            if hasattr(text, "tobytes"):
+                text = text.tobytes().decode()
+            else:
+                text = text.decode()
 
-            buffered = StringIO(text)
+            reader = StringIO(text)
 
             # Determine if we need to have imports for this string
             # It may be a fragment of the file
-            has_spec = regexes["encoding_matcher"].search(buffered.readline())
+            has_spec = regexes["encoding_matcher"].search(reader.readline())
             no_imports = not has_spec
-            buffered.seek(0)
-
-            # Translate the text
-            if six.PY2:
-                utf8 = encodings.search_function("utf8")  # Assume utf8 encoding
-                reader = utf8.streamreader(buffered)
-            else:
-                reader = buffered
+            reader.seek(0)
 
             data = self.dealwith(reader.readline, no_imports=no_imports)
 
@@ -87,7 +78,7 @@ class TokeniserCodec(object):
                 if regexes["whitespace"].sub("", text) == regexes["whitespace"].sub("", data):
                     bad_indentation = regexes["leading_whitespace"].search(text).groups()[0]
                     good_indentation = regexes["leading_whitespace"].search(data).groups()[0]
-                    data = "%s%s" % (good_indentation, text[len(bad_indentation) :])
+                    data = f"{good_indentation}{text[len(bad_indentation) :]}"
 
             # If text is empty and data isn't, then we should return text
             if len(text) == 0 and len(data) == 1:
@@ -137,20 +128,17 @@ class TokeniserCodec(object):
             for line in traceback.format_exception(*sys.exc_info()):
                 lines.append(line.strip())
             lines.append('"""')
-            lines.append(r"raise Exception('--- internal spec codec error --- \n{0}'.format(msg))")
+            lines.append(r'raise Exception(f"--- internal spec codec error --- \n{msg}")')
             data = "\n".join(lines)
         else:
             # At this point, data is a list of tokens
             data = untokenize(data)
 
-        if six.PY2 and type(data) is not unicode:  # noqa
-            data = unicode(data)  # noqa
-
         return data
 
     def output_for_debugging(self, stream, data):
         """It will write the translated version of the file"""
-        with open("%s.spec.out" % stream.name, "w") as f:
+        with open(f"{stream.name}.spec.out", "w") as f:
             f.write(str(data))
 
 

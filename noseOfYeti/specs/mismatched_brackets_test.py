@@ -3,6 +3,7 @@ from should_dsl import should
 
 # pylama:ignore=E0602
 
+
 class TestMismatchedBrackets(object):
     def test_it_knows_about_mismatched_brackets(self):
         txt = """

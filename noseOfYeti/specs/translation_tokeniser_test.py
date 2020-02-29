@@ -2,14 +2,9 @@ from noseOfYeti.tokeniser import Tokeniser
 from should_dsl import should
 
 from unittest import TestCase
-import six
 
 # Silencing code checker about should_dsl matchers
 result_in = None
-
-func_accessor = ""
-if six.PY2:
-    func_accessor = "__func__ ."
 
 
 class Test_Tokenisor_translation(TestCase):
@@ -302,12 +297,10 @@ class Test_Tokenisor_translation(TestCase):
         class TestSomeTests_NestedDescribe (TestSomeTests ):
             def test_asdf_asdf (self ):
                 1 |should |be (2 )
-        test_root_level_should_work_well .__testname__ ="(root level) should work {{well}}"
-        TestSomeTests .test_doesnt_get_phased_by_special_characters .{func_accessor}__testname__ ="doesn't get phased by $special characters"
-        TestSomeTests_NestedDescribe .test_asdf_asdf .{func_accessor}__testname__ ="asdf $% asdf"
-        """.format(
-            func_accessor=func_accessor
-        )
+        test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
+        TestSomeTests .test_doesnt_get_phased_by_special_characters .__testname__ ="doesn't get phased by $special characters"
+        TestSomeTests_NestedDescribe .test_asdf_asdf .__testname__ ="asdf $% asdf"
+        """
 
         (self.toka, test) | should | result_in(desired)
 

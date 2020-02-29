@@ -24,7 +24,8 @@ Note that it is recommended you remove .pyc of your noseOfYeti specs when you up
 The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
 This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
 
-``2.0``
+``2.0.0``
+    * noseOfYeti is now only python3.6+ compatible
     * Removed the ignore-kls option
     * Removed support for nose2, pylint and sphinx.
       * I don't use these and I'm not sure these plugins actually work.

@@ -1,8 +1,6 @@
 from tokenize import NAME, OP, INDENT, NEWLINE, STRING
 from tokenize import generate_tokens
 
-import six
-
 ########################
 ###   TOKENS IN GENERATOR
 ########################
@@ -82,7 +80,8 @@ class Tokens(object):
         if kls:
             kls = tokens_in(kls)
 
-        method_name = "%snoy_sup_%s" % ("async_" if with_async else "", self.equivalence[method])
+        prefix = "async_" if with_async else ""
+        method_name = f"{prefix}noy_sup_{self.equivalence[method]}"
         result = [(OP, ":"), (NEWLINE, "\n"), (INDENT, indent)]
 
         if with_async:
@@ -106,7 +105,7 @@ class Tokens(object):
             (NAME, "True"),
         ]
 
-    def make_name_modifier(self, ismethod, cleaned, english):
+    def make_name_modifier(self, cleaned, english):
         result = [(NEWLINE, "\n")]
 
         parts = cleaned.split(".")
@@ -114,9 +113,6 @@ class Tokens(object):
 
         for part in parts[1:]:
             result.extend([(OP, "."), (NAME, part)])
-
-        if ismethod and not six.PY3:
-            result.extend([(OP, "."), (NAME, "__func__")])
 
         result.extend([(OP, "."), (NAME, "__testname__"), (OP, "="), (STRING, english)])
 
