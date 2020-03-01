@@ -5,7 +5,6 @@ Changelog
 
 2.0.0 - TBD
     * nose-of-yeti is now only python3.6+ compatible
-    * Removed the ignore-kls option
     * Removed support for nose2, pylint and sphinx.
 
       * I don't use these and I'm not sure these plugins actually work.
