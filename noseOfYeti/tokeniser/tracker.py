@@ -1,4 +1,4 @@
-from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMMENT, ENDMARKER
+from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMMENT, ENDMARKER, NL
 from contextlib import contextmanager
 import re
 
@@ -212,7 +212,7 @@ class Tracker:
         # Just append if token should be
         if just_append:
             # Make sure comments are indented appropriately
-            if tokenum == COMMENT:
+            if tokenum == COMMENT and not self.in_container:
                 indent = self.indent_type * (self.current.scol - self.groups.level)
                 self.result.append((INDENT, indent))
 

@@ -151,6 +151,59 @@ class Examples:
     """,
     ]
 
+    comment_example = [
+        """
+    assertTileHues(
+        self, tiles[0],
+        25.0,  25.0,  25.0,  25.0,  25.0,  25.0, # noqa
+        18.75, 18.75, 18.75, 18.75, 18.75, 18.75, # noqa
+    )
+
+    it "things":
+        assertTileHues(
+            self, tiles[1],
+            25.0,  25.0,  25.0,  25.0,  25.0,  25.0, # noqa
+            18.75, 18.75, 18.75, 18.75, 18.75, 18.75, # noqa
+        )
+
+        expected = {
+            # something
+            ("D2", "<d"): lambda s: ("D2", "<d", s)
+            # something else
+            ,
+            ("B2", None): ("B2", None, None),
+        }
+
+        def t(n, f, c):
+            return expected[(n, f, c)]
+    """,
+        """
+    assertTileHues (
+    self ,tiles [0 ],
+    25.0 ,25.0 ,25.0 ,25.0 ,25.0 ,25.0 ,# noqa
+    18.75 ,18.75 ,18.75 ,18.75 ,18.75 ,18.75 ,# noqa
+    )
+
+    def test_things ():
+        assertTileHues (
+        self ,tiles [1 ],
+        25.0 ,25.0 ,25.0 ,25.0 ,25.0 ,25.0 ,# noqa
+        18.75 ,18.75 ,18.75 ,18.75 ,18.75 ,18.75 ,# noqa
+        )
+
+        expected ={
+        # something
+        ("D2","<d"):lambda s :("D2","<d",s )
+        # something else
+        ,
+        ("B2",None ):("B2",None ,None ),
+        }
+
+        def t (n ,f ,c ):
+            return expected [(n ,f ,c )]
+    """,
+    ]
+
 
 class Test_Tokeniser:
     def test_gives_describes_noy_specific_attributes(self):
@@ -178,3 +231,6 @@ class Test_Tokeniser_Complex:
 
     def test_keeps_good_indentation_in_body_with_tabs(self):
         pytest.helpers.assert_example(Examples.big_example, convert_to_tabs=True)
+
+    def test_keeps_correct_indentation_with_comments(self):
+        pytest.helpers.assert_example(Examples.comment_example, convert_to_tabs=True)
