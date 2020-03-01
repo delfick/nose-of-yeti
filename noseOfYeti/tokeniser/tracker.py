@@ -8,14 +8,14 @@ from noseOfYeti.tokeniser.containers import TokenDetails, Group
 regexes = {"whitespace": re.compile(r"\s+")}
 
 
-class WildCard(object):
+class WildCard:
     """Used to determine if tokens should be inserted untill ignored token"""
 
     def __repr__(self):
         return "<WildCard>"
 
 
-class Tracker(object):
+class Tracker:
     """Keep track of what each next token should mean"""
 
     def __init__(self, result, tokens):

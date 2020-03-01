@@ -17,7 +17,7 @@ regexes = {
 }
 
 
-class TokeniserCodec(object):
+class TokeniserCodec:
     """Class to register the spec codec"""
 
     def __init__(self, tokeniser):

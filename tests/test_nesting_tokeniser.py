@@ -100,7 +100,7 @@ def assert_example(example, convert_to_tabs=False):
     )
 
 
-class Test_Tokeniser_Nesting(object):
+class Test_Tokeniser_Nesting:
     def test_works_with_space(self):
         assert_example(Examples.small_example)
 

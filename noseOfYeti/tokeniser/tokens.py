@@ -30,7 +30,7 @@ def tokens_in(s, strip_it=True):
 ########################
 
 
-class Tokens(object):
+class Tokens:
     def __init__(self):
         self.equivalence = {"after_each": "tearDown", "before_each": "setUp"}
 

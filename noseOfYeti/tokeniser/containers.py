@@ -26,7 +26,7 @@ def acceptable(value, capitalize=False):
     return name
 
 
-class TokenDetails(object):
+class TokenDetails:
     """Container for current token"""
 
     def __init__(self, tokenum=None, value=None, srow=0, scol=0):
@@ -45,7 +45,7 @@ class TokenDetails(object):
         return self.tokenum, self.value, self.srow, self.scol
 
 
-class Single(object):
+class Single:
     """Container for a single block (i.e. it or ignore block)"""
 
     def __init__(self, group, typ=None, indent=0):
@@ -98,7 +98,7 @@ class Single(object):
             self.args[-1].append((tokenum, value))
 
 
-class Group(object):
+class Group:
     """Container for describe blocks"""
 
     def __init__(self, name=None, root=False, parent=None, level=0, typ=None):
