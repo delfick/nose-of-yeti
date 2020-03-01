@@ -1,110 +1,85 @@
-from noseOfYeti.tokeniser import Tokeniser
-from should_dsl import should
-
-from unittest import TestCase
-
-# Silencing code checker about should_dsl matchers
-result_in = None
+from textwrap import dedent
+import pytest
 
 
-class Test_Tokenisor_translation(TestCase):
-    def setUp(self):
-        self.toka = Tokeniser(with_describe_attrs=False)
+def assert_example(original, desired):
+    tab_original = original.replace("    ", "\t")
+    tab_desired = desired.replace("    ", "\t")
 
+    options = {"with_describe_attrs": False}
+
+    for original, desired in ((original, desired), (tab_original, tab_desired)):
+        pytest.helpers.assert_conversion(original, desired, tokeniser=options)
+
+        # And with newlines
+        original = f"import os\n{dedent(original)}"
+        desired = f"import os\n{dedent(desired)}"
+        pytest.helpers.assert_conversion(original, desired, tokeniser=options)
+
+
+class Test_Tokenisor_translation:
     def test_translates_a_describe(self):
-        (self.toka, 'describe "Something testable"') | should | result_in(
-            "class TestSomethingTestable :pass"
-        )
-
-        # Same tests, but with newlines in front
-        (self.toka, '\ndescribe "Something testable"') | should | result_in(
-            "\nclass TestSomethingTestable :pass"
-        )
+        original = 'describe "Something testable"'
+        desired = "class TestSomethingTestable :pass"
+        assert_example(original, desired)
 
     def test_translates_an_it(self):
-        (self.toka, 'it "should do this thing":') | should | result_in(
-            "def test_should_do_this_thing ():"
-        )
-
-        # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing":') | should | result_in(
-            "\ndef test_should_do_this_thing ():"
-        )
+        original = 'it "should do this thing":'
+        desired = "def test_should_do_this_thing ():"
+        assert_example(original, desired)
 
         ## and with async
-
-        (self.toka, 'async it "should do this thing":') | should | result_in(
-            "async def test_should_do_this_thing ():"
-        )
-
-        # Same tests, but with newlines in front
-        (self.toka, '\nasync it "should do this thing":') | should | result_in(
-            "\nasync def test_should_do_this_thing ():"
-        )
+        original = 'async it "should do this thing":'
+        desired = "async def test_should_do_this_thing ():"
+        assert_example(original, desired)
 
     def test_adds_arguments_to_its_if_declared_on_same_line(self):
-        (self.toka, 'it "should do this thing", blah, meh:') | should | result_in(
-            "def test_should_do_this_thing (blah ,meh ):"
-        )
-
-        # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing", blah, meh:') | should | result_in(
-            "\ndef test_should_do_this_thing (blah ,meh ):"
-        )
+        original = 'it "should do this thing", blah, meh:'
+        desired = "def test_should_do_this_thing (blah ,meh ):"
+        assert_example(original, desired)
 
     def test_adds_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
-        (self.toka, 'it "should do this thing", blah, meh: pass') | should | result_in(
-            "def test_should_do_this_thing (blah ,meh ):pass"
-        )
-
-        # Same tests, but with newlines in front
-        (self.toka, '\nit "should do this thing", blah, meh:\n    pass') | should | result_in(
-            "\ndef test_should_do_this_thing (blah ,meh ):\n    pass"
-        )
+        original = 'it "should do this thing", blah, meh: pass'
+        desired = "def test_should_do_this_thing (blah ,meh ):pass"
+        assert_example(original, desired)
 
     def test_complains_about_it_that_isnt_a_block(self):
-        with self.assertRaisesRegex(SyntaxError, "Found a missing ':' on line 1, column 22"):
-            (self.toka, 'it "should be skipped"\n') | should | result_in("")
+        with pytest.raises(SyntaxError, match="Found a missing ':' on line 1, column 22"):
+            assert_example('it "should be skipped"\n', "")
 
         # Same tests, but with newlines in front
-        with self.assertRaisesRegex(SyntaxError, "Found a missing ':' on line 3, column 22"):
-            (self.toka, 'import os\n\nit "should be skipped"\n') | should | result_in("")
+        with pytest.raises(SyntaxError, match="Found a missing ':' on line 3, column 22"):
+            assert_example('import os\n\nit "should be skipped"\n', "")
 
-        (self.toka, 'import os\n\nit "should not be skipped":\n') | should | result_in(
-            "import os\n\ndef test_should_not_be_skipped ():"
-        )
+        original = 'import os\n\nit "should not be skipped":\n'
+        desired = "import os\n\ndef test_should_not_be_skipped ():"
+        assert_example(original, desired)
 
         ## And with async
 
-        with self.assertRaises(SyntaxError, msg="Found a missing ':' on line 1, column 28"):
-            (self.toka, 'async it "should be skipped"\n') | should | result_in("")
+        with pytest.raises(SyntaxError, match="Found a missing ':' on line 1, column 28"):
+            assert_example('async it "should be skipped"\n', "")
 
-        (self.toka, 'async it "should not be skipped":\n') | should | result_in(
-            "async def test_should_not_be_skipped ():"
-        )
+        original = 'import os\n\nasync it "should not be skipped":\n'
+        desired = "import os\n\nasync def test_should_not_be_skipped ():"
+        assert_example(original, desired)
 
         # Same tests, but with newlines in front
-        with self.assertRaises(SyntaxError, msg="Found a missing ':' on line 2, column 28"):
-            (self.toka, 'import os\nasync it "should be skipped"\n') | should | result_in("")
+        with pytest.raises(SyntaxError, match="Found a missing ':' on line 3, column 28"):
+            assert_example('import os\n\nasync it "should be skipped"\n', "")
 
-        (self.toka, 'import os\nasync it "should not be skipped":\n') | should | result_in(
-            "import os\nasync def test_should_not_be_skipped ():"
-        )
+        original = 'import os\n\nasync it "should not be skipped":\n'
+        desired = "import os\n\nasync def test_should_not_be_skipped ():"
+        assert_example(original, desired)
 
     def test_turns_before_each_into_setup(self):
-        (self.toka, "before_each:") | should | result_in("def setUp (self ):")
-
-        # Same tests, but with newlines in front
-        (self.toka, "\nbefore_each:") | should | result_in("\ndef setUp (self ):")
+        assert_example("before_each:", "def setUp (self ):")
 
         # And with async
-        (self.toka, "async before_each:") | should | result_in("async def setUp (self ):")
-
-        # Same tests, but with newlines in front
-        (self.toka, "\nasync before_each:") | should | result_in("\nasync def setUp (self ):")
+        assert_example("async before_each:", "async def setUp (self ):")
 
     def test_indentation_should_work_regardless_of_crazy_groups(self):
-        test = """
+        original = """
         describe 'a':
             it 'asdf':
                 l = [ True
@@ -153,20 +128,21 @@ class Test_Tokenisor_translation(TestCase):
                 pass
         """
 
-        (self.toka, test) | should | result_in(desired)
+        assert_example(original, desired)
 
     def test_complains_if_describe_after_hanging_it(self):
-        test = """
+        original = """
         describe 'thing':
             it 'should be skipped'
             describe 'that':
-                pass"""
+                pass
+        """
 
-        with self.assertRaisesRegex(SyntaxError, "Found a missing ':' on line 2, column 26"):
-            (self.toka, test) | should | result_in("")
+        with pytest.raises(SyntaxError, match="Found a missing ':' on line 2, column 26"):
+            assert_example(original, "")
 
     def test_indentation_should_work_for_inline_python_code(self):
-        test = """
+        original = """
         describe 'this':
             describe 'that':
                 pass
@@ -184,10 +160,10 @@ class Test_Tokenisor_translation(TestCase):
             def indented_method ()
         """
 
-        (self.toka, test) | should | result_in(desired)
+        assert_example(original, desired)
 
     def test_gives_setups_super_call_when_in_describes_that_know_about_await_if_async(self):
-        test = """
+        original = """
         describe "Thing":
             async before_each:
                 self.x = 5
@@ -199,12 +175,10 @@ class Test_Tokenisor_translation(TestCase):
                 await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_before_each ();self .x =5
         """
 
-        (self.toka, test) | should | result_in(desired)
-        # and with tabs
-        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
+        assert_example(original, desired)
 
     def test_gives_setups_super_call_when_in_describes(self):
-        test = """
+        original = """
         describe "Thing":
             before_each:
                 self.x = 5
@@ -216,18 +190,13 @@ class Test_Tokenisor_translation(TestCase):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .x =5
         """
 
-        (self.toka, test) | should | result_in(desired)
-        # and with tabs
-        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
+        assert_example(original, desired)
 
     def test_turns_after_each_into_teardown(self):
-        (self.toka, "after_each:") | should | result_in("def tearDown (self ):")
-
-        # Same tests, but with newlines in front
-        (self.toka, "\nafter_each:") | should | result_in("\ndef tearDown (self ):")
+        assert_example("after_each:", "def tearDown (self ):")
 
     def test_gives_teardowns_super_call_that_awaits_when_in_describes_and_async(self):
-        test = """
+        original = """
         describe "Thing":
             async after_each:
                 self.x = 5
@@ -239,12 +208,10 @@ class Test_Tokenisor_translation(TestCase):
                 await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_after_each ();self .x =5
         """
 
-        (self.toka, test) | should | result_in(desired)
-        # and with tabs
-        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
+        assert_example(original, desired)
 
     def test_gives_teardowns_super_call_when_in_describes(self):
-        test = """
+        original = """
         describe "Thing":
             after_each:
                 self.x = 5
@@ -256,26 +223,17 @@ class Test_Tokenisor_translation(TestCase):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ();self .x =5
         """
 
-        (self.toka, test) | should | result_in(desired)
-        # and with tabs
-        (self.toka, test.replace("    ", "\t")) | should | result_in(desired.replace("    ", "\t"))
+        assert_example(original, desired)
 
     def test_no_transform_inside_expression(self):
-        (self.toka, "variable = before_each") | should | result_in("variable =before_each ")
-        (self.toka, "variable = after_each") | should | result_in("variable =after_each ")
-        (self.toka, "variable = describe") | should | result_in("variable =describe ")
-        (self.toka, "variable = ignore") | should | result_in("variable =ignore ")
-        (self.toka, "variable = it") | should | result_in("variable =it ")
-
-        # Same tests, but with newlines in front
-        (self.toka, "\nvariable = before_each") | should | result_in("\nvariable =before_each ")
-        (self.toka, "\nvariable = after_each") | should | result_in("\nvariable =after_each ")
-        (self.toka, "\nvariable = describe") | should | result_in("\nvariable =describe ")
-        (self.toka, "\nvariable = ignore") | should | result_in("\nvariable =ignore ")
-        (self.toka, "\nvariable = it") | should | result_in("\nvariable =it ")
+        assert_example("variable = before_each", "variable =before_each ")
+        assert_example("variable = after_each", "variable =after_each ")
+        assert_example("variable = describe", "variable =describe ")
+        assert_example("variable = ignore", "variable =ignore ")
+        assert_example("variable = it", "variable =it ")
 
     def test_sets__testname__on_non_alphanumeric_test_names(self):
-        test = """
+        original = """
         it "(root level) should work {well}":
             3 |should| be(4)
         describe "SomeTests":
@@ -303,10 +261,10 @@ class Test_Tokenisor_translation(TestCase):
         TestSomeTests_NestedDescribe .test_asdf_asdf .__testname__ ="asdf $% asdf"
         """
 
-        (self.toka, test) | should | result_in(desired)
+        assert_example(original, desired)
 
     def test_it_maintains_line_numbers_when_pass_on_another_line(self):
-        test = """
+        original = """
         it "is a function with a pass": pass
 
         it "is a function with a pass on another line":
@@ -368,10 +326,10 @@ class Test_Tokenisor_translation(TestCase):
             pass
         """
 
-        (self.toka, test) | should | result_in(desired)
+        assert_example(original, desired)
 
     def test_it_allows_default_arguments_for_its(self):
-        test = """
+        original = """
         it "is a test with default arguments", thing=2, other=[3]:
             pass
 
@@ -395,10 +353,10 @@ class Test_Tokenisor_translation(TestCase):
                 1 |should |be (2 )
         """
 
-        (self.toka, test) | should | result_in(desired)
+        assert_example(original, desired)
 
     def test_can_properly_dedent_after_block_of_just_containers(self):
-        test = """
+        original = """
         it "should ensure askers are None or boolean or string":
             for val in (None, False, 'asdf', u'asdf', lambda: 1):
                 (lambda : Step(askBeforeAction  = val)) |should_not| throw(Problem)
@@ -428,10 +386,10 @@ class Test_Tokenisor_translation(TestCase):
             3 |should |be (3 )
         """
 
-        (self.toka, test) | should | result_in(desired)
+        assert_example(original, desired)
 
     def test_it_doesnt_add_semicolon_after_noy_setup_if_not_necessary(self):
-        test = """
+        original = """
             describe "block with necessary semicolon":
                 before_each:
                     two = 1 + 1
@@ -460,10 +418,11 @@ class Test_Tokenisor_translation(TestCase):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ()
                 pass
         """
-        (self.toka, test) | should | result_in(desired)
+
+        assert_example(original, desired)
 
     def test_it_keeps_comments_placed_after_setup_and_teardown_methods(self):
-        test = """
+        original = """
             describe "Kls":
                 before_each: # Comment one
 
@@ -500,4 +459,5 @@ class Test_Tokenisor_translation(TestCase):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ()#comment
                 pass
         """
-        (self.toka, test) | should | result_in(desired)
+
+        assert_example(original, desired)
