@@ -1,5 +1,5 @@
 from noseOfYeti.tokeniser.spec_codec import register
-from .support.test_chooser import TestChooser
+from noseOfYeti.tokeniser.chooser import TestChooser
 
 from nose.plugins import Plugin
 

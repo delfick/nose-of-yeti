@@ -26,14 +26,18 @@ setup(
 
     , extras_require =
       { 'tests':
-        [ 'nose'
-        , 'fudge'
-        , 'should-dsl'
+        [ "asynctest==0.12.2"
+        , "pytest==5.3.1"
+        , "alt-pytest-asyncio==0.5.2"
+        , "pytest-helpers-namespace==2019.1.8"
         ]
       }
 
     , entry_points =
-      { 'nose.plugins':
+      { 'console_scripts' :
+        [ 'run_noseOfYeti_tests = noseOfYeti:run_pytest'
+        ]
+      , 'nose.plugins':
         [ 'noseOfYeti = noseOfYeti.plugins.nosetests:Plugin'
         ]
       , "pytest11": ["nose_of_yeti = noseOfYeti.plugins.pytest"]

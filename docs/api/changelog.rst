@@ -25,6 +25,8 @@ Changelog
     * Removed wrapped setup/teardown helpers
     * You no longer need to import sync and async ``noy_sup_setUp`` or
       ``noy_sup_tearDown`` methods anymore.
+    * ``noseOfYeti.plugins.support.test_chooser`` is now
+      ``noseOfYeti.tokeniser.chooser``
 
 1.9.1
     Turns out the incremental decoder does get used for the whole file, so I've
