@@ -17,17 +17,20 @@ it "is possible to add the number three", three=3:
     # Contrived example of default arguments
     assert 1 + three == 4
 
-describe TestCase, "Python Mathematics":
-    # ^^ is replaced with "class test_Python_Mathematics(object):"
+describe "Python Mathematics":
+    # ^^ is replaced with "class test_Python_Mathematics:"
 
     it 'is be able to add two numbers':
         # ^^ is replaced with "def test_is_able_to_add_two_numbers(self):"
-        self.assertEqual(2 + 3, 5)
-        self.assertEqual(2 + 0, 2)
+        assert 2 + 3 == 5
+        assert 2 + 0 == 2
 
     it "can't divide by zero":
-        with self.assertRaises(ZeroDivisionError):
+        try:
             2 / 0
+            assert False, "Expected an error"
+        except ZeroDivisionError:
+            pass
 
 # We can also define a class for the describes
 # Either when we create the tokeniser and register it

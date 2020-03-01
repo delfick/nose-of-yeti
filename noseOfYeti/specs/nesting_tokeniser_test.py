@@ -21,11 +21,11 @@ class Test_Tokeniser_Nesting(object):
             describe "Blah":pass
         describe "Another":pass """,
             """
-        class TestThis ():pass
+        class TestThis :pass
         class TestThis_That (TestThis ):pass
         class TestThis_That_Meh (TestThis_That ):pass
         class TestThis_Blah (TestThis ):pass
-        class TestAnother ():pass
+        class TestAnother :pass
         """,
         ]
 
@@ -39,11 +39,11 @@ class Test_Tokeniser_Nesting(object):
             describe "Blah":pass
         describe "Another":pass """,
             """
-        class TestThis ():pass
+        class TestThis :pass
         class TestThis_That (TestThis ):pass
         class TestThis_That_Meh (TestThis_That ):pass
         class TestThis_Blah (TestThis ):pass
-        class TestAnother ():pass
+        class TestAnother :pass
         """,
         ]
 
@@ -77,7 +77,7 @@ class Test_Tokeniser_Nesting(object):
                     pass
         """,
             """
-        class TestThis ():
+        class TestThis :
             def test_should (self ):
                 if x :
                     pass
@@ -91,7 +91,7 @@ class Test_Tokeniser_Nesting(object):
                 else :
                     pass
         class TestThis_Blah (TestThis ):pass
-        class TestAnother ():
+        class TestAnother :
             def test_should (self ):
                 if z :
                     if u :
@@ -132,5 +132,5 @@ class Test_Tokeniser_Nesting(object):
 
     def test_names_nested_describes_with_part_of_parents_name(self):
         test = 'describe "a":\n\tdescribe "b":'
-        desired = "class TestA ():pass\nclass TestA_B (TestA ):"
+        desired = "class TestA :pass\nclass TestA_B (TestA ):"
         (self.toka, test) | should | result_in(desired)

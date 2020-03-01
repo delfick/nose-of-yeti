@@ -13,12 +13,12 @@ class Test_Tokenisor_translation(TestCase):
 
     def test_translates_a_describe(self):
         (self.toka, 'describe "Something testable"') | should | result_in(
-            "class TestSomethingTestable ():pass"
+            "class TestSomethingTestable :pass"
         )
 
         # Same tests, but with newlines in front
         (self.toka, '\ndescribe "Something testable"') | should | result_in(
-            "\nclass TestSomethingTestable ():pass"
+            "\nclass TestSomethingTestable :pass"
         )
 
     def test_translates_an_it(self):
@@ -129,7 +129,7 @@ class Test_Tokenisor_translation(TestCase):
                 pass"""
 
         desired = """
-        class TestA ():
+        class TestA :
             def test_asdf (self ):
                 l =[True
                 ,False
@@ -171,16 +171,16 @@ class Test_Tokenisor_translation(TestCase):
             describe 'that':
                 pass
 
-        class SomeMockObject():
+        class SomeMockObject:
             def indented_method()
         """
 
         desired = """
-        class TestThis ():pass
+        class TestThis :pass
         class TestThis_That (TestThis ):
             pass
 
-        class SomeMockObject ():
+        class SomeMockObject :
             def indented_method ()
         """
 
@@ -194,7 +194,7 @@ class Test_Tokenisor_translation(TestCase):
         """
 
         desired = """
-        class TestThing ():
+        class TestThing :
             async def setUp (self ):
                 await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_before_each ();self .x =5
         """
@@ -211,7 +211,7 @@ class Test_Tokenisor_translation(TestCase):
         """
 
         desired = """
-        class TestThing ():
+        class TestThing :
             def setUp (self ):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .x =5
         """
@@ -234,7 +234,7 @@ class Test_Tokenisor_translation(TestCase):
         """
 
         desired = """
-        class TestThing ():
+        class TestThing :
             async def tearDown (self ):
                 await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_after_each ();self .x =5
         """
@@ -251,7 +251,7 @@ class Test_Tokenisor_translation(TestCase):
         """
 
         desired = """
-        class TestThing ():
+        class TestThing :
             def tearDown (self ):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ();self .x =5
         """
@@ -290,7 +290,7 @@ class Test_Tokenisor_translation(TestCase):
         desired = """
         def test_root_level_should_work_well ():
             3 |should |be (4 )
-        class TestSomeTests ():
+        class TestSomeTests :
             def test_doesnt_get_phased_by_special_characters (self ):
                 pass
 
@@ -349,14 +349,14 @@ class Test_Tokenisor_translation(TestCase):
 
             pass
 
-        class TestBlockWithAPass ():
+        class TestBlockWithAPass :
             pass
 
-        class TestBlockWithCommentAndPass ():
+        class TestBlockWithCommentAndPass :
             # comment or something
             pass
 
-        class TestNestingAndPasses ():pass
+        class TestNestingAndPasses :pass
             # comment
         class TestNestingAndPasses_Nested (TestNestingAndPasses ):
             pass
@@ -387,7 +387,7 @@ class Test_Tokenisor_translation(TestCase):
         def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):
             pass
 
-        class TestGroup ():
+        class TestGroup :
             def test_has_self_and_default_args (self ,blah =None ,you =(3 ,4 ,
             5 ,5 )):
                 # Test space is respected
@@ -447,11 +447,11 @@ class Test_Tokenisor_translation(TestCase):
         """
 
         desired = """
-        class TestBlockWithNecessarySemicolon ():
+        class TestBlockWithNecessarySemicolon :
             def setUp (self ):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();two =1 +1
 
-        class TestBlockWithUnecessarySemiclon ():
+        class TestBlockWithUnecessarySemiclon :
             def setUp (self ):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ()#comment
                 pass
@@ -483,7 +483,7 @@ class Test_Tokenisor_translation(TestCase):
         """
 
         desired = """
-        class TestKls ():
+        class TestKls :
             def setUp (self ):# Comment one
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ()
                 pass
@@ -492,7 +492,7 @@ class Test_Tokenisor_translation(TestCase):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ()
                 pass
 
-        class TestKls2 ():
+        class TestKls2 :
             def setUp (self ):# Comment three
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();two =1 +1
 

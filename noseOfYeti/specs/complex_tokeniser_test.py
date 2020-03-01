@@ -13,7 +13,7 @@ class Test_Tokeniser(object):
         tok = Tokeniser()
         (tok, 'describe "Something testable"') | should | result_in(
             """
-        class TestSomethingTestable ():pass
+        class TestSomethingTestable :pass
 
         TestSomethingTestable .is_noy_spec =True
         """
@@ -47,7 +47,7 @@ class Test_Tokeniser_Complex(object):
             before_each:
                 self.z = 8 """,
             """
-        class TestThis ():
+        class TestThis :
             def setUp (self ):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .x =5
         class TestThis_That (TestThis ):
@@ -62,7 +62,7 @@ class Test_Tokeniser_Complex(object):
                 await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_before_each ();pass
             async def tearDown (self ):
                 await __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).async_after_each ();pass
-        class TestAnother ():
+        class TestAnother :
             def setUp (self ):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .z =8
 
@@ -123,7 +123,7 @@ class Test_Tokeniser_Complex(object):
             pass
         """,
             """
-        class TestThis ():
+        class TestThis :
             def setUp (self ):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .x =5
             def test_should (self ):
@@ -151,7 +151,7 @@ class Test_Tokeniser_Complex(object):
         class TestThis_Blah (TestThis ):pass
         def ignore__root_level_pecial_method ():
             pass
-        class TestAnother ():
+        class TestAnother :
             def setUp (self ):
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .z =8
             def test_should (self ):
