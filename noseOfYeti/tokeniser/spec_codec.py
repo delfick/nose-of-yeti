@@ -114,9 +114,9 @@ class TokeniserCodec:
 
     def dealwith(self, readline, **kwargs):
         """
-            Replace the contents of spec file with the translated version
-            readline should be a callable object
-            , which provides the same interface as the readline() method of built-in file objects
+        Replace the contents of spec file with the translated version
+        readline should be a callable object,
+        which provides the same interface as the readline() method of built-in file objects
         """
         data = []
         try:
