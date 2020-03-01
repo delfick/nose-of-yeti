@@ -68,11 +68,13 @@ class Tokens(object):
         return lst
 
     def make_describe(self, kls, name):
-        lst = [(NAME, "class"), (NAME, name), (OP, "(")]
+        lst = [(NAME, "class"), (NAME, name)]
         if kls:
+            lst.append((OP, "("))
             lst.extend(tokens_in(kls))
+            lst.append((OP, ")"))
 
-        lst.extend([(OP, ")"), (OP, ":")])
+        lst.append((OP, ":"))
 
         return lst
 
