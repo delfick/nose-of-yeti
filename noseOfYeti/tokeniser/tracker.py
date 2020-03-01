@@ -1,8 +1,9 @@
-from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMMENT, ENDMARKER, NL
+from noseOfYeti.tokeniser.containers import TokenDetails, Group
+
+from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMMENT, ENDMARKER
 from contextlib import contextmanager
 import re
 
-from noseOfYeti.tokeniser.containers import TokenDetails, Group
 
 # Regex for matching whitespace
 regexes = {"whitespace": re.compile(r"\s+")}
