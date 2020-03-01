@@ -1,12 +1,10 @@
 # coding: spec
 
-# The noy plugin for nosetests (enabled by the --with-noy option)
-# will register the "spec" codec, which means any file that has
-# "# coding: sepc" as the first line, like this file, will be parsed
-# by the spec codec before it is imported.
+# You ensure the file has the coding: spec comment as the first line as above
+# and that nose-of-yeti has registered the spec codec
 
-# The codec will then turn what you have written into proper
-# , executable python code!
+# The codec will then turn what you have written into python code that can be
+# executed.
 
 # The test can then be specified using describes and its
 
@@ -20,10 +18,10 @@ it "is possible to add the number three", three=3:
     assert 1 + three == 4
 
 describe TestCase, "Python Mathematics":
-    # That is replaced with "class test_Python_Mathematics(object):"
+    # ^^ is replaced with "class test_Python_Mathematics(object):"
 
     it 'is be able to add two numbers':
-        # that is replaced with "def test_is_able_to_add_two_numbers(self):"
+        # ^^ is replaced with "def test_is_able_to_add_two_numbers(self):"
         self.assertEqual(2 + 3, 5)
         self.assertEqual(2 + 0, 2)
 
@@ -43,8 +41,7 @@ describe DifferentBase 'Inheritance':
     it 'has an x equal to 5':
         self.assertEqual(self.x(), 5)
 
-# You can even nest describes !
-# The following is a bad example, but it demonstrates well enough
+# You can even nest describes
 
 describe TestCase, 'numbers':
     before_each:
