@@ -3,16 +3,26 @@ import re
 
 regexes = {
     "joins": re.compile(r"[- /]"),
-    "punctuation": re.compile(r"[+\-*/=\$%^&'\",.:;?{()}#<>\[\]]"),
     "repeated_underscore": re.compile(r"_{2,}"),
+    "invalid_variable_name_start": re.compile(r"^[^a-zA-Z_]"),
+    "invalid_variable_name_characters": re.compile(r"[^0-9a-zA-Z_]"),
 }
 
 
-def acceptable(value, capitalize=False):
+def acceptable(name, capitalize=False):
     """Convert a string into something that can be used as a valid python variable name"""
-    name = regexes["punctuation"].sub("", regexes["joins"].sub("_", value))
+    # Convert space and dashes into underscores
+    name = regexes["joins"].sub("_", name)
+
+    # Remove invalid characters
+    name = regexes["invalid_variable_name_characters"].sub("", name)
+
+    # Remove leading characters until we find a letter or underscore
+    name = regexes["invalid_variable_name_start"].sub("", name)
+
     # Clean up irregularities in underscores.
     name = regexes["repeated_underscore"].sub("_", name.strip("_"))
+
     if capitalize:
         # We don't use python's built in capitalize method here because it
         # turns all upper chars into lower chars if not at the start of
@@ -23,6 +33,7 @@ def acceptable(value, capitalize=False):
             if len(word) > 1:
                 name_parts.append(word[1:])
         name = "".join(name_parts)
+
     return name
 
 
