@@ -9,7 +9,7 @@ regexes = {"whitespace": re.compile(r"\s+")}
 
 
 class WildCard:
-    """Used to determine if tokens should be inserted untill ignored token"""
+    """Used to determine if tokens should be inserted until ignored token"""
 
     def __repr__(self):
         return "<WildCard>"
@@ -115,9 +115,9 @@ class Tracker:
 
     def progress(self):
         """
-            Deal with next token
-            Used to create, fillout and end groups and singles
-            As well as just append everything else
+        Deal with next token
+        Used to create, fillout and end groups and singles
+        As well as just append everything else
         """
         tokenum, value, srow, scol = self.current.values()
 
@@ -270,7 +270,7 @@ class Tracker:
                 if type(next_ignore) is not WildCard:
                     return False
 
-                # Go through tokens untill we find one that isn't a wildcard
+                # Go through tokens until we find one that isn't a wildcard
                 while type(next_ignore) == WildCard:
                     next_ignore = get_next_ignore(remove=True)
 
@@ -324,9 +324,9 @@ class Tracker:
 
     def forced_insert(self):
         """
-            Insert tokens if self.insert_till hasn't been reached yet
-            Will respect self.inserted_line and make sure token is inserted before it
-            Returns True if it appends anything or if it reached the insert_till token
+        Insert tokens if self.insert_till hasn't been reached yet
+        Will respect self.inserted_line and make sure token is inserted before it
+        Returns True if it appends anything or if it reached the insert_till token
         """
         # If we have any tokens we are waiting for
         if self.insert_till:
@@ -448,11 +448,13 @@ class Tracker:
 
     def determine_if_whitespace(self):
         """
-            Set is_space if current token is whitespace
-            Is space if value is:
-             * Newline
-             * Empty String
-             * Something that matches regexes['whitespace']
+        Set is_space if current token is whitespace
+
+        Is space if value is:
+
+        * Newline
+        * Empty String
+        * Something that matches regexes['whitespace']
         """
         value = self.current.value
 
@@ -465,10 +467,11 @@ class Tracker:
 
     def determine_inside_container(self):
         """
-            Set self.in_container if we're inside a container
-             * Inside container
-             * Current token starts a new container
-             * Current token ends all containers
+        Set self.in_container if we're inside a container
+
+        * Inside container
+        * Current token starts a new container
+        * Current token ends all containers
         """
         tokenum, value = self.current.tokenum, self.current.value
         ending_container = False

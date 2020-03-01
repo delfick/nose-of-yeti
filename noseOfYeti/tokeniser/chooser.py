@@ -20,9 +20,9 @@ class TestChooser:
 
     def consider(self, method):
         """
-            Determines whether a method should be considered a Test
-            Returns False if it believes it isn't a test
-            Will return True otherwise
+        Determines whether a method should be considered a Test
+        Returns False if it believes it isn't a test
+        Will return True otherwise
         """
         if method.__name__.startswith("ignore__"):
             # Method wants to be ignored
