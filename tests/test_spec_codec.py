@@ -40,7 +40,7 @@ def assert_run_subprocess(cmd, expected_output, status=0, **kwargs):
     pytest.helpers.assert_regex_lines(output, expected_output)
 
 
-class Test_RegisteringCodec(object):
+class Test_RegisteringCodec:
     def test_not_registering_codec_leads_to_error(self, a_temp_file):
         with a_temp_file(example_specd_tests.strip()) as filename:
             expected_output = "".join(

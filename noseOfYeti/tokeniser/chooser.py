@@ -1,7 +1,7 @@
 from inspect import getmembers
 
 
-class TestChooser(object):
+class TestChooser:
     def __init__(self):
         self.new_module()
 

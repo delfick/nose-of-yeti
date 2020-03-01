@@ -23,7 +23,7 @@ def Classes():
             def test_actual(self):
                 pass
 
-        class TestIgnoredKls(object):
+        class TestIgnoredKls:
             def test_things(self):
                 pass
 

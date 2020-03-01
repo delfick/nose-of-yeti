@@ -4,7 +4,7 @@ from noseOfYeti.tokeniser.tokens import Tokens
 from tokenize import generate_tokens
 
 
-class Tokeniser(object):
+class Tokeniser:
     """Endpoint for tokenising a file"""
 
     def __init__(self, with_describe_attrs=True):

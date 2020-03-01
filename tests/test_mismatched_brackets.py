@@ -2,7 +2,7 @@ import pytest
 import re
 
 
-class TestMismatchedBrackets(object):
+class TestMismatchedBrackets:
     def test_it_knows_about_mismatched_square_from_parenthesis(self):
         original = """
         def wat(self:
