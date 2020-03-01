@@ -1,31 +1,41 @@
 Nose of Yeti
 ============
 
-This is a project to provide a Behaviour Driven Development style DSL (domain specific language) for python tests.
+This is a project to provide a Behaviour Driven Development style DSL
+(domain specific language) for python tests.
 
-It uses the fact that you can register a codec that is able to modify a python file before executing it.
+It uses the fact that you can register a codec that is able to modify a python
+file before executing it.
 
 http://docs.python.org/library/codecs.html
 
-Using this we can make it so that when python imports a file with a particular encoding as the first line of the file (noseOfYeti looks for ``# coding: spec``), it will be intercepted and the tokens in the file will be translated to something else before the import continues.
+Using this we can make it so that when python imports a file with a particular
+encoding as the first line of the file (nose-of-yeti looks for ``# coding: spec``)
+, it will be intercepted and the tokens in the file will be translated to
+something else before the import continues.
 
-NoseOfYeti uses this technique to translate from the DSL it defines into python classes and functions that may be recognised by the Python Nose testing framework.
+NoseOfYeti uses this technique to translate from the DSL it defines into python
+classes and functions that may be recognised by the Python Nose testing
+framework.
 
 https://readthedocs.org/docs/nose/
 
-It was originally developed by Stephen Moore after borrowing the idea from a project by Fernando Meyer called Yeti
+It was originally developed by Stephen Moore after borrowing the idea from a
+project by Fernando Meyer called Yeti
 
 https://github.com/fmeyer/yeti
 
 Changelog
 =========
 
-Note that it is recommended you remove .pyc of your noseOfYeti specs when you upgrade noseOfYeti.
-The python interpreter skips the translation process if it sees a .pyc file (unless the .py file has changed since the .pyc file was created).
-This means that any changes in the translation process won't happen untill either the .pyc files are removed or all the .py files have been changed.
+Note that it is recommended you remove .pyc of your nose-of-yeti specs when you
+upgrade nose-of-yeti. The python interpreter skips the translation process if it
+sees a .pyc file (unless the .py file has changed since the .pyc file was
+created). This means that any changes in the translation process won't happen
+untill either the .pyc files are removed or all the .py files have been changed.
 
 ``2.0.0``
-    * noseOfYeti is now only python3.6+ compatible
+    * nose-of-yeti is now only python3.6+ compatible
     * Removed the ignore-kls option
     * Removed support for nose2, pylint and sphinx.
       * I don't use these and I'm not sure these plugins actually work.
@@ -55,9 +65,9 @@ This means that any changes in the translation process won't happen untill eithe
     incremental decoder would often get confused by the indentation and return
     nothing
 
-    Also, noseOfYeti will now detect bracket mismatches and tell you where you've
-    made a mistake. I.e. if you close the wrong type of bracket, or have a
-    mismatched bracket, or have a hanging open bracket, it will tell you line
+    Also, nose-of-yeti will now detect bracket mismatches and tell you where
+    you've made a mistake. I.e. if you close the wrong type of bracket, or have
+    a mismatched bracket, or have a hanging open bracket, it will tell you line
     and column numbers of where this is happening
 
 ``1.8.3``
@@ -149,4 +159,3 @@ Always use a virtualenv!::
 Or just run tox::
 
     $ tox
-
