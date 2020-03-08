@@ -3,7 +3,7 @@
 Changelog
 =========
 
-2.0.0 - TBD
+2.0.0 - 8 March 2020
     * nose-of-yeti is now only python3.6+ compatible
     * Removed support for nose2, pylint and sphinx.
 
