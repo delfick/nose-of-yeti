@@ -3,6 +3,11 @@
 Changelog
 =========
 
+2.0.1 - TBD
+    * Added a pyls plugin
+    * Made available a ``noy_pylama`` console script to run pylama with the
+      ability to translate ``coding: spec`` files
+
 2.0.0 - 8 March 2020
     * nose-of-yeti is now only python3.6+ compatible
     * Removed support for nose2, pylint and sphinx.

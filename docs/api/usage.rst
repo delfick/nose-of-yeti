@@ -17,3 +17,26 @@ Pytests
 
 Having nose-of-yeti in your environment is enough for pytest to be able to
 import spec encoded files.
+
+Pyls
+----
+
+You can make python language server not complain about ``coding: spec`` files
+by including configuration for pyls that looks like:
+
+.. code-block:: json
+
+    "pyls": {
+      "plugins": {
+        "noy_pyls": {
+          "enabled": true
+        }
+      }
+    }
+
+Pylama
+------
+
+Pylama doesn't understand ``coding: spec`` files, but noseOfYeti makes available
+a ``noy_pylama`` command that you can use instead that will translate files
+that start with ``# coding: spec``.

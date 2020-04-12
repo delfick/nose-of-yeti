@@ -36,11 +36,13 @@ setup(
     , entry_points =
       { 'console_scripts' :
         [ 'run_noseOfYeti_tests = noseOfYeti:run_pytest'
+        , 'noy_pylama = noseOfYeti.plugins.pylama:run_pylama'
         ]
       , 'nose.plugins':
         [ 'noseOfYeti = noseOfYeti.plugins.nosetests:Plugin'
         ]
       , "pytest11": ["nose_of_yeti = noseOfYeti.plugins.pytest"]
+      , 'pyls': ['pyls_noy = noseOfYeti.plugins.pyls']
       }
     )
 
