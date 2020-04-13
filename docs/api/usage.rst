@@ -40,3 +40,9 @@ Pylama
 Pylama doesn't understand ``coding: spec`` files, but noseOfYeti makes available
 a ``noy_pylama`` command that you can use instead that will translate files
 that start with ``# coding: spec``.
+
+Black
+-----
+
+To format files with the ``spec`` encoding you need to use a modified version
+of black, which you can find here https://github.com/delfick/noy_black 
