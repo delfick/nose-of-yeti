@@ -3,7 +3,7 @@
 Changelog
 =========
 
-2.0.1 - TBD
+2.0.1 - 13 April 2020
     * Added a pyls plugin
     * Made available a ``noy_pylama`` console script to run pylama with the
       ability to translate ``coding: spec`` files
