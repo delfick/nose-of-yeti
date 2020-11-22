@@ -3,7 +3,7 @@
 Changelog
 =========
 
-2.0.2 - TBD
+2.0.2 - 22 November 2020
     * Make this work with python3.9
 
 2.0.1 - 13 April 2020

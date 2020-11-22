@@ -1,6 +1,6 @@
 """pytest-cov: avoid already-imported warning: PYTEST_DONT_REWRITE."""
 
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 
 
 def run_pytest():
