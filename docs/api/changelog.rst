@@ -3,6 +3,9 @@
 Changelog
 =========
 
+2.0.2 - TBD
+    * Make this work with python3.9
+
 2.0.1 - 13 April 2020
     * Added a pyls plugin
     * Made available a ``noy_pylama`` console script to run pylama with the

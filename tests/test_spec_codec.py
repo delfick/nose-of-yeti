@@ -36,17 +36,27 @@ def assert_run_subprocess(cmd, expected_output, status=0, **kwargs):
 
     output = process.stdout.read().decode("utf8").strip()
 
+    print("the process output:")
+    print("~" * 80)
+    print(output)
+    print("~" * 80)
+
     assert process.returncode == status
-    pytest.helpers.assert_regex_lines(output, expected_output)
+
+    if expected_output is not None:
+        pytest.helpers.assert_regex_lines(output, expected_output)
+
+    return output
 
 
 class Test_RegisteringCodec:
     def test_not_registering_codec_leads_to_error(self, a_temp_file):
         with a_temp_file(example_specd_tests.strip()) as filename:
-            expected_output = "".join(
-                ['File "', filename, '", line 1\nSyntaxError: encoding problem.+']
+            output = assert_run_subprocess(
+                [sys.executable, filename], expected_output=None, status=1
             )
-            assert_run_subprocess([sys.executable, filename], expected_output, status=1)
+            expected_output = "SyntaxError: encoding problem.+"
+            pytest.helpers.assert_regex_lines(output.split("\n")[-1], expected_output)
 
     def test_registering_codec_doesnt_lead_to_error(self, a_temp_dir):
         with a_temp_dir() as tempdir:

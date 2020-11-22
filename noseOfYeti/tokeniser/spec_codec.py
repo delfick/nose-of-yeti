@@ -134,6 +134,9 @@ class TokeniserCodec:
             # At this point, data is a list of tokens
             data = untokenize(data)
 
+        # python3.9 requires a newline at the end
+        data += "\n"
+
         return data
 
     def output_for_debugging(self, stream, data):
