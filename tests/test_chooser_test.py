@@ -107,7 +107,9 @@ class Test_TestChooser_Consider:
         assert test_chooser.consider(Classes.TestKlsChild().test_two)
 
     def test_it_doesnt_run_grandparent_tests_if_specified_in_grandparent_to_only_run_tests_in_children(
-        self, test_chooser, Classes,
+        self,
+        test_chooser,
+        Classes,
     ):
         Classes.TestKlsParent.is_noy_spec = True
         Classes.TestKlsChild.is_noy_spec = True
