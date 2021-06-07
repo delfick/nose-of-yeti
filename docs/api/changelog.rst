@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2-0-3:
+
+2.0.3 - 7 June 2021
+    * Release using github actions, no changes to 2.0.2
+
 .. _release-2-0-2:
 
 2.0.2 - 22 November 2020
