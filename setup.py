@@ -26,10 +26,10 @@ setup(
 
     , extras_require =
       { 'tests':
-        [ "asynctest==0.12.2"
-        , "pytest==5.3.1"
-        , "alt-pytest-asyncio==0.5.2"
-        , "pytest-helpers-namespace==2019.1.8"
+        [ "asynctest==0.13.0"
+        , "pytest==6.2.5"
+        , "alt-pytest-asyncio==0.6.0"
+        , "pytest-helpers-namespace==2021.4.29"
         ]
       }
 
