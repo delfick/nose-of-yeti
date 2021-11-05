@@ -5,7 +5,7 @@ Changelog
 
 .. _release-2.1.0:
 
-2.1.0 - TBD
+2.1.0 - 6 November 2021
     * nose-of-yeti is now only python3.7+ compatible
 
 .. _release-2-0-3:
