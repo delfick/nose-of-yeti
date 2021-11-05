@@ -1,1 +1,2 @@
-.pylama
+.noy_pylama
+.black

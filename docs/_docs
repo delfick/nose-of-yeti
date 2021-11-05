@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 
-from venvstarter import ignite
-import runpy
-import os
+from venvstarter import manager
 
-this_dir = os.path.dirname(__file__)
-
-noseOfYeti_version = runpy.run_path(
-    os.path.join(this_dir, "..", "noseOfYeti", "__init__.py")
-)["VERSION"]
-
-with open(os.path.join(this_dir, "requirements.txt"), "r") as fle:
-    deps = [line.strip() for line in fle.readlines() if line.strip()]
-
-deps.append(f"-e file:{this_dir}/..#egg=noseOfYeti=={noseOfYeti_version}")
-
-ignite(this_dir, "sphinx-build", deps=deps, min_python_version=3.6)
+(
+    __import__("venvstarter")
+    .manager("sphinx-build")
+    .add_requirements_file("{here}", "requirements.txt")
+    .add_local_dep(
+        "{here}",
+        "..",
+        version_file=(
+            "noseOfYeti",
+            "__init__.py",
+        ),
+        name="noseOfYeti=={version}",
+    )
+    .min_python("3.7")
+    .run()
+)
