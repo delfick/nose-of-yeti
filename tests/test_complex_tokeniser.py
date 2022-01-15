@@ -42,12 +42,12 @@ class Examples:
         def setUp (self ):
             __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .z =8
 
-    TestThis .is_noy_spec =True
-    TestThis_That .is_noy_spec =True
-    TestThis_That_Meh .is_noy_spec =True
-    TestThis_Blah .is_noy_spec =True
-    TestThis_Async .is_noy_spec =True
-    TestAnother .is_noy_spec =True
+    TestThis .is_noy_spec =True  # type: ignore
+    TestThis_That .is_noy_spec =True  # type: ignore
+    TestThis_That_Meh .is_noy_spec =True  # type: ignore
+    TestThis_Blah .is_noy_spec =True  # type: ignore
+    TestThis_Async .is_noy_spec =True  # type: ignore
+    TestAnother .is_noy_spec =True  # type: ignore
     """,
     ]
 
@@ -140,14 +140,14 @@ class Examples:
     async def test_supports_level_0_async_its ():
         pass
 
-    TestThis .is_noy_spec =True
-    TestThis_That .is_noy_spec =True
-    TestThis_That_Meh .is_noy_spec =True
-    TestThis_Blah .is_noy_spec =True
-    TestAnother .is_noy_spec =True
+    TestThis .is_noy_spec =True  # type: ignore
+    TestThis_That .is_noy_spec =True  # type: ignore
+    TestThis_That_Meh .is_noy_spec =True  # type: ignore
+    TestThis_Blah .is_noy_spec =True  # type: ignore
+    TestAnother .is_noy_spec =True  # type: ignore
 
-    ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"
-    TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__testname__ ="should set __testname__ for non alpha names ' $^"
+    ignore__root_level_pecial_method .__testname__ ="root level $pecial-method*+"  # type: ignore
+    TestThis_That_Meh .test_should_set_testname_for_non_alpha_names .__testname__ ="should set __testname__ for non alpha names ' $^"  # type: ignore
     """,
     ]
 
@@ -213,7 +213,7 @@ class Test_Tokeniser:
                 """
             class TestSomethingTestable :pass
 
-            TestSomethingTestable .is_noy_spec =True
+            TestSomethingTestable .is_noy_spec =True  # type: ignore
             """,
             ]
         )

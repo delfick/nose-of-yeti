@@ -1,4 +1,4 @@
-from tokenize import NAME, OP, INDENT, NEWLINE, STRING
+from tokenize import NAME, OP, INDENT, NEWLINE, STRING, COMMENT
 from tokenize import generate_tokens
 
 ########################
@@ -123,6 +123,7 @@ class Tokens:
             (NAME, "is_noy_spec"),
             (OP, "="),
             (NAME, "True"),
+            (COMMENT, " # type: ignore"),
         ]
 
     def make_name_modifier(self, cleaned, english):
@@ -134,6 +135,14 @@ class Tokens:
         for part in parts[1:]:
             result.extend([(OP, "."), (NAME, part)])
 
-        result.extend([(OP, "."), (NAME, "__testname__"), (OP, "="), (STRING, english)])
+        result.extend(
+            [
+                (OP, "."),
+                (NAME, "__testname__"),
+                (OP, "="),
+                (STRING, english),
+                (COMMENT, "  # type: ignore"),
+            ]
+        )
 
         return result

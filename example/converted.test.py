@@ -73,10 +73,10 @@ class TestNumbers_TestingNumber3_LetsChangeANumber (TestNumbers_TestingNumber3 )
         self .assertEqual (self .number2 ,2 )
         self .assertEqual (self .number3 ,3 )
 
-TestPythonMathematics .is_noy_spec =True
-TestInheritance .is_noy_spec =True
-TestNumbers .is_noy_spec =True
-TestNumbers_TestingNumber3 .is_noy_spec =True
-TestNumbers_TestingNumber3_LetsChangeANumber .is_noy_spec =True
+TestPythonMathematics .is_noy_spec =True  # type: ignore
+TestInheritance .is_noy_spec =True  # type: ignore
+TestNumbers .is_noy_spec =True  # type: ignore
+TestNumbers_TestingNumber3 .is_noy_spec =True  # type: ignore
+TestNumbers_TestingNumber3_LetsChangeANumber .is_noy_spec =True  # type: ignore
 
-TestPythonMathematics .test_cant_divide_by_zero .__testname__ ="can't divide by zero"
+TestPythonMathematics .test_cant_divide_by_zero .__testname__ ="can't divide by zero"  # type: ignore

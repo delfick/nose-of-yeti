@@ -46,3 +46,16 @@ Black
 
 To format files with the ``spec`` encoding you need to use a modified version
 of black, which you can find here https://github.com/delfick/noy_black 
+
+MyPy
+----
+
+Add this to your mypy `configuration <https://mypy.readthedocs.io/en/stable/config_file.html#config-file>`_::
+
+    [mypy]
+    plugins = noseOfYeti.plugins.mypy
+
+Note that if you choose to put this in ``pyproject.toml`` it should look like::
+
+    [tool.mypy]
+    plugins = 'noseOfYeti.plugins.mypy'

@@ -256,9 +256,9 @@ class Test_Tokenisor_translation:
             def test_asdf_asdf (self ):
                 1 |should |be (2 )
 
-        test_root_level_should_work_well .__testname__ ="(root level) should work {well}"
-        TestSomeTests .test_doesnt_get_phased_by_special_characters .__testname__ ="doesn't get phased by $special characters"
-        TestSomeTests_NestedDescribe .test_asdf_asdf .__testname__ ="asdf $% asdf"
+        test_root_level_should_work_well .__testname__ ="(root level) should work {well}"  # type: ignore
+        TestSomeTests .test_doesnt_get_phased_by_special_characters .__testname__ ="doesn't get phased by $special characters"  # type: ignore
+        TestSomeTests_NestedDescribe .test_asdf_asdf .__testname__ ="asdf $% asdf"  # type: ignore
         """
 
         assert_example(original, desired)
