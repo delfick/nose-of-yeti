@@ -6,7 +6,7 @@ from venvstarter import manager
     __import__("venvstarter")
     .manager(None)
     .named(".black")
-    .add_pypi_deps("noy_black==0.2.1")
+    .add_pypi_deps("noy_black==0.3.0")
     .min_python("3.7")
     .run()
 )
