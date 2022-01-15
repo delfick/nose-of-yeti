@@ -5,7 +5,7 @@ Changelog
 
 .. _release-2.2.0:
 
-2.2.0 - TBD
+2.2.0 - 15 January 2022
    * Add a mypy plugin
    * The extra ``__testname__`` and ``is_noy_spec`` lines now get a type:ignore
      comment so that mypy doesn't complain about them
