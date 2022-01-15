@@ -9,6 +9,7 @@ Changelog
    * Add a mypy plugin
    * The extra ``__testname__`` and ``is_noy_spec`` lines now get a type:ignore
      comment so that mypy doesn't complain about them
+   * Update pylama plugin
 
 .. _release-2.1.0:
 
