@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2.3.0:
+
+2.3.0 - TBD
+    * Make it possible to add type annotations to arguments in an "it" signature
+
 .. _release-2.2.0:
 
 2.2.0 - 15 January 2022

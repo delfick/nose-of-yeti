@@ -1,4 +1,4 @@
-from tokenize import NAME, OP
+from tokenize import NAME, COMMENT
 import re
 
 regexes = {
@@ -59,20 +59,25 @@ class TokenDetails:
 class Single:
     """Container for a single block (i.e. it or ignore block)"""
 
-    def __init__(self, group, typ=None, indent=0):
+    def __init__(self, srow, scol, group, typ=None, indent=0):
         self.typ = typ
         self.group = group
         self.indent = indent
 
         self.args = []
+        self.comments = []
+
         self._name = None
         self.english = None
         self.skipped = False
 
+        self.started_arg = False
         self.starting_arg = False
 
         if not self.group.root:
-            self.args.append([(NAME, "self")])
+            self.args.append((NAME, "self", srow, scol))
+        else:
+            self.args.append((None, None, srow, scol))
 
     @property
     def name(self):
@@ -97,16 +102,14 @@ class Single:
         else:
             return f"{self.group.kls_name}.{self.python_name}"
 
-    def add_to_arg(self, tokenum, value):
-        if tokenum == OP and value == ",":
-            self.starting_arg = True
+    def add_to_arg(self, tokenum, value, srow, scol):
+        if value == "," and len(self.args) == 1 and self.args[0][0] is None:
             return
 
-        if self.starting_arg:
-            self.args.append([(tokenum, value)])
-            self.starting_arg = False
+        if self.comments or tokenum is COMMENT:
+            self.comments.append((tokenum, value))
         else:
-            self.args[-1].append((tokenum, value))
+            self.args.append((tokenum, value, srow, scol))
 
 
 class Group:
@@ -185,10 +188,10 @@ class Group:
         """Start a new group"""
         return Group(parent=self, level=scol, typ=typ)
 
-    def start_single(self, typ, scol):
+    def start_single(self, typ, srow, scol):
         """Start a new single"""
         self.starting_single = True
-        single = self.single = Single(typ=typ, group=self, indent=(scol - self.level))
+        single = self.single = Single(srow, scol, self, typ=typ, indent=(scol - self.level))
         self.singles.append(single)
         return single
 

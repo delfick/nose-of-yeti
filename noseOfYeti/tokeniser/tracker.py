@@ -157,18 +157,20 @@ class Tracker:
             # Inside single signature, add to it
             if tokenum == STRING:
                 self.single.name = value
+                self.single.args[0] = (
+                    self.single.args[0][0],
+                    self.single.args[0][1],
+                    srow,
+                    scol + len(value),
+                )
 
             elif tokenum == NEWLINE and not self.in_container:
-                # Premature end of single
-                self.add_tokens_for_single(ignore=True)
-
-            elif tokenum == OP and value == ":":
-                # Proper end of single
                 self.add_tokens_for_single()
+                self.result.append((tokenum, value))
 
             elif value and self.single.name:
                 # Only want to add args after the name for the single has been specified
-                self.single.add_to_arg(tokenum, value)
+                self.single.add_to_arg(tokenum, value, srow, scol)
 
         elif self.after_space or self.after_an_async or scol == 0 and tokenum == NAME:
             # set after_an_async if we found an async by itself
@@ -191,7 +193,7 @@ class Tracker:
                 self.all_groups.append(self.groups)
 
             elif value in ("it", "ignore"):
-                self.single = self.groups.start_single(value, scol)
+                self.single = self.groups.start_single(value, srow, scol)
 
             elif value in ("before_each", "after_each"):
                 setattr(self.groups, f"has_{value}", True)
@@ -414,24 +416,18 @@ class Tracker:
 
         self.groups.finish_signature()
 
-    def add_tokens_for_single(self, ignore=False):
+    def add_tokens_for_single(self):
         """Add the tokens for the single signature"""
         args = self.single.args
         name = self.single.python_name
+        comments = self.single.comments
 
         # Reset indentation to proper amount
         if not self.result or self.result[-1][0] != NAME:
             self.reset_indentation(self.indent_type * self.single.indent)
 
         # And add signature
-        self.result.extend(self.tokens.make_single(name, args))
-
-        # Add skip if necessary
-        if ignore:
-            srow = self.current.srow
-            scol = self.current.scol
-            raise SyntaxError(f"Found a missing ':' on line {srow}, column {scol}")
-
+        self.result.extend(self.tokens.make_single(name, args, comments))
         self.groups.finish_signature()
 
     def finish_hanging(self):
@@ -441,7 +437,7 @@ class Tracker:
                 self.add_tokens_for_group(with_pass=True)
 
             elif self.groups.starting_single:
-                self.add_tokens_for_single(ignore=True)
+                self.add_tokens_for_single()
 
     ########################
     ###   DETERMINE INFORMATION

@@ -38,6 +38,20 @@ class Test_Tokenisor_translation:
         desired = "def test_should_do_this_thing (blah ,meh ):"
         assert_example(original, desired)
 
+    def test_adds_type_annotations(self):
+        original = 'it "should do this thing", blah:str, meh: Thing | Other:'
+        desired = "def test_should_do_this_thing (blah :str ,meh :Thing |Other ):"
+        assert_example(original, desired)
+
+    def test_allows_comments_after_it(self):
+        original = 'it "should do this thing", blah:str, meh: Thing | Other: # a comment'
+        desired = "def test_should_do_this_thing (blah :str ,meh :Thing |Other ):# a comment"
+        assert_example(original, desired)
+
+        original = 'it "should do this thing":  # a comment'
+        desired = "def test_should_do_this_thing ():# a comment"
+        assert_example(original, desired)
+
     def test_adds_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
         original = 'it "should do this thing", blah, meh: pass'
         desired = "def test_should_do_this_thing (blah ,meh ):pass"
@@ -46,6 +60,9 @@ class Test_Tokenisor_translation:
     def test_complains_about_it_that_isnt_a_block(self):
         with pytest.raises(SyntaxError, match="Found a missing ':' on line 1, column 22"):
             assert_example('it "should be skipped"\n', "")
+
+        with pytest.raises(SyntaxError, match="Found a missing ':' on line 1, column 22"):
+            assert_example('it "should be skipped" # blah\n', "")
 
         # Same tests, but with newlines in front
         with pytest.raises(SyntaxError, match="Found a missing ':' on line 3, column 22"):

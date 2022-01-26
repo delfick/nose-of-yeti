@@ -50,21 +50,39 @@ class Tokens:
             (OP, ")"),
         ]
 
+        self.single_colon = (OP, ":")
+
     ########################
     ###   MAKERS
     ########################
 
-    def make_single(self, name, args):
-        lst = [(NAME, "def"), (NAME, name), (OP, "(")]
+    def make_single(self, name, args, comments):
+        lst = [(NAME, "def"), (NAME, name), (OP, "(")] + [
+            (t, n) for t, n, *_ in args if t is not None
+        ]
 
-        if args:
-            lst.extend(args[0])
+        has_end = True
+        has_pass = False
 
-            for arg in args[1:]:
-                lst.append((OP, ","))
-                lst.extend(arg)
+        if lst[-1][1] == ":":
+            lst.pop()
+        elif lst[-1][1] == "pass" and lst[-2][1] == ":":
+            has_pass = True
+            lst.pop()
+            lst.pop()
+        else:
+            has_end = False
+
+        if not has_end:
+            srow = args[-1][-2]
+            scol = args[-1][-1]
+            raise SyntaxError(f"Found a missing ':' on line {srow}, column {scol}")
 
         lst.extend([(OP, ")"), (OP, ":")])
+        if has_pass:
+            lst.append((NAME, "pass"))
+
+        lst.extend(comments)
         return lst
 
     def make_describe(self, kls, name):
