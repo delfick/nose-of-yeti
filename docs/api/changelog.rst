@@ -5,7 +5,7 @@ Changelog
 
 .. _release-2.3.1:
 
-2.3.1 - TBD
+2.3.1 - 17 February 2022
     * Fix how tests are collected in pytest
 
 .. _release-2.3.0:
