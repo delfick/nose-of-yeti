@@ -10,7 +10,6 @@ any collected tests that aren't on that class.
 from noseOfYeti.tokeniser.spec_codec import register
 
 from _pytest.unittest import UnitTestCase
-from functools import partial
 from unittest import mock
 import inspect
 import pytest
@@ -38,29 +37,17 @@ def pytest_pycollect_makeitem(collector, name, obj):
     original_item_collect = res.collect
 
     if isinstance(res, UnitTestCase):
-        original_item_collect = res.collect
 
         def collect():
             yield from filter_collection(original_item_collect(), res.obj)
 
-        mock.patch.object(res, "collect", collect).start()
     else:
 
         def collect():
-            got = original_item_collect()
-            for g in got:
-                original_collect = g.collect
-                mock.patch.object(
-                    g, "collect", partial(modified_class_collect, g, original_collect)
-                ).start()
-            return got
+            res.session._fixturemanager.parsefactories(res)
+            yield from filter_collection(original_item_collect(), res.obj)
 
-        mock.patch.object(res, "collect", collect).start()
-
-
-def modified_class_collect(instance, original_collect):
-    instance.session._fixturemanager.parsefactories(instance)
-    yield from filter_collection(original_collect(), instance.obj)
+    mock.patch.object(res, "collect", collect).start()
 
 
 def filter_collection(collected, obj):
