@@ -8,10 +8,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     cd $DIR
     exec ack "$@" \
         --ignore-directory .tox \
+        --ignore-directory .mypy_cache \
         --ignore-directory dist \
         --ignore-directory build \
         --ignore-directory noseOfYeti.egg-info \
         --ignore-directory tools \
-        --ignore-directory docs/.sphinx-build \
+        --ignore-directory docs/.docs \
         --ignore-directory docs/_build \
 )

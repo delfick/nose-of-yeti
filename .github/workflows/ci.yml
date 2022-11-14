@@ -23,11 +23,9 @@ jobs:
         run: python -c "import sys; print(sys.version)"
 
       - name: Install deps
-        shell: bash
-        run: |
-          set -e
-          python -m pip install --user --upgrade pip
-          python -m pip install -e ".[tests]"
+        env:
+          VENVSTARTER_ONLY_MAKE_VENV: "1"
+        run: ./tools/venv
 
       - name: Run tests
         shell: bash

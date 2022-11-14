@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+import typing as tp
+import subprocess
+import runpy
+import glob
+import sys
+import os
+
+manager = runpy.run_path(str(Path(__file__).parent / "bootstrap_venvstarter.py"))["manager"]
+
+
+def run(venv_location: Path, args: tp.List[str]) -> tp.Union[None , str , tp.List[str]]:
+    devtools_location = Path(__file__).parent / "devtools.py"
+    return ["python", str(devtools_location)]
+
+
+manager = manager(run).named(".python")
+manager.add_requirements_file("{here}", "requirements.dev.txt")
+manager.add_requirements_file("{here}", "requirements.docs.txt")
+manager.add_local_dep(
+    "{here}",
+    "..",
+    version_file=(
+        "noseOfYeti",
+        "__init__.py",
+    ),
+    name="noseOfYeti=={version}",
+    with_tests=True,
+)
+manager.run()

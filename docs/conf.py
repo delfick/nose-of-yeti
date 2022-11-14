@@ -11,7 +11,7 @@ source_suffix = ".rst"
 
 pygments_style = "pastie"
 
-copyright = "2020, delfick"
+copyright = "delfick"
 project = "noseOfYeti"
 
 version = "0.1"

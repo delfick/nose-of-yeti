@@ -6,7 +6,8 @@ exclude = '''
      \.git
    | \.tox
    | dist
-   | tools
-   | docs
+   | tools/\.python
+   | docs/_build
+   | example
 )/
 '''

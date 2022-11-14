@@ -1,2 +1,4 @@
-.noy_pylama
+deps
+.pylama
 .black
+.python
