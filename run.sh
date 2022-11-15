@@ -13,6 +13,7 @@ if [[ "$#" == "1" ]]; then
 
         case "$1" in
         activate)
+            export NOSE_OF_YETI_BLACK_COMPAT=true
             source ./tools/.python/bin/activate
             HANDLED=1
             ;;
@@ -21,5 +22,6 @@ if [[ "$#" == "1" ]]; then
 fi
 
 if [[ $HANDLED != 1 ]]; then
+    export NOSE_OF_YETI_BLACK_COMPAT=true
     exec ./tools/venv "$@"
 fi
