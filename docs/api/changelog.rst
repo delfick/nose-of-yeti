@@ -3,6 +3,16 @@
 Changelog
 =========
 
+.. _release-2.4.0:
+
+2.4.0 - TBD
+    * ``noseOfYeti.spec_code.get_codec`` now returns the same instance every
+      time
+    * ``noseOfYeti.spec_codec.register`` now has a mandatory ``transform: bool``
+      argument which will be used to tell the global codec whether it should
+      transform the code that passes through it or not. Register will not
+      reregister new search paths.
+ 
 .. _release-2.3.1:
 
 2.3.1 - 17 February 2022

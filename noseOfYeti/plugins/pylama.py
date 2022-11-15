@@ -69,7 +69,7 @@ def run_old_pylama(spec_codec):
 
 
 def run_pylama():
-    spec_codec.register()
+    spec_codec.register(transform=True)
 
     if CodeContext is None:
 

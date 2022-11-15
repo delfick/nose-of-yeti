@@ -13,7 +13,7 @@ regexes = {
 
 @hookimpl(hookwrapper=True)
 def pyls_initialize(config, workspace):
-    spec_codec.register()
+    spec_codec.register(transform=True)
     yield
 
 

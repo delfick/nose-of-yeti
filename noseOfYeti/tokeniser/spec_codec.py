@@ -1,10 +1,9 @@
 from noseOfYeti.tokeniser.tokeniser import Tokeniser
-
 from tokenize import untokenize
 from encodings import utf_8
 from io import StringIO
-import traceback
 import encodings
+import traceback
 import codecs
 import sys
 import re
@@ -22,12 +21,17 @@ class TokeniserCodec:
 
     def __init__(self, tokeniser):
         self.tokeniser = tokeniser
+
+        self.transform = True
         self.codec = self.get_codec()
 
-    def translate(self, value):
+    def translate(self, value, transform=None):
         if isinstance(value, str):
             value = value.encode()
-        return self.codec.decode(value, return_tuple=False)
+
+        return self.codec.decode(
+            value, return_tuple=False, transform=self.transform if transform is None else transform
+        )
 
     def register(self):
         def search_function(s):
@@ -49,12 +53,15 @@ class TokeniserCodec:
 
             def __init__(sr, stream, *args, **kwargs):
                 codecs.StreamReader.__init__(sr, stream, *args, **kwargs)
-                data = self.dealwith(sr.stream.readline)
-                sr.stream = StringIO(data)
+                if self.transform:
+                    data = self.dealwith(sr.stream.readline)
+                    sr.stream = StringIO(data)
 
-        def decode(text, *args, **kwargs):
-            """Used by pypy and pylint to deal with a spec file"""
-            return_tuple = kwargs.get("return_tuple", True)
+        def _decode(text, *args, transform=None, **kwargs):
+            transform = self.transform if transform is None else transform
+
+            if not transform:
+                return utf8.decode(text, *args, **kwargs)
 
             if hasattr(text, "tobytes"):
                 text = text.tobytes().decode()
@@ -82,19 +89,23 @@ class TokeniserCodec:
 
             # If text is empty and data isn't, then we should return text
             if len(text) == 0 and len(data) == 1:
-                if return_tuple:
-                    return "", 0
-                else:
-                    return ""
+                return "", 0
 
             # Return translated version and it's length
+            return data, len(data)
+
+        def decode(text, *args, return_tuple=True, transform=None, **kwargs):
+            ret = _decode(text, *args, transform=transform, **kwargs)
             if return_tuple:
-                return data, len(data)
+                return ret
             else:
-                return data
+                return ret[0]
 
         class incrementaldecoder(utf8.incrementaldecoder):
             def decode(s, obj, final, **kwargs):
+                if not self.transform:
+                    return super().decode(obj, final, **kwargs)
+
                 lines = obj.split("\n".encode("utf-8"))
                 if re.match(r"#\s*coding:\s*spec", lines[0].decode("utf-8", "replace")) and final:
                     kwargs["return_tuple"] = False
@@ -149,12 +160,27 @@ class TokeniserCodec:
 ###   CODEC REGISTER
 ########################
 
+_spec_codec = None
+
 
 def codec():
     """Return the codec used to translate a file"""
-    return TokeniserCodec(Tokeniser())
+    global _spec_codec
+    if _spec_codec is None:
+        _spec_codec = TokeniserCodec(Tokeniser())
+    return _spec_codec
 
 
-def register():
+def register(transform=True):
     """Get a codec and register it in python"""
-    codec().register()
+    do_register = False
+    try:
+        codecs.lookup("spec")
+    except LookupError:
+        do_register = True
+
+    cdc = codec()
+    cdc.transform = transform
+
+    if do_register:
+        cdc.register()

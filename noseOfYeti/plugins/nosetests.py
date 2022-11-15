@@ -34,4 +34,4 @@ class Plugin(Plugin):
         if options.enabled:
             self.done = {}
             self.enabled = True
-            register()
+            register(transform=True)

@@ -1,8 +1,6 @@
-from noseOfYeti.tokeniser.spec_codec import codec
+from noseOfYeti.tokeniser.spec_codec import register
 
 from mypy.plugin import Plugin
-
-spec_codec = codec()
 
 
 class NoyPlugin(Plugin):
@@ -10,5 +8,5 @@ class NoyPlugin(Plugin):
 
 
 def plugin(version: str):
-    spec_codec.register()
+    register(transform=True)
     return NoyPlugin
