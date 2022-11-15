@@ -79,7 +79,7 @@ class Test_RegisteringCodec:
             [sys.executable, "-c", "import test_code"],
             expected_output=None,
             cwd=directory,
-            env={"NOSE_OF_YETI_BLACK_COMPAT": "true"},
+            env={"NOSE_OF_YETI_BLACK_COMPAT": "false"},
             status=1,
         )
         expected_output = "SyntaxError: unknown encoding: spec"
@@ -90,7 +90,7 @@ class Test_RegisteringCodec:
             [sys.executable, "-c", "import registerer; import test_code"],
             expected_output="test_should_totally_work",
             cwd=directory,
-            env={"NOSE_OF_YETI_BLACK_COMPAT": "true"},
+            env={"NOSE_OF_YETI_BLACK_COMPAT": "false"},
             status=0,
         )
 

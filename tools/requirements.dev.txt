@@ -1,5 +1,4 @@
 types-setuptools==65.5.0.2
-black==22.10.0
 pylama-dmypy==0.3
 pylama==8.4.1
 neovim==0.3.1
@@ -7,3 +6,4 @@ tox==3.27.0
 sh==1.14.3
 python-language-server==0.36.2
 pylsp-mypy==0.6.3
+tox-asdf==0.1.0

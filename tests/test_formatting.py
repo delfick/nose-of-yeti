@@ -26,9 +26,10 @@ class TestBlackFormatting:
 
         from black.cache import CACHE_DIR
 
-        for fle in CACHE_DIR.iterdir():
-            if "noy" in fle.name:
-                fle.unlink()
+        if CACHE_DIR.exists():
+            for fle in CACHE_DIR.iterdir():
+                if "noy" in fle.name:
+                    fle.unlink()
 
         directory = tmp_path_factory.mktemp("files")
 

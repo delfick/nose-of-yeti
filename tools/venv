@@ -3,22 +3,33 @@
 from pathlib import Path
 import typing as tp
 import subprocess
+import shutil
 import runpy
 import glob
 import sys
 import os
 
+here = Path(__file__).parent
 manager = runpy.run_path(str(Path(__file__).parent / "bootstrap_venvstarter.py"))["manager"]
 
 
 def run(venv_location: Path, args: tp.List[str]) -> tp.Union[None, str, tp.List[str]]:
+    os.environ["NOSE_OF_YETI_BLACK_COMPAT"] = "true"
+
+    for dr in Path(venv_location / "lib").iterdir():
+        if dr.name.startswith("python"):
+            (dr / "site-packages" / "noy_black.pth").symlink_to(here / ".." / "noseOfYeti" / "black" / "noy_black.pth")
+            break
+
     devtools_location = Path(__file__).parent / "devtools.py"
     return ["python", str(devtools_location)]
 
 
 manager = manager(run).named(".python")
+manager.add_no_binary("black")
 manager.add_requirements_file("{here}", "requirements.dev.txt")
 manager.add_requirements_file("{here}", "requirements.docs.txt")
+manager.add_env(NOSE_OF_YETI_BLACK_COMPAT="true")
 manager.add_local_dep(
     "{here}",
     "..",
@@ -26,7 +37,6 @@ manager.add_local_dep(
         "noseOfYeti",
         "__init__.py",
     ),
-    name="noseOfYeti=={version}",
-    with_tests=True,
+    name="noseOfYeti[black,tests]=={version}",
 )
 manager.run()

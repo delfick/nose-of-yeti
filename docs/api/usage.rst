@@ -44,8 +44,12 @@ that start with ``# coding: spec``.
 Black
 -----
 
-To format files with the ``spec`` encoding you need to use a modified version
-of black, which you can find here https://github.com/delfick/noy_black 
+To format files with the ``spec`` encoding you need to use a specific version of black
+that isn't installed as a binary and have a specific environment variable set::
+
+    > pip uninstall black
+    > pip install --no-binary black noseOfYeti[black]
+    > NOSE_OF_YETI_BLACK_COMPAT=true black .
 
 MyPy
 ----
