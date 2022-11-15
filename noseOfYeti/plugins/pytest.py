@@ -19,39 +19,41 @@ def pytest_configure():
     register(transform=True)
 
 
+def change_item(res, obj):
+    original_item_collect = res.collect
+
+    if isinstance(res, UnitTestCase):
+
+        def collect():
+            yield from filter_collection(original_item_collect(), obj)
+
+    else:
+
+        def collect():
+            res.session._fixturemanager.parsefactories(res)
+            yield from filter_collection(original_item_collect(), obj)
+
+    mock.patch.object(res, "collect", collect).start()
+
+
 @pytest.hookimpl(hookwrapper=True)
 def pytest_pycollect_makeitem(collector, name, obj):
     """Make sure we can have nested noseOfYeti describes"""
     outcome = yield
     res = outcome.get_result()
 
-    if res is None:
+    if not isinstance(res, pytest.Class):
         return
 
-    if not hasattr(res, "obj"):
-        is_noy_on_obj = getattr(obj, "is_noy_spec", False)
-        is_noy_on_class = getattr(obj.__class__, "is_noy_spec", False)
-        if not is_noy_on_obj and not is_noy_on_class:
-            return
-
-    original_item_collect = res.collect
-
-    if isinstance(res, UnitTestCase):
-
-        def collect():
-            yield from filter_collection(original_item_collect(), res.obj)
-
-    else:
-
-        def collect():
-            res.session._fixturemanager.parsefactories(res)
-            yield from filter_collection(original_item_collect(), res.obj)
-
-    mock.patch.object(res, "collect", collect).start()
+    change_item(res, obj)
 
 
 def filter_collection(collected, obj):
     for thing in collected:
+        if not pytest.__version__.startswith("7") and isinstance(thing, pytest.Instance):
+            if getattr(thing.obj, "is_noy_spec", False):
+                change_item(thing, thing.obj)
+
         if not isinstance(thing, pytest.Function):
             yield thing
             continue
