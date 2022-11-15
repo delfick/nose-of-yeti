@@ -13,6 +13,7 @@ Changelog
       transform the code that passes through it or not. Register will not
       reregister new search paths.
     * Introduced a pylama linter to replace the noy_pylama script
+    * Fixed regression introduced in previous release with pytest versions before 7
  
 .. _release-2.3.1:
 
