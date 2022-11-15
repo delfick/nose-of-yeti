@@ -59,7 +59,9 @@ class App:
 
     @command
     def format(self, bin_dir: Path, args: tp.List[str]) -> None:
-        sh.Command(bin_dir / "black")(".", *args, _fg=True)
+        if not args:
+            args = [".", *args]
+        sh.Command(bin_dir / "black")(*args, _fg=True)
 
     @command
     def lint(self, bin_dir: Path, args: tp.List[str]) -> None:

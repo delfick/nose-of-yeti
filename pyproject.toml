@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 100
-include = '\.py$'
+include = '(\.py|^venv)$'
 exclude = '''
 /(
      \.git
@@ -9,5 +9,6 @@ exclude = '''
    | tools/\.python
    | docs/_build
    | example
+   | build
 )/
 '''
