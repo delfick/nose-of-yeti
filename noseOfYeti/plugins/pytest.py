@@ -16,7 +16,7 @@ import pytest
 
 
 def pytest_configure():
-    register()
+    register(transform=True)
 
 
 @pytest.hookimpl(hookwrapper=True)
