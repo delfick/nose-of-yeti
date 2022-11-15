@@ -53,8 +53,8 @@ setup(
       }
 
     , entry_points =
-      { 'console_scripts' :
-        [ 'noy_pylama = noseOfYeti.plugins.pylama:run_pylama'
+      { 'pylama.linter':
+        [ 'pylama_noy = noseOfYeti.plugins.pylama:Linter'
         ]
       , 'nose.plugins':
         [ 'noseOfYeti = noseOfYeti.plugins.nosetests:Plugin'

@@ -37,9 +37,13 @@ by including configuration for pyls that looks like:
 Pylama
 ------
 
-Pylama doesn't understand ``coding: spec`` files, but noseOfYeti makes available
-a ``noy_pylama`` command that you can use instead that will translate files
-that start with ``# coding: spec``.
+You may tell pylama to use the ``pylama_noy`` linter to make pylama aware of
+``spec`` encoded files. Make sure it is defined before other linters!
+
+It is also recommended adding to pylama configuration::
+
+    [pylama:tests*]
+    ignore = E225,E202,E211,E231,E226,W292,W291,E251,E122,E501,E701,E227,E305,E128,E228
 
 Black
 -----
