@@ -13,3 +13,7 @@ exclude = '''
    | build
 )/
 '''
+
+[tool.mypy]
+plugins = 'noseOfYeti.plugins.mypy'
+ignore_missing_imports = true
