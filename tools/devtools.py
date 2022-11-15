@@ -69,7 +69,7 @@ class App:
     def tests(self, bin_dir: Path, args: tp.List[str]) -> None:
         if "-q" not in args:
             args = ["-q", *args]
-        sh.Command(bin_dir / "run_noseOfYeti_tests")(*args, _fg=True)
+        sh.Command(bin_dir / "pytest")(*args, _fg=True)
 
     @command
     def tox(self, bin_dir: Path, args: tp.List[str]) -> None:
