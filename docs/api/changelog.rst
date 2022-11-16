@@ -3,6 +3,12 @@
 Changelog
 =========
 
+.. _release-2.4.1:
+
+2.4.1 - TBD
+    * Fix the pth file so that pytest doesn't warn about noseOfYeti already
+      being loaded
+
 .. _release-2.4.0:
 
 2.4.0 - 16 November 2022

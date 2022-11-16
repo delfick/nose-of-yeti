@@ -1,2 +1,2 @@
 # make black support noseOfYeti if NOSE_OF_YETI_BLACK_COMPAT=true is in the environment
-import importlib; importlib.import_module("noseOfYeti.plugins.black_compat").maybe_modify_black()
+import importlib; importlib.import_module("noseOfYeti.plugins.black_compat").maybe_modify_black(); import sys; [sys.modules.pop(k) for k in list(sys.modules) if k.startswith("noseOfYeti") and not k.startswith("noseOfYeti.tokeniser")]

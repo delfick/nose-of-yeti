@@ -18,7 +18,9 @@ def run(venv_location: Path, args: tp.List[str]) -> tp.Union[None, str, tp.List[
 
     for dr in Path(venv_location / "lib").iterdir():
         if dr.name.startswith("python"):
-            (dr / "site-packages" / "noy_black.pth").symlink_to(here / ".." / "noseOfYeti" / "black" / "noy_black.pth")
+            pth_file = (dr / "site-packages" / "noy_black.pth")
+            if not pth_file.exists():
+                pth_file.symlink_to(here / ".." / "noseOfYeti" / "black" / "noy_black.pth")
             break
 
     devtools_location = Path(__file__).parent / "devtools.py"
