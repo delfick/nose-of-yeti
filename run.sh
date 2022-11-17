@@ -11,13 +11,11 @@ if [[ "$#" == "1" ]]; then
         fi
         VENVSTARTER_ONLY_MAKE_VENV=1 ./tools/venv
 
-        case "$1" in
-        activate)
+        if [[ "$1" == "activate" ]]; then
             export NOSE_OF_YETI_BLACK_COMPAT=true
             source ./tools/.python/bin/activate
             HANDLED=1
-            ;;
-        esac
+        fi
     fi
 fi
 
