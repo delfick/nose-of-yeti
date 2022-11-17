@@ -7,3 +7,4 @@ sh==1.14.3
 python-language-server==0.36.2
 pylsp-mypy==0.6.3
 tox-asdf==0.1.0
+python-lsp-black==1.2.1
