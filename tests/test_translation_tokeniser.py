@@ -38,6 +38,11 @@ class Test_Tokenisor_translation:
         desired = "def test_should_do_this_thing (blah ,meh ):"
         assert_example(original, desired)
 
+    def test_adds_arguments_with_default_string_to_its_if_declared_on_same_line(self):
+        original = 'it "should do this thing", blah, meh="hello":'
+        desired = 'def test_should_do_this_thing (blah ,meh ="hello"):'
+        assert_example(original, desired)
+
     def test_adds_type_annotations(self):
         original = 'it "should do this thing", blah:str, meh: Thing | Other:'
         desired = "def test_should_do_this_thing (blah :str ,meh :Thing |Other ):"

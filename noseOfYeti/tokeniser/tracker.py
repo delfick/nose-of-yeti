@@ -155,7 +155,7 @@ class Tracker:
 
         elif self.groups.starting_single:
             # Inside single signature, add to it
-            if tokenum == STRING:
+            if tokenum == STRING and not self.single.name:
                 self.single.name = value
                 self.single.args[0] = (
                     self.single.args[0][0],
