@@ -25,12 +25,12 @@ class Test_Tokenisor_translation:
 
     def test_translates_an_it(self):
         original = 'it "should do this thing":'
-        desired = "def test_should_do_this_thing ():"
+        desired = "def test_should_do_this_thing ()$RET:"
         assert_example(original, desired)
 
         ## and with async
         original = 'async it "should do this thing":'
-        desired = "async def test_should_do_this_thing ():"
+        desired = "async def test_should_do_this_thing ()$RET:"
         assert_example(original, desired)
 
     def test_translates_an_it_with_return_type(self):
@@ -79,31 +79,31 @@ class Test_Tokenisor_translation:
 
     def test_adds_arguments_to_its_if_declared_on_same_line(self):
         original = 'it "should do this thing", blah, meh:'
-        desired = "def test_should_do_this_thing (blah ,meh ):"
+        desired = "def test_should_do_this_thing (blah ,meh )$RET:"
         assert_example(original, desired)
 
     def test_adds_arguments_with_default_string_to_its_if_declared_on_same_line(self):
         original = 'it "should do this thing", blah, meh="hello":'
-        desired = 'def test_should_do_this_thing (blah ,meh ="hello"):'
+        desired = 'def test_should_do_this_thing (blah ,meh ="hello")$RET:'
         assert_example(original, desired)
 
     def test_adds_type_annotations(self):
         original = 'it "should do this thing", blah:str, meh: Thing | Other:'
-        desired = "def test_should_do_this_thing (blah :str ,meh :Thing |Other ):"
+        desired = "def test_should_do_this_thing (blah :str ,meh :Thing |Other )$RET:"
         assert_example(original, desired)
 
     def test_allows_comments_after_it(self):
         original = 'it "should do this thing", blah:str, meh: Thing | Other: # a comment'
-        desired = "def test_should_do_this_thing (blah :str ,meh :Thing |Other ):# a comment"
+        desired = "def test_should_do_this_thing (blah :str ,meh :Thing |Other )$RET:# a comment"
         assert_example(original, desired)
 
         original = 'it "should do this thing":  # a comment'
-        desired = "def test_should_do_this_thing ():# a comment"
+        desired = "def test_should_do_this_thing ()$RET:# a comment"
         assert_example(original, desired)
 
     def test_adds_arguments_to_its_if_declared_on_same_line_and_work_with_skipTest(self):
         original = 'it "should do this thing", blah, meh: pass'
-        desired = "def test_should_do_this_thing (blah ,meh ):pass"
+        desired = "def test_should_do_this_thing (blah ,meh )$RET:pass"
         assert_example(original, desired)
 
     def test_complains_about_it_that_isnt_a_block(self):
@@ -118,7 +118,7 @@ class Test_Tokenisor_translation:
             assert_example('import os\n\nit "should be skipped"\n', "")
 
         original = 'import os\n\nit "should not be skipped":\n'
-        desired = "import os\n\ndef test_should_not_be_skipped ():"
+        desired = "import os\n\ndef test_should_not_be_skipped ()$RET:"
         assert_example(original, desired)
 
         ## And with async
@@ -127,7 +127,7 @@ class Test_Tokenisor_translation:
             assert_example('async it "should be skipped"\n', "")
 
         original = 'import os\n\nasync it "should not be skipped":\n'
-        desired = "import os\n\nasync def test_should_not_be_skipped ():"
+        desired = "import os\n\nasync def test_should_not_be_skipped ()$RET:"
         assert_example(original, desired)
 
         # Same tests, but with newlines in front
@@ -135,7 +135,7 @@ class Test_Tokenisor_translation:
             assert_example('import os\n\nasync it "should be skipped"\n', "")
 
         original = 'import os\n\nasync it "should not be skipped":\n'
-        desired = "import os\n\nasync def test_should_not_be_skipped ():"
+        desired = "import os\n\nasync def test_should_not_be_skipped ()$RET:"
         assert_example(original, desired)
 
     def test_turns_before_each_into_setup(self):
@@ -171,7 +171,7 @@ class Test_Tokenisor_translation:
 
         desired = """
         class TestA :
-            def test_asdf (self ):
+            def test_asdf (self )$RET:
                 l =[True
                 ,False
                 ,1
@@ -190,7 +190,7 @@ class Test_Tokenisor_translation:
                 t2 =(True
                 ,False
                 )
-            def test_asdf2 (self ):
+            def test_asdf2 (self )$RET:
                 pass
         """
 
@@ -312,14 +312,14 @@ class Test_Tokenisor_translation:
         """
 
         desired = """
-        def test_root_level_should_work_well ():
+        def test_root_level_should_work_well ()$RET:
             3 |should |be (4 )
         class TestSomeTests :
-            def test_doesnt_get_phased_by_special_characters (self ):
+            def test_doesnt_get_phased_by_special_characters (self )$RET:
                 pass
 
         class TestSomeTests_NestedDescribe (TestSomeTests ):
-            def test_asdf_asdf (self ):
+            def test_asdf_asdf (self )$RET:
                 1 |should |be (2 )
 
         test_root_level_should_work_well .__testname__ ="(root level) should work {well}"  # type: ignore
@@ -362,12 +362,12 @@ class Test_Tokenisor_translation:
         """
 
         desired = """
-        def test_is_a_function_with_a_pass ():pass
+        def test_is_a_function_with_a_pass ()$RET:pass
 
-        def test_is_a_function_with_a_pass_on_another_line ():
+        def test_is_a_function_with_a_pass_on_another_line ()$RET:
             pass
 
-        def test_is_a_function_with_a_pass_on_another_line_further_below ():
+        def test_is_a_function_with_a_pass_on_another_line_further_below ()$RET:
             #comment or something
 
 
@@ -408,12 +408,12 @@ class Test_Tokenisor_translation:
         """
 
         desired = """
-        def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ]):
+        def test_is_a_test_with_default_arguments (thing =2 ,other =[3 ])$RET:
             pass
 
         class TestGroup :
             def test_has_self_and_default_args (self ,blah =None ,you =(3 ,4 ,
-            5 ,5 )):
+            5 ,5 ))$RET:
                 # Test space is respected
 
                 1 |should |be (2 )
@@ -438,7 +438,7 @@ class Test_Tokenisor_translation:
         """
 
         desired = """
-        def test_should_ensure_askers_are_None_or_boolean_or_string ():
+        def test_should_ensure_askers_are_None_or_boolean_or_string ()$RET:
             for val in (None ,False ,'asdf',u'asdf',lambda :1 ):
                 (lambda :Step (askBeforeAction =val ))|should_not |throw (Problem )
                 (lambda :Step (askDesiredResult =val ))|should_not |throw (Problem )

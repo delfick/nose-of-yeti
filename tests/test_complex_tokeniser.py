@@ -1,3 +1,4 @@
+from noseOfYeti.tokeniser.tokeniser import Tokeniser, WITH_IT_RETURN_TYPE_ENV_NAME
 import pytest
 
 
@@ -100,12 +101,12 @@ class Examples:
     class TestThis :
         def setUp (self ):
             __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .x =5
-        def test_should (self ):
+        def test_should (self )$RET:
             if x :
                 pass
             else :
                 x +=9
-        async def test_supports_async_its (self ):
+        async def test_supports_async_its (self )$RET:
             pass
     class TestThis_That (TestThis ):
         def setUp (self ):
@@ -113,22 +114,22 @@ class Examples:
     class TestThis_That_Meh (TestThis_That ):
         def tearDown (self ):
             __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ();self .y =None
-        def test_should_set_testname_for_non_alpha_names (self ):
+        def test_should_set_testname_for_non_alpha_names (self )$RET:
             pass
-        def test_should (self ):
+        def test_should (self )$RET:
             if y :
                 pass
             else :
                 pass
-        def test_should_have_args (self ,arg1 ,arg2 ):
+        def test_should_have_args (self ,arg1 ,arg2 )$RET:
             blah |should |be_good ()
     class TestThis_Blah (TestThis ):pass
-    def ignore__root_level_pecial_method ():
+    def ignore__root_level_pecial_method ()$RET:
         pass
     class TestAnother :
         def setUp (self ):
             __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_before_each ();self .z =8
-        def test_should (self ):
+        def test_should (self )$RET:
             if z :
                 if u :
                     print "hello \
@@ -137,7 +138,7 @@ class Examples:
                     print "no"
             else :
                 pass
-    async def test_supports_level_0_async_its ():
+    async def test_supports_level_0_async_its ()$RET:
         pass
 
     TestThis .is_noy_spec =True  # type: ignore
@@ -184,7 +185,7 @@ class Examples:
     18.75 ,18.75 ,18.75 ,18.75 ,18.75 ,18.75 ,# noqa
     )
 
-    def test_things ():
+    def test_things ()$RET:
         assertTileHues (
         self ,tiles [1 ],
         25.0 ,25.0 ,25.0 ,25.0 ,25.0 ,25.0 ,# noqa
@@ -206,6 +207,25 @@ class Examples:
 
 
 class Test_Tokeniser:
+    def test_sets_with_it_return_type_appropriately(self, monkeypatch):
+        monkeypatch.delenv(WITH_IT_RETURN_TYPE_ENV_NAME, raising=False)
+        assert not Tokeniser().with_it_return_type
+
+        monkeypatch.setenv(WITH_IT_RETURN_TYPE_ENV_NAME, "true")
+        assert Tokeniser().with_it_return_type
+
+        monkeypatch.setenv(WITH_IT_RETURN_TYPE_ENV_NAME, "false")
+        assert not Tokeniser().with_it_return_type
+        assert not Tokeniser().with_it_return_type
+
+        monkeypatch.setenv(WITH_IT_RETURN_TYPE_ENV_NAME, "1")
+        assert Tokeniser().with_it_return_type
+        assert Tokeniser().with_it_return_type
+
+        monkeypatch.setenv(WITH_IT_RETURN_TYPE_ENV_NAME, "0")
+        assert not Tokeniser().with_it_return_type
+        assert not Tokeniser().with_it_return_type
+
     def test_gives_describes_noy_specific_attributes(self):
         pytest.helpers.assert_example(
             [

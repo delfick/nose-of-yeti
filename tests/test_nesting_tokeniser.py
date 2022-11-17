@@ -66,21 +66,21 @@ class Examples:
     """,
         """
     class TestThis :
-        def test_should (self ):
+        def test_should (self )$RET:
             if x :
                 pass
             else :
                 x +=9
     class TestThis_That (TestThis ):pass
     class TestThis_That_Meh (TestThis_That ):
-        def test_should (self ):
+        def test_should (self )$RET:
             if y :
                 pass
             else :
                 pass
     class TestThis_Blah (TestThis ):pass
     class TestAnother :
-        def test_should (self ):
+        def test_should (self )$RET:
             if z :
                 if u :
                     print "hello \

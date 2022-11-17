@@ -1,3 +1,5 @@
+from noseOfYeti.tokeniser.tokeniser import WITH_IT_RETURN_TYPE_ENV_NAME
+
 from contextlib import contextmanager
 from tokenize import untokenize
 from textwrap import dedent
@@ -7,6 +9,11 @@ import shutil
 import pytest
 import re
 import os
+
+
+@pytest.fixture(autouse=True)
+def remove_with_it_return_type_env(monkeypatch):
+    monkeypatch.delenv(WITH_IT_RETURN_TYPE_ENV_NAME, raising=False)
 
 
 @pytest.fixture()
@@ -117,17 +124,25 @@ def pytest_configure():
             original = original.rstrip()
 
         if tokeniser is None:
-            tokeniser = Tokeniser()
-        elif isinstance(tokeniser, dict):
-            tokeniser = Tokeniser(**tokeniser)
+            tokeniser = {}
 
-        s = StringIO(original)
-        got_lines = untokenize(tokeniser.translate(s.readline))
+        for give_return_types, ret in ((False, ""), (True, "->None ")):
+            orig = original.replace("$RET", ret)
+            want = want_lines.replace("$RET", ret)
 
-        if regex:
-            pytest.helpers.assert_regex_lines(got_lines, want_lines, lstrip=lstrip, rstrip=rstrip)
-        else:
-            pytest.helpers.assert_lines(got_lines, want_lines, lstrip=lstrip, rstrip=rstrip)
+            if give_return_types:
+                kwargs = {**tokeniser, "with_it_return_type": True}
+            else:
+                kwargs = {**tokeniser, "with_it_return_type": False}
+
+            s = StringIO(orig)
+            tok = Tokeniser(**kwargs)
+            got_lines = untokenize(tok.translate(s.readline))
+
+            if regex:
+                pytest.helpers.assert_regex_lines(got_lines, want, lstrip=lstrip, rstrip=rstrip)
+            else:
+                pytest.helpers.assert_lines(got_lines, want, lstrip=lstrip, rstrip=rstrip)
 
     @pytest.helpers.register
     def assert_example(example, convert_to_tabs=False, **kwargs):
@@ -138,7 +153,4 @@ def pytest_configure():
             original = original.replace("    ", "\t")
             desired = desired.replace("    ", "\t")
 
-        from noseOfYeti.tokeniser import Tokeniser
-
-        tok = Tokeniser(**kwargs)
-        pytest.helpers.assert_conversion(original, desired, tokeniser=tok)
+        pytest.helpers.assert_conversion(original, desired, tokeniser=kwargs)

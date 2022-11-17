@@ -57,7 +57,9 @@ class Tokens:
     ########################
 
     def make_single(self, name, args, comments, return_type):
-        if return_type is None:
+        if return_type is True:
+            return_type = [(STRING, "->"), (NAME, "None")]
+        elif return_type is None:
             return_type = []
 
         lst = [(NAME, "def"), (NAME, name), (OP, "(")] + [

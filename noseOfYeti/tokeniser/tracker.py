@@ -19,11 +19,13 @@ class WildCard:
 class Tracker:
     """Keep track of what each next token should mean"""
 
-    def __init__(self, result, tokens):
+    def __init__(self, result, tokens, with_it_return_type=False):
         if result is None:
             self.result = []
         else:
             self.result = result
+
+        self.with_it_return_type = with_it_return_type
 
         self.single = None
         self.tokens = tokens
@@ -422,6 +424,8 @@ class Tracker:
         name = self.single.python_name
         comments = self.single.comments
         return_type = self.single.return_type
+        if return_type is None and self.with_it_return_type:
+            return_type = True
 
         # Reset indentation to proper amount
         if not self.result or self.result[-1][0] != NAME:

@@ -10,6 +10,9 @@ Changelog
       being loaded
     * Fix being able to have default string values for args in it signatures
     * Add ability to add a return type to an it
+    * Added default return type to an it of ``-> None`` if
+      ``NOSE_OF_YETI_IT_RETURN_TYPE`` is in your environment and not set to
+      an empty string, "false" (case insensitive) or "0".
 
 .. _release-2.4.0:
 
