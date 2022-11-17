@@ -56,7 +56,10 @@ class Tokens:
     ###   MAKERS
     ########################
 
-    def make_single(self, name, args, comments):
+    def make_single(self, name, args, comments, return_type):
+        if return_type is None:
+            return_type = []
+
         lst = [(NAME, "def"), (NAME, name), (OP, "(")] + [
             (t, n) for t, n, *_ in args if t is not None
         ]
@@ -66,10 +69,16 @@ class Tokens:
 
         if lst[-1][1] == ":":
             lst.pop()
+        elif return_type and return_type[-1][1] == ":":
+            return_type.pop()
         elif lst[-1][1] == "pass" and lst[-2][1] == ":":
             has_pass = True
             lst.pop()
             lst.pop()
+        elif return_type and return_type[-1][1] == "pass" and return_type[-2][1] == ":":
+            has_pass = True
+            return_type.pop()
+            return_type.pop()
         else:
             has_end = False
 
@@ -78,7 +87,10 @@ class Tokens:
             scol = args[-1][-1]
             raise SyntaxError(f"Found a missing ':' on line {srow}, column {scol}")
 
-        lst.extend([(OP, ")"), (OP, ":")])
+        lst.append((OP, ")"))
+        lst.extend(return_type)
+        lst.append((OP, ":"))
+
         if has_pass:
             lst.append((NAME, "pass"))
 

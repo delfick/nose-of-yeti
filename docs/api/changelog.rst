@@ -9,6 +9,7 @@ Changelog
     * Fix the pth file so that pytest doesn't warn about noseOfYeti already
       being loaded
     * Fix being able to have default string values for args in it signatures
+    * Add ability to add a return type to an it
 
 .. _release-2.4.0:
 

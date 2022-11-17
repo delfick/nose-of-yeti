@@ -33,6 +33,50 @@ class Test_Tokenisor_translation:
         desired = "async def test_should_do_this_thing ():"
         assert_example(original, desired)
 
+    def test_translates_an_it_with_return_type(self):
+        original = 'it "should do this thing" -> None:'
+        desired = "def test_should_do_this_thing ()->None :"
+        assert_example(original, desired)
+
+        ## and with async
+        original = 'async it "should do this thing" -> None:'
+        desired = "async def test_should_do_this_thing ()->None :"
+        assert_example(original, desired)
+
+    def test_translates_an_it_with_complex_return_type(self):
+        original = 'it "should do this thing" -> tp.Generic[Thing, list[str]]:'
+        desired = "def test_should_do_this_thing ()->tp .Generic [Thing list [str ]]:"
+        assert_example(original, desired)
+
+        ## and with async
+        original = 'async it "should do this thing" -> tp.Generic[Thing, list[str]]:'
+        desired = "async def test_should_do_this_thing ()->tp .Generic [Thing list [str ]]:"
+        assert_example(original, desired)
+
+    def test_translates_an_it_with_return_type_and_args(self):
+        original = 'it "should do this thing", one: str -> None:'
+        desired = "def test_should_do_this_thing (one :str )->None :"
+        assert_example(original, desired)
+
+        ## and with async
+        original = 'async it "should do this thing", two: int -> None:'
+        desired = "async def test_should_do_this_thing (two :int )->None :"
+        assert_example(original, desired)
+
+    def test_translates_an_it_with_complex_return_type_and_args(self):
+        original = (
+            'it "should do this thing" blah: dict[str, list] -> tp.Generic[Thing, list[str]]:'
+        )
+        desired = "def test_should_do_this_thing (blah :dict [str ,list ])->tp .Generic [Thing ,list [str ]]:"
+        assert_example(original, desired)
+
+        ## and with async
+        original = 'async it "should do this thing" item: Item -> tp.Generic[Thing, list[str]]:'
+        desired = (
+            "async def test_should_do_this_thing (item :Item )->tp .Generic [Thing ,list [str ]]:"
+        )
+        assert_example(original, desired)
+
     def test_adds_arguments_to_its_if_declared_on_same_line(self):
         original = 'it "should do this thing", blah, meh:'
         desired = "def test_should_do_this_thing (blah ,meh ):"

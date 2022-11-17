@@ -66,6 +66,7 @@ class Single:
 
         self.args = []
         self.comments = []
+        self.return_type = None
 
         self._name = None
         self.english = None
@@ -106,8 +107,14 @@ class Single:
         if value == "," and len(self.args) == 1 and self.args[0][0] is None:
             return
 
+        if value == "->" and self.return_type is None:
+            self.return_type = [(tokenum, value, srow, scol)]
+            return
+
         if self.comments or tokenum is COMMENT:
             self.comments.append((tokenum, value))
+        elif self.return_type is not None:
+            self.return_type.append((tokenum, value, srow, scol))
         else:
             self.args.append((tokenum, value, srow, scol))
 

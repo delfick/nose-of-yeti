@@ -421,13 +421,14 @@ class Tracker:
         args = self.single.args
         name = self.single.python_name
         comments = self.single.comments
+        return_type = self.single.return_type
 
         # Reset indentation to proper amount
         if not self.result or self.result[-1][0] != NAME:
             self.reset_indentation(self.indent_type * self.single.indent)
 
         # And add signature
-        self.result.extend(self.tokens.make_single(name, args, comments))
+        self.result.extend(self.tokens.make_single(name, args, comments, return_type))
         self.groups.finish_signature()
 
     def finish_hanging(self):
