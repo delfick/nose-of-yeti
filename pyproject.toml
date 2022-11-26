@@ -9,7 +9,7 @@ exclude = '''
    | tools/\.python
    | docs/_build
    | example
-   | tests/for_formatting
+   | tests/for_formatting_and_pylama
    | build
 )/
 '''

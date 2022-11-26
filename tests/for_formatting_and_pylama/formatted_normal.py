@@ -1,5 +1,8 @@
-import sys
 import typing as tp
+
+
+def stuff():
+    pass
 
 
 def hello(one: int, two: str, *args: str) -> object:

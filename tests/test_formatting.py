@@ -19,6 +19,7 @@ except ImportError:
     pytestmark = pytest.mark.skip("black is not current installed")
 
 here = Path(__file__).parent
+test_dir = here / "for_formatting_and_pylama"
 
 
 class TestBlackFormatting:
@@ -47,12 +48,8 @@ class TestBlackFormatting:
                 )
             )
 
-        shutil.copy(
-            here / "for_formatting" / "unformatted_spec.py", directory / "unformatted_spec.py"
-        )
-        shutil.copy(
-            here / "for_formatting" / "unformatted_normal.py", directory / "unformatted_normal.py"
-        )
+        shutil.copy(test_dir / "unformatted_spec.py", directory / "unformatted_spec.py")
+        shutil.copy(test_dir / "unformatted_normal.py", directory / "unformatted_normal.py")
 
         path = Path(__import__("noseOfYeti").__file__).parent / "black" / "noy_black.pth"
         shutil.copy(path, directory)
@@ -60,11 +57,11 @@ class TestBlackFormatting:
         subprocess.check_call([sys.executable, "-m", "black", str(directory)], cwd=directory)
 
         with open(directory / "unformatted_spec.py") as spec_result, open(
-            here / "for_formatting" / "formatted_spec.py"
+            test_dir / "formatted_spec.py"
         ) as spec_want:
             assert spec_result.read() == spec_want.read()
 
         with open(directory / "unformatted_normal.py") as normal_result, open(
-            here / "for_formatting" / "formatted_normal.py"
+            test_dir / "formatted_normal.py"
         ) as normal_want:
             assert normal_result.read() == normal_want.read()
