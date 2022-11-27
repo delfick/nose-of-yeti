@@ -5,7 +5,7 @@ Changelog
 
 .. _release-2.4.1:
 
-2.4.1 - TBD
+2.4.1 - 27 November 2022
     * Fix the pth file so that pytest doesn't warn about noseOfYeti already
       being loaded
     * Fix being able to have default string values for args in it signatures
