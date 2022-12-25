@@ -3,6 +3,7 @@ from noseOfYeti.tokeniser.spec_codec import TokeniserCodec, Tokeniser
 from textwrap import dedent
 from unittest import mock
 import subprocess
+import fnmatch
 import pytest
 import sys
 import os
@@ -30,6 +31,34 @@ def assert_run_subprocess(cmd, expected_output, status=0, **kwargs):
         pytest.helpers.assert_regex_lines(output, expected_output)
 
     return output
+
+
+def assert_glob_lines(got, expect):
+    message = [line.strip() for line in got.strip().split("\n")]
+    want = [line.strip() for line in expect.strip().split("\n")]
+
+    print("GOT >>" + "=" * 74)
+    print()
+    print("\n".join(message))
+    print()
+    print("WANT >>" + "-" * 73)
+    print()
+    print("\n".join(want))
+
+    count = 1
+    while want:
+        line = want[0]
+        if not message:
+            assert False, f"Ran out of lines, stopped at [{count}] '{want[0]}'"
+
+        if message[0] == line or fnmatch.fnmatch(message[0], line):
+            count += 1
+            want.pop(0)
+
+        message.pop(0)
+
+    if want:
+        assert False, f"Didn't match all the lines, stopped at [{count}] '{want[0]}'"
 
 
 class Test_RegisteringCodec:
@@ -115,35 +144,18 @@ class Test_RegisteringCodec:
             got = codec.dealwith(readline)
             tokeniser.translate.assert_called_once_with(readline, [])
 
-            mock_traceback = r'File ".+unittest/mock.py", line \d+.+' + "\n    .+"
-
-            if sys.version_info < (3, 8):
-                mock_traceback = [mock_traceback] * 2
-            else:
-                mock_traceback = [mock_traceback] * 3
-
-            mock_traceback = "\n".join(mock_traceback)
-
-            want = (
-                dedent(
-                    r'''
-            msg = """
-            Traceback \(most recent call last\):
-            File ".+noseOfYeti/tokeniser/spec_codec.py", line \d+, in dealwith
-                self.tokeniser.translate\(readline, data, \*\*kwargs\)
-            '''
-                )
-                + mock_traceback
-                + dedent(
-                    r'''
-            Exception: NOPE
-            """
-            raise Exception\(f"--- internal spec codec error --- \\n\{msg\}"\)
-            '''
-                )
+            expect = dedent(
+                r'''
+                msg = """
+                Traceback (most recent call last):
+                File "*noseOfYeti/tokeniser/spec_codec.py", line *, in dealwith
+                Exception: NOPE
+                """
+                raise Exception(f"--- internal spec codec error --- \n{msg}")
+                '''
             )
 
-            pytest.helpers.assert_regex_lines(got, want, rstrip=True)
+            assert_glob_lines(got, expect)
 
             with pytest.raises(Exception) as excinfo:
                 exec(got)
