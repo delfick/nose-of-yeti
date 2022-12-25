@@ -15,10 +15,15 @@ example_dir = os.path.join(this_dir, "..", "example")
 def assert_run_subprocess(cmd, expected_output, status=0, **kwargs):
     __tracebackhide__ = True
 
+    # necessary so that tests pass on windows
+    env = os.environ.copy()
+    env.update(kwargs.get("env", {}))
+    kwargs["env"] = env
+
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
     process.wait()
 
-    output = process.stdout.read().decode("utf8").strip()
+    output = process.stdout.read().decode("utf8").strip().replace("\r\n", "\n")
 
     print("the process output:")
     print("~" * 80)
@@ -34,7 +39,7 @@ def assert_run_subprocess(cmd, expected_output, status=0, **kwargs):
 
 
 def assert_glob_lines(got, expect):
-    message = [line.strip() for line in got.strip().split("\n")]
+    message = [line.strip() for line in got.strip().replace("\r\n", "\n").split("\n")]
     want = [line.strip() for line in expect.strip().split("\n")]
 
     print("GOT >>" + "=" * 74)
@@ -146,9 +151,9 @@ class Test_RegisteringCodec:
 
             expect = dedent(
                 r'''
-                msg = """
+                msg = r"""
                 Traceback (most recent call last):
-                File "*noseOfYeti/tokeniser/spec_codec.py", line *, in dealwith
+                File "*noseOfYeti*tokeniser*spec_codec.py", line *, in dealwith
                 Exception: NOPE
                 """
                 raise Exception(f"--- internal spec codec error --- \n{msg}")

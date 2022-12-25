@@ -73,7 +73,7 @@ class TestPylama:
         assert p.returncode == 1
 
         assert (
-            p.stdout.decode().strip()
+            p.stdout.decode().strip().replace("\r\n", "\n")
             == dedent(
                 """
             formatted_spec.py:3:1 W0611 'sys' imported but unused [pyflakes]

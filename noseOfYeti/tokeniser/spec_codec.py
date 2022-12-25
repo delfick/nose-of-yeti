@@ -135,7 +135,7 @@ class TokeniserCodec:
             # get partial output even in the case of an exception.
             self.tokeniser.translate(readline, data, **kwargs)
         except:
-            lines = ['msg = """']
+            lines = ['msg = r"""']
             for line in traceback.format_exception(*sys.exc_info()):
                 lines.append(line.strip())
             lines.append('"""')
