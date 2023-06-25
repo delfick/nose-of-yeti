@@ -177,6 +177,12 @@ class Examples:
 
         def t(n, f, c):
             return expected[(n, f, c)]
+
+        assert True # type: ignore[valid-type]
+        assert True
+
+        # one two three
+        assert True
     """,
         """
     assertTileHues (
@@ -202,6 +208,12 @@ class Examples:
 
         def t (n ,f ,c ):
             return expected [(n ,f ,c )]
+
+        assert True # type: ignore[valid-type]
+        assert True
+
+        # one two three
+        assert True
     """,
     ]
 

@@ -217,11 +217,15 @@ class Tracker:
         # Just append if token should be
         if just_append:
             # Make sure comments are indented appropriately
+            add_dedent = False
             if tokenum == COMMENT and not self.in_container:
                 indent = self.indent_type * (self.current.scol - self.groups.level)
                 self.result.append((INDENT, indent))
+                add_dedent = True
 
             self.result.append([tokenum, value])
+            if add_dedent:
+                self.result.append((DEDENT, ""))
 
     ########################
     ###   UTILITY
