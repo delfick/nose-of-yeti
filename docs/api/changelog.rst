@@ -5,7 +5,7 @@ Changelog
 
 .. _release-2.4.2:
 
-2.4.2 - TBD
+2.4.2 - 25 June 2023
     * Make sure adding a comment doesn't indent code after the comment
 
 .. _release-2.4.1:
