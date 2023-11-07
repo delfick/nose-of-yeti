@@ -1,5 +1,6 @@
 from textwrap import dedent
 import pytest
+import sys
 
 
 def assert_example(original, desired):
@@ -525,5 +526,33 @@ class Test_Tokenisor_translation:
                 __import__ ("noseOfYeti").tokeniser .TestSetup (super ()).sync_after_each ()#comment
                 pass
         """
+
+        assert_example(original, desired)
+
+    def test_it_doesnt_mess_up_dedent_from_whitespace_in_fstring(self):
+        original = """
+        def one(
+            item: object, want: three, /, _register: four
+        ) -> dict | None:
+            f"{item} "
+
+
+        def two(value: object, /) -> dict | None:
+            return None
+        """
+
+        desired = """
+        def one (
+        item :object ,want :three ,/,_register :four
+        )->dict |None :
+            f"{item } "
+
+
+        def two (value :object ,/)->dict |None :
+            return None
+        """
+
+        if sys.version_info < (3, 12):
+            desired = desired.replace("{item }", "{item}")
 
         assert_example(original, desired)

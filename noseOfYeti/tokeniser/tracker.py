@@ -4,6 +4,10 @@ from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMM
 from contextlib import contextmanager
 import re
 
+try:
+    from tokenize import FSTRING_START, FSTRING_END
+except ImportError:
+    FSTRING_START, FSTRING_END = None, None
 
 # Regex for matching whitespace
 regexes = {"whitespace": re.compile(r"\s+")}
@@ -44,6 +48,7 @@ class Tracker:
         self.after_space = True
         self.inserted_line = False
         self.after_an_async = False
+        self.f_string_level = 0
         self.just_ended_container = False
         self.just_started_container = False
 
@@ -72,6 +77,9 @@ class Tracker:
 
         # Only proceed if we shouldn't ignore this token
         if not self.ignore_token():
+            # Determining the f string level
+            self.determine_f_string_level()
+
             # Determining if this token is whitespace
             self.determine_if_whitespace()
 
@@ -469,7 +477,19 @@ class Tracker:
         else:
             self.is_space = False
             if value == "" or regexes["whitespace"].match(value):
-                self.is_space = True
+                if self.f_string_level == 0:
+                    self.is_space = True
+
+    def determine_f_string_level(self):
+        """
+        Set self.f_string_level depending on FSTRING_{START,END}
+        """
+        if self.current.tokenum == FSTRING_START:
+            self.f_string_level += 1
+
+        if self.current.tokenum == FSTRING_END:
+            if self.f_string_level > 0:
+                self.f_string_level -= 1
 
     def determine_inside_container(self):
         """

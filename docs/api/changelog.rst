@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2.4.3:
+
+2.4.3 - TBD
+    * Ensure f-string tokenising in python 3.12 doesn't break dedents
+
 .. _release-2.4.2:
 
 2.4.2 - 25 June 2023
