@@ -1,10 +1,11 @@
-types-setuptools==65.5.0.2
-pylama-dmypy==0.3
+pylama-dmypy==0.4
 pylama==8.4.1
 neovim==0.3.1
-tox==3.27.0
-python-language-server==0.36.2
-pylsp-mypy==0.6.3
-tox-asdf==0.1.0
-python-lsp-black==1.2.1
-mslex==0.3.0
+tox==4.11.3
+isort==5.12.0
+python-lsp-server==1.9.0
+pylsp-mypy==0.6.7
+pyls-isort==0.2.2
+python-lsp-black==1.3.0
+mslex==1.1.0; sys.platform == 'win32'
+jedi==0.19.1
