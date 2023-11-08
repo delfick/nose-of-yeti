@@ -66,6 +66,7 @@ class App:
         if not args:
             args = [".", *args]
         run(bin_dir / "black", *args)
+        run(bin_dir / "isort", *args)
 
     @command
     def lint(self, bin_dir: Path, args: list[str]) -> None:

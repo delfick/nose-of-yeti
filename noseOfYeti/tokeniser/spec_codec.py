@@ -1,12 +1,13 @@
-from noseOfYeti.tokeniser.tokeniser import Tokeniser
-from tokenize import untokenize
+import codecs
+import encodings
+import re
+import sys
+import traceback
 from encodings import utf_8
 from io import StringIO
-import encodings
-import traceback
-import codecs
-import sys
-import re
+from tokenize import untokenize
+
+from noseOfYeti.tokeniser.tokeniser import Tokeniser
 
 regexes = {
     "whitespace": re.compile(r"\s*"),

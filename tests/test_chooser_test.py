@@ -1,6 +1,6 @@
-from noseOfYeti.tokeniser.chooser import TestChooser as Chooser
-
 import pytest
+
+from noseOfYeti.tokeniser.chooser import TestChooser as Chooser
 
 
 @pytest.fixture()

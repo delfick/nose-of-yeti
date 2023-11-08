@@ -1,8 +1,8 @@
-from noseOfYeti.tokeniser.tracker import Tracker
-from noseOfYeti.tokeniser.tokens import Tokens
-
-from tokenize import generate_tokens
 import os
+from tokenize import generate_tokens
+
+from noseOfYeti.tokeniser.tokens import Tokens
+from noseOfYeti.tokeniser.tracker import Tracker
 
 WITH_IT_RETURN_TYPE_ENV_NAME = "NOSE_OF_YETI_IT_RETURN_TYPE"
 

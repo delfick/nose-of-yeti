@@ -10,6 +10,7 @@
 
 from unittest import TestCase
 
+
 def test_is_possible_to_add_numbers ():
     assert 1 +1 ==2
 

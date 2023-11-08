@@ -1,6 +1,7 @@
-from textwrap import dedent
-import pytest
 import sys
+from textwrap import dedent
+
+import pytest
 
 
 def assert_example(original, desired):

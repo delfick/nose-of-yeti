@@ -10,6 +10,7 @@
 
 from unittest import TestCase
 
+
 it "is possible to add numbers":
     assert 1 + 1 == 2
 

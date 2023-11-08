@@ -1,12 +1,13 @@
-from noseOfYeti.tokeniser.spec_codec import TokeniserCodec, Tokeniser
-
+import fnmatch
+import os
+import subprocess
+import sys
 from textwrap import dedent
 from unittest import mock
-import subprocess
-import fnmatch
+
 import pytest
-import sys
-import os
+
+from noseOfYeti.tokeniser.spec_codec import Tokeniser, TokeniserCodec
 
 this_dir = os.path.dirname(__file__)
 example_dir = os.path.join(this_dir, "..", "example")

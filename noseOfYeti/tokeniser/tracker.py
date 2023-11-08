@@ -1,11 +1,21 @@
-from noseOfYeti.tokeniser.containers import TokenDetails, Group
-
-from tokenize import NAME, OP, INDENT, NEWLINE, DEDENT, STRING, ERRORTOKEN, COMMENT, ENDMARKER
-from contextlib import contextmanager
 import re
+from contextlib import contextmanager
+from tokenize import (
+    COMMENT,
+    DEDENT,
+    ENDMARKER,
+    ERRORTOKEN,
+    INDENT,
+    NAME,
+    NEWLINE,
+    OP,
+    STRING,
+)
+
+from noseOfYeti.tokeniser.containers import Group, TokenDetails
 
 try:
-    from tokenize import FSTRING_START, FSTRING_END
+    from tokenize import FSTRING_END, FSTRING_START
 except ImportError:
     FSTRING_START, FSTRING_END = None, None
 

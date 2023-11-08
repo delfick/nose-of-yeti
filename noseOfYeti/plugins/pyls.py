@@ -1,7 +1,8 @@
-from noseOfYeti.tokeniser.spec_codec import codec
+import re
 
 from pyls import hookimpl
-import re
+
+from noseOfYeti.tokeniser.spec_codec import codec
 
 spec_codec = codec()
 

@@ -77,6 +77,20 @@ exclude = '''
 )/
 '''
 
+[tool.isort]
+profile = "black"
+skip_glob = [
+   ".git/*",
+   ".tox/*",
+   "dist/*",
+   "tools/.python/*",
+   "tools/deps/*",
+   "docs/_build/*",
+   "build/*",
+   "example/*",
+   "tests/for_formatting_and_pylama",
+]
+
 [tool.mypy]
 plugins = 'noseOfYeti.plugins.mypy'
 ignore_missing_imports = true

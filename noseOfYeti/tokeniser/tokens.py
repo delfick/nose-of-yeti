@@ -1,5 +1,4 @@
-from tokenize import NAME, OP, INDENT, NEWLINE, STRING, COMMENT
-from tokenize import generate_tokens
+from tokenize import COMMENT, INDENT, NAME, NEWLINE, OP, STRING, generate_tokens
 
 ########################
 ###   TOKENS IN GENERATOR

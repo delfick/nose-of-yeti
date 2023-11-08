@@ -1,14 +1,15 @@
-from noseOfYeti.tokeniser.tokeniser import WITH_IT_RETURN_TYPE_ENV_NAME
-
-from contextlib import contextmanager
-from tokenize import untokenize
-from textwrap import dedent
-from io import StringIO
-import tempfile
-import shutil
-import pytest
-import re
 import os
+import re
+import shutil
+import tempfile
+from contextlib import contextmanager
+from io import StringIO
+from textwrap import dedent
+from tokenize import untokenize
+
+import pytest
+
+from noseOfYeti.tokeniser.tokeniser import WITH_IT_RETURN_TYPE_ENV_NAME
 
 
 @pytest.fixture(autouse=True)

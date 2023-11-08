@@ -7,12 +7,13 @@ same tests multiple times.
 It achieves this by making classes have a ModifiedInstance object that discards
 any collected tests that aren't on that class.
 """
-from noseOfYeti.tokeniser.spec_codec import register
-
-from _pytest.unittest import UnitTestCase
-from unittest import mock
 import inspect
+from unittest import mock
+
 import pytest
+from _pytest.unittest import UnitTestCase
+
+from noseOfYeti.tokeniser.spec_codec import register
 
 
 def pytest_configure():

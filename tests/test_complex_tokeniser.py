@@ -1,5 +1,6 @@
-from noseOfYeti.tokeniser.tokeniser import Tokeniser, WITH_IT_RETURN_TYPE_ENV_NAME
 import pytest
+
+from noseOfYeti.tokeniser.tokeniser import WITH_IT_RETURN_TYPE_ENV_NAME, Tokeniser
 
 
 class Examples:

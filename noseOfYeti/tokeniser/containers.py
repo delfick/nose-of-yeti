@@ -1,5 +1,5 @@
-from tokenize import NAME, COMMENT
 import re
+from tokenize import COMMENT, NAME
 
 regexes = {
     "joins": re.compile(r"[- /]"),

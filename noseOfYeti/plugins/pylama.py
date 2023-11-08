@@ -1,10 +1,12 @@
-from noseOfYeti.tokeniser.spec_codec import register, codec
-from pylama.lint import Linter as BaseLinter
-from pylama.config import LOGGER
-from pylama.errors import Error
-import pylama.context
 import codecs
 import re
+
+import pylama.context
+from pylama.config import LOGGER
+from pylama.errors import Error
+from pylama.lint import Linter as BaseLinter
+
+from noseOfYeti.tokeniser.spec_codec import codec, register
 
 spec_codec = codec()
 

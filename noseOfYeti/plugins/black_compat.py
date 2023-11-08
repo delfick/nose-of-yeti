@@ -1,8 +1,8 @@
-from pathlib import Path
-import tempfile
-import sys
 import os
 import re
+import sys
+import tempfile
+from pathlib import Path
 
 load_grammar_line = '_GRAMMAR_FILE = os.path.join(os.path.dirname(__file__), "Grammar.txt")'
 
@@ -79,8 +79,8 @@ def modify_black(spec_codec=None):
     if not is_supported_black_version():
         return
 
-    from blib2to3 import pygram
     import blib2to3
+    from blib2to3 import pygram
 
     if not str(pygram.__loader__.path).startswith(str(Path(blib2to3.__file__).parent)):
         return
