@@ -16,9 +16,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install deps
+        shell: bash
         env:
           VENVSTARTER_ONLY_MAKE_VENV: "1"
-        run: ./tools/venv
+        run: python ./tools/venv
 
       - name: Ensure linter is happy
         run: ./lint
@@ -34,9 +35,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install deps
+        shell: bash
         env:
           VENVSTARTER_ONLY_MAKE_VENV: "1"
-        run: ./tools/venv
+        run: python ./tools/venv
 
       - name: Ensure code is formatted
         run: |
