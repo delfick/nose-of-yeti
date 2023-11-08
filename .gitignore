@@ -1,4 +1,5 @@
 *.pyc
+.dmypy.json
 __pycache__/
 *.egg-info/
 .tox
