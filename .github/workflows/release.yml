@@ -1,7 +1,7 @@
 on:
   - workflow_dispatch
 
-name: Release packages
+name: Release Packages
 
 jobs:
   build:
@@ -13,41 +13,30 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
-      - id: sdist
-        run: python setup.py sdist
+      - id: build
+        run: pip install hatch==1.6.3 && hatch build
 
       - id: version
         run: |
-          printf "::set-output name=version::%s\n" $(python -c "import runpy; print(runpy.run_path('noseOfYeti/__init__.py')['VERSION'])")
-          printf "::set-output name=versiondash::%s\n" $(python -c "import runpy; print(runpy.run_path('noseOfYeti/__init__.py')['VERSION'].replace('.', '-'))")
+          version=$(python -c "import runpy; print(runpy.run_path('noseOfYeti/version.py')['VERSION'])")
+          versiondash=$(python -c "import runpy; print(runpy.run_path('noseOfYeti/version.py')['VERSION'].replace('.', '-'))")
 
-      - id: package
-        run: >
-          printf "::set-output name=package::noseOfYeti-${{ steps.version.outputs.version}}.tar.gz"
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "versiondash=$versiondash" >> $GITHUB_OUTPUT
 
-      - id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      - id: create-release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: "release-${{ steps.version.outputs.version }}"
-          release_name: noseOfYeti ${{ steps.version.outputs.version }}
+          name: noseOfYeti ${{ steps.version.outputs.version }}
           body: "https://noseOfYeti.readthedocs.io/en/latest/api/changelog.html#release-${{ steps.version.outputs.versiondash }}"
+          tag_name: "release-${{ steps.version.outputs.version }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: true
           draft: false
           prerelease: false
-
-      - id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "dist/${{ steps.package.outputs.package }}"
-          asset_name: ${{ steps.package.outputs.package }}
-          asset_content_type: application/tar+gzip
+          files: "dist/*"
 
       - uses: pypa/gh-action-pypi-publish@v1.4.1
         with:
