@@ -5,7 +5,7 @@ Changelog
 
 .. _release-2.4.3:
 
-2.4.3 - TBD
+2.4.3 - 8 November 2023
     * Ensure f-string tokenising in python 3.12 doesn't break dedents
     * Converted packaging to hatchling
 
