@@ -1,12 +1,13 @@
 pylama-dmypy==0.4
 pylama==8.4.1
 neovim==0.3.1
-tox==4.11.3
-isort==5.12.0
-python-lsp-server==1.9.0
+tox==4.8.0
+isort==5.11.5
+python-lsp-server==1.7.4; python_version < '3.10'
+python-lsp-server==1.9.0; python_version >= '3.10'
 pylsp-mypy==0.6.7
 pyls-isort==0.2.2
 python-lsp-black==1.3.0
 mslex==1.1.0; sys.platform == 'win32'
-jedi==0.19.1
+jedi==0.19.1; python_version >= '3.10'
 hatch==1.7.0
