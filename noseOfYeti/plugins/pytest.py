@@ -3,9 +3,6 @@ Modified pytest discovery classes.
 
 This is so you can use noseOfYeti to have nested describes without running the
 same tests multiple times.
-
-It achieves this by making classes have a ModifiedInstance object that discards
-any collected tests that aren't on that class.
 """
 import inspect
 from unittest import mock
@@ -14,6 +11,8 @@ import pytest
 from _pytest.unittest import UnitTestCase
 
 from noseOfYeti.tokeniser.spec_codec import register
+
+pytest_has_instance_class = int(pytest.__version__.split(".")[0]) < 7
 
 
 def pytest_configure():
@@ -51,7 +50,7 @@ def pytest_pycollect_makeitem(collector, name, obj):
 
 def filter_collection(collected, obj):
     for thing in collected:
-        if not pytest.__version__.startswith("7") and isinstance(thing, pytest.Instance):
+        if pytest_has_instance_class and isinstance(thing, pytest.Instance):
             if getattr(thing.obj, "is_noy_spec", False):
                 change_item(thing, thing.obj)
 

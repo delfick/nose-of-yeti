@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2.4.4:
+
+2.4.4 - TBD
+    * Don't reference deprecated pytest.Instance in pytest8
+
 .. _release-2.4.3:
 
 2.4.3 - 8 November 2023
