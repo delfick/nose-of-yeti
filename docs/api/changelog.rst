@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2.4.5:
+
+2.4.5 - 21 January 2024
+    * Fixed the sdist build to contain more than nothing
+
 .. _release-2.4.4:
 
 2.4.4 - 16 January 2024

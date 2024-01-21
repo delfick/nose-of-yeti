@@ -55,7 +55,22 @@ path = "noseOfYeti/version.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/noseofyeti",
+    "/noseOfYeti",
+    "/README.rst",
+    "/LICENSE",
+    "/test.sh",
+    "/run.sh",
+    "/pytest.ini",
+    "/tests/**",
+    "/tools/bootstrap_venvstarter.py",
+    "/tools/requirements.dev.txt",
+    "/tools/devtools.py",
+    "/tools/venv"
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/noseOfYeti",
 ]
 
 [tool.hatch.build.force-include]
