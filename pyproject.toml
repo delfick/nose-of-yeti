@@ -73,7 +73,7 @@ include = [
     "/noseOfYeti",
 ]
 
-[tool.hatch.build.force-include]
+[tool.hatch.build.targets.wheel.force-include]
 "noseOfYeti/black/noy_black.pth" = "noy_black.pth"
 
 [tool.black]

@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2.4.6:
+
+2.4.6 - 21 January 2024
+    * Fixed pip's ability to install from the sdist
+
 .. _release-2.4.5:
 
 2.4.5 - 21 January 2024
