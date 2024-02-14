@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2.4.7:
+
+2.4.7 - 14 February 2024
+    * Include test examples in the source distribution
+
 .. _release-2.4.6:
 
 2.4.6 - 21 January 2024
