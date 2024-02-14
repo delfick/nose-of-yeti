@@ -61,6 +61,7 @@ include = [
     "/test.sh",
     "/run.sh",
     "/pytest.ini",
+    "/example/*",
     "/tests/**",
     "/tools/bootstrap_venvstarter.py",
     "/tools/requirements.dev.txt",
