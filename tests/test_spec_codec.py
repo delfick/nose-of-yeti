@@ -117,7 +117,7 @@ class Test_RegisteringCodec:
             env={"NOSE_OF_YETI_BLACK_COMPAT": "false"},
             status=1,
         )
-        expected_output = "SyntaxError: unknown encoding: spec"
+        expected_output = "SyntaxError: [Uu]nknown encoding: spec"
         pytest.helpers.assert_regex_lines(output.split("\n")[-1], expected_output)
 
     def test_registering_codec_doesnt_lead_to_error(self, directory):
