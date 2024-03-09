@@ -3,6 +3,12 @@
 Changelog
 =========
 
+.. _release-2.4.8:
+
+2.4.8 - TBD
+    * Update to black 24.2.0
+    * Removed support for python3.7
+
 .. _release-2.4.7:
 
 2.4.7 - 14 February 2024

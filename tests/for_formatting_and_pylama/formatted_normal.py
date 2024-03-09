@@ -5,8 +5,7 @@ def stuff():
     pass
 
 
-def hello(one: int, two: str, *args: str) -> object:
-    ...
+def hello(one: int, two: str, *args: str) -> object: ...
 
 
 class Hi(tp.Protocol):

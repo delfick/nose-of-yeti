@@ -3,6 +3,7 @@ import re
 import sys
 import tempfile
 from pathlib import Path
+from unittest import mock
 
 load_grammar_line = '_GRAMMAR_FILE = os.path.join(os.path.dirname(__file__), "Grammar.txt")'
 
@@ -17,7 +18,7 @@ def is_supported_black_version():
     except ImportError:
         return
 
-    return not black.COMPILED and black.__version__ == "22.10.0"
+    return not black.COMPILED and black.__version__ == "24.2.0"
 
 
 def maybe_modify_black():
@@ -101,6 +102,7 @@ def modify_black(spec_codec=None):
 
     token = blibparse.token
     Parser = blibparse.Parser
+    syms = black.nodes.syms
 
     class ModifiedLineGenerator(LineGenerator):
         def visit_setup_teardown_stmts(self, node):
@@ -144,6 +146,32 @@ def modify_black(spec_codec=None):
             src = spec_codec.translate(src, transform=True)
             dst = spec_codec.translate(dst, transform=True)
         original_assert_equivalent(src, dst)
+
+    original_is_parent_function_or_class = black.nodes.is_parent_function_or_class
+
+    def is_parent_function_or_class(node):
+        if node.type == syms.it_stmt:
+            assert node.parent is not None
+            return node.parent.type in {
+                syms.funcdef,
+                syms.classdef,
+                syms.describe_stmt,
+                syms.it_stmt,
+            }
+        else:
+            return original_is_parent_function_or_class(node)
+
+    original_is_function_or_class = black.nodes.is_function_or_class
+
+    def is_function_or_class(node):
+        if node.type in {syms.it_stmt, syms.describe_stmt}:
+            return True
+        return original_is_function_or_class(node)
+
+    mock.patch.object(
+        black.nodes, "is_parent_function_or_class", is_parent_function_or_class
+    ).start()
+    mock.patch.object(black.nodes, "is_function_or_class", is_function_or_class).start()
 
     blibparse.Parser = ModifiedParser
     black.LineGenerator = ModifiedLineGenerator

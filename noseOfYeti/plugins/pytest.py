@@ -4,6 +4,7 @@ Modified pytest discovery classes.
 This is so you can use noseOfYeti to have nested describes without running the
 same tests multiple times.
 """
+
 import inspect
 from unittest import mock
 

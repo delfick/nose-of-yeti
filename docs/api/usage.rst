@@ -43,7 +43,7 @@ You may tell pylama to use the ``pylama_noy`` linter to make pylama aware of
 It is also recommended adding to pylama configuration::
 
     [pylama:tests*]
-    ignore = E225,E202,E211,E231,E226,W292,W291,E251,E122,E501,E701,E227,E305,E128,E228,E203,E261
+    ignore = E701,E704,E225,E202,E211,E231,E226,W292,W291,E251,E122,E501,E701,E227,E305,E128,E228,E203,E261
 
 Black
 -----

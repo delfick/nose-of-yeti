@@ -15,8 +15,7 @@ if platform.system() == "Windows":
 
 
 class Command:
-    def __call__(self, bin_dir, args) -> None:
-        ...
+    def __call__(self, bin_dir, args) -> None: ...
 
 
 def command(func) -> Callable:
