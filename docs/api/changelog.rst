@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2.4.9:
+
+2.4.9 - 28 April 2024
+    * Removed asynctest as a test dependency
+
 .. _release-2.4.8:
 
 2.4.8 - 9 March 2024
