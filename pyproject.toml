@@ -38,9 +38,6 @@ tests = [
 [project.entry-points."nose.plugins"]
 noseOfYeti = "noseOfYeti.plugins.nosetests:Plugin"
 
-[project.entry-points."pylama.linter"]
-pylama_noy = "noseOfYeti.plugins.pylama:Linter"
-
 [project.entry-points.pyls]
 pyls_noy = "noseOfYeti.plugins.pyls"
 
@@ -88,7 +85,6 @@ exclude = '''
    | tools/\.python
    | docs/_build
    | example
-   | tests/for_formatting_and_pylama
    | build
 )/
 '''
@@ -104,7 +100,6 @@ skip_glob = [
    "docs/_build/*",
    "build/*",
    "example/*",
-   "tests/for_formatting_and_pylama",
 ]
 
 [tool.mypy]

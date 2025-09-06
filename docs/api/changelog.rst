@@ -3,6 +3,11 @@
 Changelog
 =========
 
+.. _release-2.5.0:
+
+2.5.0 - TBD
+    * Remove support for pylama due to it still importing pkg_resources
+
 .. _release-2.4.9:
 
 2.4.9 - 28 April 2024

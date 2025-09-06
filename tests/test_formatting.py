@@ -19,12 +19,11 @@ except ImportError:
     pytestmark = pytest.mark.skip("black is not current installed")
 
 here = Path(__file__).parent
-test_dir = here / "for_formatting_and_pylama"
+test_dir = here / "for_formatting"
 
 
 class TestBlackFormatting:
     def test_it_formats(self, tmp_path_factory, monkeypatch):
-
         from black.cache import CACHE_DIR
 
         if CACHE_DIR.exists():
@@ -49,12 +48,18 @@ class TestBlackFormatting:
             )
 
         shutil.copy(test_dir / "unformatted_spec.py", directory / "unformatted_spec.py")
-        shutil.copy(test_dir / "unformatted_normal.py", directory / "unformatted_normal.py")
+        shutil.copy(
+            test_dir / "unformatted_normal.py", directory / "unformatted_normal.py"
+        )
 
-        path = Path(__import__("noseOfYeti").__file__).parent / "black" / "noy_black.pth"
+        path = (
+            Path(__import__("noseOfYeti").__file__).parent / "black" / "noy_black.pth"
+        )
         shutil.copy(path, directory)
 
-        subprocess.check_call([sys.executable, "-m", "black", str(directory)], cwd=directory)
+        subprocess.check_call(
+            [sys.executable, "-m", "black", str(directory)], cwd=directory
+        )
 
         with open(directory / "unformatted_spec.py") as spec_result, open(
             test_dir / "formatted_spec.py"
