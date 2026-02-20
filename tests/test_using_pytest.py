@@ -51,6 +51,7 @@ class TestPyTest:
                 "-v",
                 "-o",
                 "console_output_style=short",
+                "-p alt_pytest_asyncio.enable",
             ],
             cwd=directory,
             stdout=subprocess.PIPE,
